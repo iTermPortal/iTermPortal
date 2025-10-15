@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AAFE0001 /* fPortalFinderExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AAFE0003 /* fPortalFinderExtension.appex */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		290DBEBD2E9F31CF00EDEACE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -23,15 +27,51 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		AAFE0002 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				AAFE0001 /* fPortalFinderExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		290DBEAE2E9F31CE00EDEACE /* fPortal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = fPortal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		290DBEBC2E9F31CF00EDEACE /* fPortalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = fPortalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		290DBEC62E9F31CF00EDEACE /* fPortalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = fPortalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAFE0003 /* fPortalFinderExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = fPortalFinderExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		290DBFFA2E9F7D5600EDEACE /* Exceptions for "fPortal" folder in "fPortal" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				OpenInAppApp.swift,
+			);
+			target = 290DBEAD2E9F31CE00EDEACE /* fPortal */;
+		};
+		290DBFFB2E9F7D5600EDEACE /* Exceptions for "fPortal" folder in "fPortalFinderExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				OpenInAppApp.swift,
+			);
+			target = AAFE0005 /* fPortalFinderExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		290DBEB02E9F31CE00EDEACE /* fPortal */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				290DBFFA2E9F7D5600EDEACE /* Exceptions for "fPortal" folder in "fPortal" target */,
+				290DBFFB2E9F7D5600EDEACE /* Exceptions for "fPortal" folder in "fPortalFinderExtension" target */,
+			);
 			path = fPortal;
 			sourceTree = "<group>";
 		};
@@ -43,6 +83,11 @@
 		290DBEC92E9F31CF00EDEACE /* fPortalUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = fPortalUITests;
+			sourceTree = "<group>";
+		};
+		AAFE0004 /* fPortalFinderExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = fPortalFinderExtension;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +114,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AAFE0007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -78,6 +130,7 @@
 				290DBEB02E9F31CE00EDEACE /* fPortal */,
 				290DBEBF2E9F31CF00EDEACE /* fPortalTests */,
 				290DBEC92E9F31CF00EDEACE /* fPortalUITests */,
+				AAFE0004 /* fPortalFinderExtension */,
 				290DBEAF2E9F31CE00EDEACE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +141,7 @@
 				290DBEAE2E9F31CE00EDEACE /* fPortal.app */,
 				290DBEBC2E9F31CF00EDEACE /* fPortalTests.xctest */,
 				290DBEC62E9F31CF00EDEACE /* fPortalUITests.xctest */,
+				AAFE0003 /* fPortalFinderExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -102,6 +156,7 @@
 				290DBEAA2E9F31CE00EDEACE /* Sources */,
 				290DBEAB2E9F31CE00EDEACE /* Frameworks */,
 				290DBEAC2E9F31CE00EDEACE /* Resources */,
+				AAFE0002 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
@@ -163,6 +218,28 @@
 			productReference = 290DBEC62E9F31CF00EDEACE /* fPortalUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		AAFE0005 /* fPortalFinderExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AAFE0009 /* Build configuration list for PBXNativeTarget "fPortalFinderExtension" */;
+			buildPhases = (
+				AAFE0006 /* Sources */,
+				AAFE0007 /* Frameworks */,
+				AAFE0008 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				AAFE0004 /* fPortalFinderExtension */,
+			);
+			name = fPortalFinderExtension;
+			packageProductDependencies = (
+			);
+			productName = fPortalFinderExtension;
+			productReference = AAFE0003 /* fPortalFinderExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +261,9 @@
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = 290DBEAD2E9F31CE00EDEACE;
 					};
+					AAFE0005 = {
+						CreatedOnToolsVersion = 16.4;
+					};
 				};
 			};
 			buildConfigurationList = 290DBEA92E9F31CE00EDEACE /* Build configuration list for PBXProject "fPortal" */;
@@ -203,6 +283,7 @@
 				290DBEAD2E9F31CE00EDEACE /* fPortal */,
 				290DBEBB2E9F31CF00EDEACE /* fPortalTests */,
 				290DBEC52E9F31CF00EDEACE /* fPortalUITests */,
+				AAFE0005 /* fPortalFinderExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -229,6 +310,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AAFE0008 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -247,6 +335,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		290DBEC22E9F31CF00EDEACE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AAFE0006 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -404,7 +499,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = hjoncour.fPortal;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.fPortal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -429,7 +524,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = hjoncour.fPortal;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.fPortal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -501,6 +596,48 @@
 			};
 			name = Release;
 		};
+		AAFE000A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = fPortalFinderExtension/fPortalFinderExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = fPortalFinderExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.fPortal.FinderExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		AAFE000B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = fPortalFinderExtension/fPortalFinderExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = fPortalFinderExtension/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.fPortal.FinderExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -536,6 +673,15 @@
 			buildConfigurations = (
 				290DBED72E9F31CF00EDEACE /* Debug */,
 				290DBED82E9F31CF00EDEACE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AAFE0009 /* Build configuration list for PBXNativeTarget "fPortalFinderExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AAFE000A /* Debug */,
+				AAFE000B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
