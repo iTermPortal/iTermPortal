@@ -1,6 +1,6 @@
 import SwiftUI
 
-private let appGroupId = "group.com.example.fPortal"
+private let appGroupId = "group.com.hjoncour.fPortal"
 private let preferredBundleKey = "preferredBundleID"
 
 struct SettingsView: View {

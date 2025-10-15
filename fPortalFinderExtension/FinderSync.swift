@@ -2,7 +2,7 @@ import Cocoa
 import FinderSync
 
 // Shared constants for app group and key
-private let appGroupId = "group.com.example.fPortal"
+private let appGroupId = "group.com.hjoncour.fPortal"
 private let preferredBundleKey = "preferredBundleID"
 
 // Finder Sync lifecycle:
