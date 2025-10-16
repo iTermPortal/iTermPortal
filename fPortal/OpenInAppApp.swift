@@ -15,7 +15,6 @@ struct OpenInAppApp: App {
 		}
 		Settings {
 			SettingsView()
-            // Settings { Text("Settings placeholder") }
 		}
 	}
 }
