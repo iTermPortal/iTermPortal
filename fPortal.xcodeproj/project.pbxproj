@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AAFE0001 /* fPortalFinderExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AAFE0003 /* fPortalFinderExtension.appex */; };
+		290DBFFE2EA0697000EDEACE /* fPortalFinderExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AAFE0003 /* fPortalFinderExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,7 +34,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				AAFE0001 /* fPortalFinderExtension.appex in Embed App Extensions */,
+				290DBFFE2EA0697000EDEACE /* fPortalFinderExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -48,30 +48,9 @@
 		AAFE0003 /* fPortalFinderExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = fPortalFinderExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		290DBFFA2E9F7D5600EDEACE /* Exceptions for "fPortal" folder in "fPortal" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				OpenInAppApp.swift,
-			);
-			target = 290DBEAD2E9F31CE00EDEACE /* fPortal */;
-		};
-		290DBFFB2E9F7D5600EDEACE /* Exceptions for "fPortal" folder in "fPortalFinderExtension" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				OpenInAppApp.swift,
-			);
-			target = AAFE0005 /* fPortalFinderExtension */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		290DBEB02E9F31CE00EDEACE /* fPortal */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				290DBFFA2E9F7D5600EDEACE /* Exceptions for "fPortal" folder in "fPortal" target */,
-				290DBFFB2E9F7D5600EDEACE /* Exceptions for "fPortal" folder in "fPortalFinderExtension" target */,
-			);
 			path = fPortal;
 			sourceTree = "<group>";
 		};
