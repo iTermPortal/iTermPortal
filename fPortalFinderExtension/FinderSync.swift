@@ -9,14 +9,13 @@ private let preferredBundleKey = "preferredBundleID"
 // - Finder launches the extension process on demand.
 // - directoryURLs determines where the extension is active.
 // - Toolbar button and contextual menu are provided by FIFinderSync.
+@objc(FinderSync)
 final class FinderSync: FIFinderSync {
 
 	override init() {
 		super.init()
-
-		// Monitor the user's home directory by default for performance and scope.
 		let home = URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
-		FIFinderSyncController.default().directoryURLs = [home]
+		FIFinderSyncController.default().directoryURLs = Set([home])
 		NSLog("OpenInAppFinderExtension initialized. Monitoring %@", home.path)
 	}
 

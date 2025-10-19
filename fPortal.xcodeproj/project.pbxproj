@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		290DBFFE2EA0697000EDEACE /* fPortalFinderExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AAFE0003 /* fPortalFinderExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		29D474792EA49C6500E7C1ED /* fPortalFinderExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AAFE0003 /* fPortalFinderExtension.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,16 +25,23 @@
 			remoteGlobalIDString = 290DBEAD2E9F31CE00EDEACE;
 			remoteInfo = fPortal;
 		};
+		29861FA92EA4A69F00A2B78E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 290DBEA62E9F31CE00EDEACE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AAFE0005;
+			remoteInfo = fPortalFinderExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		AAFE0002 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				290DBFFE2EA0697000EDEACE /* fPortalFinderExtension.appex in Embed App Extensions */,
+				29D474792EA49C6500E7C1ED /* fPortalFinderExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -140,6 +147,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				29861FAA2EA4A69F00A2B78E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				290DBEB02E9F31CE00EDEACE /* fPortal */,
@@ -339,6 +347,11 @@
 			isa = PBXTargetDependency;
 			target = 290DBEAD2E9F31CE00EDEACE /* fPortal */;
 			targetProxy = 290DBEC72E9F31CF00EDEACE /* PBXContainerItemProxy */;
+		};
+		29861FAA2EA4A69F00A2B78E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AAFE0005 /* fPortalFinderExtension */;
+			targetProxy = 29861FA92EA4A69F00A2B78E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
