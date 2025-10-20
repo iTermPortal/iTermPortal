@@ -2,8 +2,6 @@
 //  fPortalApp.swift
 //  fPortal
 //
-//  Created by Hugo Joncour on 2025-10-19.
-//
 
 import SwiftUI
 import AppKit
@@ -11,67 +9,72 @@ import AppKit
 @main
 struct fPortalApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+
     var body: some Scene {
-        // Window that can be shown/hidden
-        Window("fPortal Settings", id: "settings") {
-            ContentView()
-        }
-        .defaultSize(width: 600, height: 700)
-        .windowResizability(.contentSize)
-        .commandsRemoved()
+        // We manage the window manually (no automatic SwiftUI window)
+        Settings { EmptyView() }
     }
 }
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem?
-    
+    private var settingsWC: NSWindowController?
+
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Create the status bar item
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        
         if let button = statusItem?.button {
-            if let image = NSImage(named: NSImage.Name("fPortal")) {
-                image.isTemplate = true            // use template so it tints automatically
-                button.image = image
+            if let img = NSImage(named: "MenuBarIcon") {
+                img.isTemplate = true
+                img.size = NSSize(width: 18, height: 18)       // 👈 tell AppKit the intended size
+                button.image = img
+                button.alternateImage = img
+                button.imageScaling = .scaleProportionallyUpOrDown // 👈 avoid odd cropping
+                button.imagePosition = .imageOnly
+            } else if let sf = NSImage(systemSymbolName: "folder.badge.gearshape",
+                                    accessibilityDescription: "fPortal") {
+                sf.isTemplate = true
+                button.image = sf
             }
-            button.action = #selector(toggleWindow)
-            button.target = self
-            button.toolTip = "fPortal — Click to open settings"
+            button.toolTip = "fPortal — Click to open / hide settings"
+            button.target  = self
+            button.action  = #selector(statusItemClicked(_:))
+            button.sendAction(on: [.leftMouseUp])
         }
     }
-    
-    @objc func toggleWindow() {
-        // Find the settings window
-        let settingsWindow = NSApplication.shared.windows.first { $0.title == "fPortal Settings" }
-        
-        if let window = settingsWindow, window.isVisible {
-            // Window exists and is visible - hide it
-            window.orderOut(nil)
-        } else if let window = settingsWindow {
-            // Window exists but is hidden - show it
-            window.makeKeyAndOrderFront(nil)
-            window.center()
-            NSApp.activate(ignoringOtherApps: true)
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
+
+    // MARK: - Status item click → TOGGLE
+    @objc private func statusItemClicked(_ sender: Any?) {
+        if let win = settingsWC?.window {
+            win.isVisible ? hideSettingsWindow() : showSettingsWindow()
         } else {
-            // Window doesn't exist - open it
-            openSettings()
+            showSettingsWindow()
         }
     }
-    
-    @objc func openSettings() {
+
+    // MARK: - Window management
+    private func showSettingsWindow() {
+        if settingsWC == nil { settingsWC = makeSettingsWindow() }
         NSApp.activate(ignoringOtherApps: true)
-        
-        // Try to open or create the window
-        if let window = NSApplication.shared.windows.first {
-            window.makeKeyAndOrderFront(nil)
-            window.center()
-        } else {
-            // Trigger window creation by opening URL scheme
-            NSWorkspace.shared.open(URL(string: "fportal://settings")!)
-        }
+        settingsWC?.showWindow(nil)
+        settingsWC?.window?.center()
     }
-    
+
+    private func hideSettingsWindow() {
+        settingsWC?.window?.orderOut(nil)
+    }
+
+    private func makeSettingsWindow() -> NSWindowController {
+        let hosting = NSHostingController(rootView: ContentView())
+        let window  = NSWindow(contentViewController: hosting)
+        window.title = "fPortal Settings"
+        window.setContentSize(NSSize(width: 600, height: 700))
+        window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
+        window.isReleasedWhenClosed = false
+        return NSWindowController(window: window)
+    }
+
     @objc func quitApp() {
         NSApplication.shared.terminate(nil)
     }

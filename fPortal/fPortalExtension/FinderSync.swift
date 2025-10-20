@@ -9,18 +9,17 @@ import Cocoa
 import FinderSync
 
 class FinderSync: FIFinderSync {
-
-    var myFolderURL = URL(fileURLWithPath: "/Users/Shared/MySyncExtension Documents")
     
     override init() {
         super.init()
         
         NSLog("FinderSync() launched from %@", Bundle.main.bundlePath as NSString)
         
-        // Set up the directory we are syncing.
-        FIFinderSyncController.default().directoryURLs = [self.myFolderURL]
+        // Monitor all directories - user's home directory and common locations
+        let homeURL = FileManager.default.homeDirectoryForCurrentUser
+        FIFinderSyncController.default().directoryURLs = [homeURL]
         
-        // Set up images for our badge identifiers. For demonstration purposes, this uses off-the-shelf images.
+        // Set up images for our badge identifiers
         FIFinderSyncController.default().setBadgeImage(NSImage(named: NSImage.colorPanelName)!, label: "Status One" , forBadgeIdentifier: "One")
         FIFinderSyncController.default().setBadgeImage(NSImage(named: NSImage.cautionName)!, label: "Status Two", forBadgeIdentifier: "Two")
     }
@@ -55,7 +54,7 @@ class FinderSync: FIFinderSync {
     }
     
     override var toolbarItemToolTip: String {
-        return "fPortal: Click for sync options"
+        return "fPortal — Open Terminal here"
     }
     
     override var toolbarItemImage: NSImage {
@@ -67,23 +66,42 @@ class FinderSync: FIFinderSync {
         return NSImage(systemSymbolName: "laptopcomputer", accessibilityDescription: "fPortal") ?? NSImage(named: NSImage.computerName)!
     }
     
-    override func menu(for menuKind: FIMenuKind) -> NSMenu {
-        // Produce a menu for the extension.
-        let menu = NSMenu(title: "")
-        menu.addItem(withTitle: "Example Menu Item", action: #selector(sampleAction(_:)), keyEquivalent: "")
-        return menu
+    // MARK: - Toolbar button action
+    
+    // Override to handle toolbar item clicks directly (no menu)
+    override func menu(for menuKind: FIMenuKind) -> NSMenu? {
+        // When user clicks the toolbar icon, this is called
+        // We open Terminal immediately instead of showing a menu
+        openTerminalInCurrentDirectory()
+        
+        // Return nil to not show any menu
+        return nil
     }
     
-    @IBAction func sampleAction(_ sender: AnyObject?) {
-        let target = FIFinderSyncController.default().targetedURL()
-        let items = FIFinderSyncController.default().selectedItemURLs()
+    private func openTerminalInCurrentDirectory() {
+        guard let target = FIFinderSyncController.default().targetedURL() else {
+            NSLog("No target URL available")
+            return
+        }
         
-        let item = sender as! NSMenuItem
-        NSLog("sampleAction: menu item: %@, target = %@, items = ", item.title as NSString, target!.path as NSString)
-        for obj in items! {
-            NSLog("    %@", obj.path as NSString)
+        let path = target.path
+        NSLog("Opening Terminal at: %@", path as NSString)
+        
+        // Use AppleScript to open Terminal at the specified directory
+        let script = """
+        tell application "Terminal"
+            activate
+            do script "cd '\(path.replacingOccurrences(of: "'", with: "'\\''"))'"
+        end tell
+        """
+        
+        if let appleScript = NSAppleScript(source: script) {
+            var error: NSDictionary?
+            appleScript.executeAndReturnError(&error)
+            
+            if let error = error {
+                NSLog("AppleScript error: %@", error)
+            }
         }
     }
-
 }
-
