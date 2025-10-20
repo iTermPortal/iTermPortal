@@ -7,93 +7,113 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		290DBFFE2EA0697000EDEACE /* fPortalFinderExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AAFE0003 /* fPortalFinderExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2986208B2EA5BF6500A2B78E /* fPortalExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 298620832EA5BF6500A2B78E /* fPortalExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		290DBEBD2E9F31CF00EDEACE /* PBXContainerItemProxy */ = {
+		298620632EA5BF1600A2B78E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 290DBEA62E9F31CE00EDEACE /* Project object */;
+			containerPortal = 2986204C2EA5BF1500A2B78E /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 290DBEAD2E9F31CE00EDEACE;
+			remoteGlobalIDString = 298620532EA5BF1500A2B78E;
 			remoteInfo = fPortal;
 		};
-		290DBEC72E9F31CF00EDEACE /* PBXContainerItemProxy */ = {
+		2986206D2EA5BF1600A2B78E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 290DBEA62E9F31CE00EDEACE /* Project object */;
+			containerPortal = 2986204C2EA5BF1500A2B78E /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 290DBEAD2E9F31CE00EDEACE;
+			remoteGlobalIDString = 298620532EA5BF1500A2B78E;
 			remoteInfo = fPortal;
+		};
+		298620892EA5BF6500A2B78E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2986204C2EA5BF1500A2B78E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 298620822EA5BF6500A2B78E;
+			remoteInfo = fPortalExtension;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		AAFE0002 /* Embed App Extensions */ = {
+		298620902EA5BF6500A2B78E /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				290DBFFE2EA0697000EDEACE /* fPortalFinderExtension.appex in Embed App Extensions */,
+				2986208B2EA5BF6500A2B78E /* fPortalExtension.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		290DBEAE2E9F31CE00EDEACE /* fPortal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = fPortal.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		290DBEBC2E9F31CF00EDEACE /* fPortalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = fPortalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		290DBEC62E9F31CF00EDEACE /* fPortalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = fPortalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		AAFE0003 /* fPortalFinderExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = fPortalFinderExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		298620542EA5BF1500A2B78E /* fPortal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = fPortal.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		298620622EA5BF1600A2B78E /* fPortalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = fPortalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2986206C2EA5BF1600A2B78E /* fPortalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = fPortalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		298620832EA5BF6500A2B78E /* fPortalExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = fPortalExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2986208C2EA5BF6500A2B78E /* Exceptions for "fPortalExtension" folder in "fPortalExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 298620822EA5BF6500A2B78E /* fPortalExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		290DBEB02E9F31CE00EDEACE /* fPortal */ = {
+		298620562EA5BF1500A2B78E /* fPortal */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = fPortal;
 			sourceTree = "<group>";
 		};
-		290DBEBF2E9F31CF00EDEACE /* fPortalTests */ = {
+		298620652EA5BF1600A2B78E /* fPortalTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = fPortalTests;
 			sourceTree = "<group>";
 		};
-		290DBEC92E9F31CF00EDEACE /* fPortalUITests */ = {
+		2986206F2EA5BF1600A2B78E /* fPortalUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = fPortalUITests;
 			sourceTree = "<group>";
 		};
-		AAFE0004 /* fPortalFinderExtension */ = {
+		298620842EA5BF6500A2B78E /* fPortalExtension */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = fPortalFinderExtension;
+			exceptions = (
+				2986208C2EA5BF6500A2B78E /* Exceptions for "fPortalExtension" folder in "fPortalExtension" target */,
+			);
+			path = fPortalExtension;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		290DBEAB2E9F31CE00EDEACE /* Frameworks */ = {
+		298620512EA5BF1500A2B78E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		290DBEB92E9F31CF00EDEACE /* Frameworks */ = {
+		2986205F2EA5BF1600A2B78E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		290DBEC32E9F31CF00EDEACE /* Frameworks */ = {
+		298620692EA5BF1600A2B78E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AAFE0007 /* Frameworks */ = {
+		298620802EA5BF6500A2B78E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -103,24 +123,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		290DBEA52E9F31CE00EDEACE = {
+		2986204B2EA5BF1500A2B78E = {
 			isa = PBXGroup;
 			children = (
-				290DBEB02E9F31CE00EDEACE /* fPortal */,
-				290DBEBF2E9F31CF00EDEACE /* fPortalTests */,
-				290DBEC92E9F31CF00EDEACE /* fPortalUITests */,
-				AAFE0004 /* fPortalFinderExtension */,
-				290DBEAF2E9F31CE00EDEACE /* Products */,
+				298620562EA5BF1500A2B78E /* fPortal */,
+				298620652EA5BF1600A2B78E /* fPortalTests */,
+				2986206F2EA5BF1600A2B78E /* fPortalUITests */,
+				298620842EA5BF6500A2B78E /* fPortalExtension */,
+				298620552EA5BF1500A2B78E /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		290DBEAF2E9F31CE00EDEACE /* Products */ = {
+		298620552EA5BF1500A2B78E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				290DBEAE2E9F31CE00EDEACE /* fPortal.app */,
-				290DBEBC2E9F31CF00EDEACE /* fPortalTests.xctest */,
-				290DBEC62E9F31CF00EDEACE /* fPortalUITests.xctest */,
-				AAFE0003 /* fPortalFinderExtension.appex */,
+				298620542EA5BF1500A2B78E /* fPortal.app */,
+				298620622EA5BF1600A2B78E /* fPortalTests.xctest */,
+				2986206C2EA5BF1600A2B78E /* fPortalUITests.xctest */,
+				298620832EA5BF6500A2B78E /* fPortalExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -128,168 +148,169 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		290DBEAD2E9F31CE00EDEACE /* fPortal */ = {
+		298620532EA5BF1500A2B78E /* fPortal */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 290DBED02E9F31CF00EDEACE /* Build configuration list for PBXNativeTarget "fPortal" */;
+			buildConfigurationList = 298620762EA5BF1600A2B78E /* Build configuration list for PBXNativeTarget "fPortal" */;
 			buildPhases = (
-				290DBEAA2E9F31CE00EDEACE /* Sources */,
-				290DBEAB2E9F31CE00EDEACE /* Frameworks */,
-				290DBEAC2E9F31CE00EDEACE /* Resources */,
-				AAFE0002 /* Embed App Extensions */,
+				298620502EA5BF1500A2B78E /* Sources */,
+				298620512EA5BF1500A2B78E /* Frameworks */,
+				298620522EA5BF1500A2B78E /* Resources */,
+				298620902EA5BF6500A2B78E /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2986208A2EA5BF6500A2B78E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				290DBEB02E9F31CE00EDEACE /* fPortal */,
+				298620562EA5BF1500A2B78E /* fPortal */,
 			);
 			name = fPortal;
 			packageProductDependencies = (
 			);
 			productName = fPortal;
-			productReference = 290DBEAE2E9F31CE00EDEACE /* fPortal.app */;
+			productReference = 298620542EA5BF1500A2B78E /* fPortal.app */;
 			productType = "com.apple.product-type.application";
 		};
-		290DBEBB2E9F31CF00EDEACE /* fPortalTests */ = {
+		298620612EA5BF1600A2B78E /* fPortalTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 290DBED32E9F31CF00EDEACE /* Build configuration list for PBXNativeTarget "fPortalTests" */;
+			buildConfigurationList = 298620792EA5BF1600A2B78E /* Build configuration list for PBXNativeTarget "fPortalTests" */;
 			buildPhases = (
-				290DBEB82E9F31CF00EDEACE /* Sources */,
-				290DBEB92E9F31CF00EDEACE /* Frameworks */,
-				290DBEBA2E9F31CF00EDEACE /* Resources */,
+				2986205E2EA5BF1600A2B78E /* Sources */,
+				2986205F2EA5BF1600A2B78E /* Frameworks */,
+				298620602EA5BF1600A2B78E /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				290DBEBE2E9F31CF00EDEACE /* PBXTargetDependency */,
+				298620642EA5BF1600A2B78E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				290DBEBF2E9F31CF00EDEACE /* fPortalTests */,
+				298620652EA5BF1600A2B78E /* fPortalTests */,
 			);
 			name = fPortalTests;
 			packageProductDependencies = (
 			);
 			productName = fPortalTests;
-			productReference = 290DBEBC2E9F31CF00EDEACE /* fPortalTests.xctest */;
+			productReference = 298620622EA5BF1600A2B78E /* fPortalTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		290DBEC52E9F31CF00EDEACE /* fPortalUITests */ = {
+		2986206B2EA5BF1600A2B78E /* fPortalUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 290DBED62E9F31CF00EDEACE /* Build configuration list for PBXNativeTarget "fPortalUITests" */;
+			buildConfigurationList = 2986207C2EA5BF1600A2B78E /* Build configuration list for PBXNativeTarget "fPortalUITests" */;
 			buildPhases = (
-				290DBEC22E9F31CF00EDEACE /* Sources */,
-				290DBEC32E9F31CF00EDEACE /* Frameworks */,
-				290DBEC42E9F31CF00EDEACE /* Resources */,
+				298620682EA5BF1600A2B78E /* Sources */,
+				298620692EA5BF1600A2B78E /* Frameworks */,
+				2986206A2EA5BF1600A2B78E /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				290DBEC82E9F31CF00EDEACE /* PBXTargetDependency */,
+				2986206E2EA5BF1600A2B78E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				290DBEC92E9F31CF00EDEACE /* fPortalUITests */,
+				2986206F2EA5BF1600A2B78E /* fPortalUITests */,
 			);
 			name = fPortalUITests;
 			packageProductDependencies = (
 			);
 			productName = fPortalUITests;
-			productReference = 290DBEC62E9F31CF00EDEACE /* fPortalUITests.xctest */;
+			productReference = 2986206C2EA5BF1600A2B78E /* fPortalUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		AAFE0005 /* fPortalFinderExtension */ = {
+		298620822EA5BF6500A2B78E /* fPortalExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AAFE0009 /* Build configuration list for PBXNativeTarget "fPortalFinderExtension" */;
+			buildConfigurationList = 2986208D2EA5BF6500A2B78E /* Build configuration list for PBXNativeTarget "fPortalExtension" */;
 			buildPhases = (
-				AAFE0006 /* Sources */,
-				AAFE0007 /* Frameworks */,
-				AAFE0008 /* Resources */,
+				2986207F2EA5BF6500A2B78E /* Sources */,
+				298620802EA5BF6500A2B78E /* Frameworks */,
+				298620812EA5BF6500A2B78E /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				AAFE0004 /* fPortalFinderExtension */,
+				298620842EA5BF6500A2B78E /* fPortalExtension */,
 			);
-			name = fPortalFinderExtension;
+			name = fPortalExtension;
 			packageProductDependencies = (
 			);
-			productName = fPortalFinderExtension;
-			productReference = AAFE0003 /* fPortalFinderExtension.appex */;
+			productName = fPortalExtension;
+			productReference = 298620832EA5BF6500A2B78E /* fPortalExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		290DBEA62E9F31CE00EDEACE /* Project object */ = {
+		2986204C2EA5BF1500A2B78E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
-					290DBEAD2E9F31CE00EDEACE = {
+					298620532EA5BF1500A2B78E = {
 						CreatedOnToolsVersion = 16.4;
 					};
-					290DBEBB2E9F31CF00EDEACE = {
+					298620612EA5BF1600A2B78E = {
 						CreatedOnToolsVersion = 16.4;
-						TestTargetID = 290DBEAD2E9F31CE00EDEACE;
+						TestTargetID = 298620532EA5BF1500A2B78E;
 					};
-					290DBEC52E9F31CF00EDEACE = {
+					2986206B2EA5BF1600A2B78E = {
 						CreatedOnToolsVersion = 16.4;
-						TestTargetID = 290DBEAD2E9F31CE00EDEACE;
+						TestTargetID = 298620532EA5BF1500A2B78E;
 					};
-					AAFE0005 = {
+					298620822EA5BF6500A2B78E = {
 						CreatedOnToolsVersion = 16.4;
 					};
 				};
 			};
-			buildConfigurationList = 290DBEA92E9F31CE00EDEACE /* Build configuration list for PBXProject "fPortal" */;
+			buildConfigurationList = 2986204F2EA5BF1500A2B78E /* Build configuration list for PBXProject "fPortal" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 290DBEA52E9F31CE00EDEACE;
+			mainGroup = 2986204B2EA5BF1500A2B78E;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 290DBEAF2E9F31CE00EDEACE /* Products */;
+			productRefGroup = 298620552EA5BF1500A2B78E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				290DBEAD2E9F31CE00EDEACE /* fPortal */,
-				290DBEBB2E9F31CF00EDEACE /* fPortalTests */,
-				290DBEC52E9F31CF00EDEACE /* fPortalUITests */,
-				AAFE0005 /* fPortalFinderExtension */,
+				298620532EA5BF1500A2B78E /* fPortal */,
+				298620612EA5BF1600A2B78E /* fPortalTests */,
+				2986206B2EA5BF1600A2B78E /* fPortalUITests */,
+				298620822EA5BF6500A2B78E /* fPortalExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		290DBEAC2E9F31CE00EDEACE /* Resources */ = {
+		298620522EA5BF1500A2B78E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		290DBEBA2E9F31CF00EDEACE /* Resources */ = {
+		298620602EA5BF1600A2B78E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		290DBEC42E9F31CF00EDEACE /* Resources */ = {
+		2986206A2EA5BF1600A2B78E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AAFE0008 /* Resources */ = {
+		298620812EA5BF6500A2B78E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -299,28 +320,28 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		290DBEAA2E9F31CE00EDEACE /* Sources */ = {
+		298620502EA5BF1500A2B78E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		290DBEB82E9F31CF00EDEACE /* Sources */ = {
+		2986205E2EA5BF1600A2B78E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		290DBEC22E9F31CF00EDEACE /* Sources */ = {
+		298620682EA5BF1600A2B78E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AAFE0006 /* Sources */ = {
+		2986207F2EA5BF6500A2B78E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -330,20 +351,25 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		290DBEBE2E9F31CF00EDEACE /* PBXTargetDependency */ = {
+		298620642EA5BF1600A2B78E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 290DBEAD2E9F31CE00EDEACE /* fPortal */;
-			targetProxy = 290DBEBD2E9F31CF00EDEACE /* PBXContainerItemProxy */;
+			target = 298620532EA5BF1500A2B78E /* fPortal */;
+			targetProxy = 298620632EA5BF1600A2B78E /* PBXContainerItemProxy */;
 		};
-		290DBEC82E9F31CF00EDEACE /* PBXTargetDependency */ = {
+		2986206E2EA5BF1600A2B78E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 290DBEAD2E9F31CE00EDEACE /* fPortal */;
-			targetProxy = 290DBEC72E9F31CF00EDEACE /* PBXContainerItemProxy */;
+			target = 298620532EA5BF1500A2B78E /* fPortal */;
+			targetProxy = 2986206D2EA5BF1600A2B78E /* PBXContainerItemProxy */;
+		};
+		2986208A2EA5BF6500A2B78E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 298620822EA5BF6500A2B78E /* fPortalExtension */;
+			targetProxy = 298620892EA5BF6500A2B78E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		290DBECE2E9F31CF00EDEACE /* Debug */ = {
+		298620742EA5BF1600A2B78E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -378,6 +404,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9F2J9S7629;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -406,7 +433,7 @@
 			};
 			name = Debug;
 		};
-		290DBECF2E9F31CF00EDEACE /* Release */ = {
+		298620752EA5BF1600A2B78E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -441,6 +468,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 9F2J9S7629;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -461,7 +489,7 @@
 			};
 			name = Release;
 		};
-		290DBED12E9F31CF00EDEACE /* Debug */ = {
+		298620772EA5BF1600A2B78E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -471,6 +499,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9F2J9S7629;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -479,7 +508,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fPortal;
+				PRODUCT_BUNDLE_IDENTIFIER = hjoncour.fPortal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -487,7 +516,7 @@
 			};
 			name = Debug;
 		};
-		290DBED22E9F31CF00EDEACE /* Release */ = {
+		298620782EA5BF1600A2B78E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -497,6 +526,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9F2J9S7629;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -505,7 +535,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fPortal;
+				PRODUCT_BUNDLE_IDENTIFIER = hjoncour.fPortal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -513,12 +543,13 @@
 			};
 			name = Release;
 		};
-		290DBED42E9F31CF00EDEACE /* Debug */ = {
+		2986207A2EA5BF1600A2B78E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9F2J9S7629;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.3;
 				MARKETING_VERSION = 1.0;
@@ -530,12 +561,13 @@
 			};
 			name = Debug;
 		};
-		290DBED52E9F31CF00EDEACE /* Release */ = {
+		2986207B2EA5BF1600A2B78E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9F2J9S7629;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.3;
 				MARKETING_VERSION = 1.0;
@@ -547,11 +579,12 @@
 			};
 			name = Release;
 		};
-		290DBED72E9F31CF00EDEACE /* Debug */ = {
+		2986207D2EA5BF1600A2B78E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9F2J9S7629;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = hjoncour.fPortalUITests;
@@ -562,11 +595,12 @@
 			};
 			name = Debug;
 		};
-		290DBED82E9F31CF00EDEACE /* Release */ = {
+		2986207E2EA5BF1600A2B78E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9F2J9S7629;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = hjoncour.fPortalUITests;
@@ -577,23 +611,26 @@
 			};
 			name = Release;
 		};
-		AAFE000A /* Debug */ = {
+		2986208E2EA5BF6500A2B78E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = fPortalFinderExtension/fPortalFinderExtension.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_ENTITLEMENTS = fPortalExtension/fPortalExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9F2J9S7629;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = fPortalFinderExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = hjoncour;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = fPortalExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = fPortalExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fPortal.FinderExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = hjoncour.fPortal.fPortalExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -601,23 +638,26 @@
 			};
 			name = Debug;
 		};
-		AAFE000B /* Release */ = {
+		2986208F2EA5BF6500A2B78E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = fPortalFinderExtension/fPortalFinderExtension.entitlements;
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_ENTITLEMENTS = fPortalExtension/fPortalExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 9F2J9S7629;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = fPortalFinderExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = hjoncour;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = fPortalExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = fPortalExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fPortal.FinderExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = hjoncour.fPortal.fPortalExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -628,52 +668,52 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		290DBEA92E9F31CE00EDEACE /* Build configuration list for PBXProject "fPortal" */ = {
+		2986204F2EA5BF1500A2B78E /* Build configuration list for PBXProject "fPortal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				290DBECE2E9F31CF00EDEACE /* Debug */,
-				290DBECF2E9F31CF00EDEACE /* Release */,
+				298620742EA5BF1600A2B78E /* Debug */,
+				298620752EA5BF1600A2B78E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		290DBED02E9F31CF00EDEACE /* Build configuration list for PBXNativeTarget "fPortal" */ = {
+		298620762EA5BF1600A2B78E /* Build configuration list for PBXNativeTarget "fPortal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				290DBED12E9F31CF00EDEACE /* Debug */,
-				290DBED22E9F31CF00EDEACE /* Release */,
+				298620772EA5BF1600A2B78E /* Debug */,
+				298620782EA5BF1600A2B78E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		290DBED32E9F31CF00EDEACE /* Build configuration list for PBXNativeTarget "fPortalTests" */ = {
+		298620792EA5BF1600A2B78E /* Build configuration list for PBXNativeTarget "fPortalTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				290DBED42E9F31CF00EDEACE /* Debug */,
-				290DBED52E9F31CF00EDEACE /* Release */,
+				2986207A2EA5BF1600A2B78E /* Debug */,
+				2986207B2EA5BF1600A2B78E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		290DBED62E9F31CF00EDEACE /* Build configuration list for PBXNativeTarget "fPortalUITests" */ = {
+		2986207C2EA5BF1600A2B78E /* Build configuration list for PBXNativeTarget "fPortalUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				290DBED72E9F31CF00EDEACE /* Debug */,
-				290DBED82E9F31CF00EDEACE /* Release */,
+				2986207D2EA5BF1600A2B78E /* Debug */,
+				2986207E2EA5BF1600A2B78E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AAFE0009 /* Build configuration list for PBXNativeTarget "fPortalFinderExtension" */ = {
+		2986208D2EA5BF6500A2B78E /* Build configuration list for PBXNativeTarget "fPortalExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AAFE000A /* Debug */,
-				AAFE000B /* Release */,
+				2986208E2EA5BF6500A2B78E /* Debug */,
+				2986208F2EA5BF6500A2B78E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 290DBEA62E9F31CE00EDEACE /* Project object */;
+	rootObject = 2986204C2EA5BF1500A2B78E /* Project object */;
 }
