@@ -24,13 +24,13 @@ A macOS menu bar app with Finder Sync extension for managing file synchronizatio
 ### 3. Enable Finder Sync Extension
 - Open **System Settings** > **Privacy & Security** > **Extensions** > **Added Extensions**
 - Enable **fPortalExtension**
-- Navigate to `/Users/Shared/MySyncExtension Documents` in Finder
+- Open any Finder window in your home directory
 - You should see the **terminal icon** appear in the Finder toolbar
 
-### 4. Using the Extension
-- The terminal icon appears when viewing monitored directories
-- Click it for quick sync actions
-- Files/folders will show badge overlays based on their sync status
+### 4. Using the Finder Extension
+- The **terminal icon** appears in the Finder toolbar when viewing directories in your home folder
+- **Click the icon** to instantly open Terminal.app in the current directory
+- No dropdown menu — direct action for quick access!
 
 ## Development
 
