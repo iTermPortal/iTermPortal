@@ -10,5 +10,17 @@
     <true/>
     <key>com.apple.security.files.bookmarks.document-scope</key>
     <true/>
+    <key>com.apple.security.scripting-targets</key>
+    <dict>
+        <key>com.apple.Terminal</key>
+        <array>
+            <string>com.apple.terminal.activate</string>
+            <string>com.apple.terminal.do-script</string>
+        </array>
+    </dict>
+    <key>com.apple.security.temporary-exception.apple-events</key>
+    <array>
+        <string>com.apple.Terminal</string>
+    </array>
 </dict>
 </plist>
