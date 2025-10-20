@@ -51,15 +51,20 @@ class FinderSync: FIFinderSync {
     // MARK: - Menu and toolbar item support
     
     override var toolbarItemName: String {
-        return "FinderSy"
+        return "fPortal"
     }
     
     override var toolbarItemToolTip: String {
-        return "FinderSy: Click the toolbar item for a menu."
+        return "fPortal: Click for sync options"
     }
     
     override var toolbarItemImage: NSImage {
-        return NSImage(named: NSImage.cautionName)!
+        // Use SF Symbol for terminal icon
+        if let terminalImage = NSImage(systemSymbolName: "terminal.fill", accessibilityDescription: "fPortal") {
+            return terminalImage
+        }
+        // Fallback to computer icon if terminal not available
+        return NSImage(systemSymbolName: "laptopcomputer", accessibilityDescription: "fPortal") ?? NSImage(named: NSImage.computerName)!
     }
     
     override func menu(for menuKind: FIMenuKind) -> NSMenu {
