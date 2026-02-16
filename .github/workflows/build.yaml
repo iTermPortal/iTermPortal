@@ -1,0 +1,34 @@
+name: PR Build - fPortal
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build app
+        run: ./scripts/build_applescript_app.sh
+
+      - name: Verify app bundle
+        run: |
+          test -d "dist/fPortal.app"
+          /usr/libexec/PlistBuddy -c "Print :LSUIElement" "dist/fPortal.app/Contents/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIconFile" "dist/fPortal.app/Contents/Info.plist"
+
+      - name: Package artifact
+        run: |
+          rm -f dist/fPortal-macos.zip
+          ditto -c -k --sequesterRsrc --keepParent dist/fPortal.app dist/fPortal-macos.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fportal-macos-pr-build
+          path: dist/fPortal-macos.zip
+          if-no-files-found: error
+          retention-days: 7
