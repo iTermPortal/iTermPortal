@@ -8,6 +8,9 @@ Behavior:
 - If a file is selected, Terminal opens in that file's parent folder.
 - The app runs without a Dock icon (`LSUIElement=true`).
 
+Icon source:
+- `assets/icons/negative.png` (converted to app icon during build)
+
 ## Build
 
 ```bash
@@ -22,6 +25,7 @@ Output app:
 1. Open a Finder window.
 2. Hold `Command` and drag `dist/fPortal.app` into Finder's toolbar.
 3. Click the new toolbar icon to run it.
+4. If Finder still shows an old icon, remove the toolbar item, relaunch Finder, and drag `dist/fPortal.app` back in.
 
 ## First-Run Permissions
 
