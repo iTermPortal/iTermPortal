@@ -1,45 +1,37 @@
-# fPortal
+# fPortal: Finder "Open Terminal Here" (AppleScript)
 
-A macOS menu bar app with Finder Sync extension for managing file synchronization.
+This repository builds a tiny AppleScript app for Finder's toolbar.
 
-## Features
+Behavior:
+- Click the toolbar icon in Finder.
+- Terminal opens in that Finder window's current folder.
+- If a file is selected, Terminal opens in that file's parent folder.
+- The app runs without a Dock icon (`LSUIElement=true`).
 
-- **Menu Bar Icon**: Access fPortal settings from the menu bar at the top of your screen
-- **Finder Sync Extension**: Adds a terminal icon to Finder's toolbar for quick access
-- **Settings Panel**: Configure sync options, notifications, and features
-- **Badge Overlays**: Visual status indicators on files and folders
-- **Context Menu Integration**: Quick actions available in Finder
+## Build
 
-## Setup Instructions
-
-### 1. Build and Run
-- Open `fPortal.xcodeproj` in Xcode
-- Press `⌘R` to build and run the app
-
-### 2. Menu Bar App
-- After launching, you'll see a folder gear icon (⚙️📁) in your menu bar at the top of the screen
-- Click the icon to open/close the settings window
-- The app runs in the background (no Dock icon)
-
-### 3. Enable Finder Sync Extension
-- Open **System Settings** > **Privacy & Security** > **Extensions** > **Added Extensions**
-- Enable **fPortalExtension**
-- Open any Finder window in your home directory
-- You should see the **terminal icon** appear in the Finder toolbar
-
-### 4. Using the Finder Extension
-- The **terminal icon** appears in the Finder toolbar when viewing directories in your home folder
-- **Click the icon** to instantly open Terminal.app in the current directory
-- No dropdown menu — direct action for quick access!
-
-## Development
-
-Run the setup script to create required directories:
 ```bash
-./setup_extension.sh
+./scripts/build_applescript_app.sh
 ```
 
-## Requirements
+Output app:
+- `dist/fPortal.app`
 
-- macOS 13.0 or later
-- Xcode 15.0 or later
+## Add to Finder Toolbar
+
+1. Open a Finder window.
+2. Hold `Command` and drag `dist/fPortal.app` into Finder's toolbar.
+3. Click the new toolbar icon to run it.
+
+## First-Run Permissions
+
+On first use, macOS may prompt for Automation permissions so the app can read Finder context.
+Grant once; repeated clicks should run without prompts.
+
+## Acceptance Checks
+
+1. Open Finder at `/Users/hjoncour/Projects`, click icon, run `pwd` in Terminal.
+2. Open Finder at `/Users/hjoncour/Downloads/studio/test_linkedin_9f7a1e80/frames`, click icon, run `pwd`.
+3. Select a file in Finder, click icon, verify Terminal opens in the containing folder.
+4. Restart Finder (`Option` + right-click Finder in Dock -> `Relaunch`), confirm toolbar icon remains and still works.
+5. Click repeatedly while changing folders; each click should open in the folder visible at click time.
