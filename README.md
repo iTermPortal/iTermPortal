@@ -20,6 +20,27 @@ Icon source:
 Output app:
 - `dist/fPortal.app`
 
+## Versioning
+
+Version format:
+- `major.feature.fix` (stored in `VERSION`)
+
+Auto-bump rules:
+- `release(scope): ...` or `major(scope): ...` -> bump `major`
+- `feature(scope): ...` -> bump `feature`
+- `fix(scope): ...` -> bump `fix`
+
+PR guardrail:
+- Exactly one bump per PR branch.
+- If `VERSION` is already bumped on that branch, additional commits do nothing.
+- Hook intentionally skips direct commits on `main`/`master`.
+
+Hook install (run once per clone):
+
+```bash
+./scripts/install_git_hooks.sh
+```
+
 ## Add to Finder Toolbar
 
 1. Open a Finder window.
