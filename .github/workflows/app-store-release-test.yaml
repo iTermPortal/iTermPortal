@@ -231,17 +231,27 @@ jobs:
           pkgutil --check-signature "dist/fPortal-app-store.pkg" || true
 
       - name: Optional App Store validation (no upload)
+        id: altool_validate
         if: ${{ env.APPLE_API_KEY_RESOLVED != '' && env.APPLE_API_ISSUER != '' && env.APPLE_API_KEY_P8 != '' }}
+        continue-on-error: true
         shell: bash
         run: |
           set -euxo pipefail
-          printf "%s" "$APPLE_API_KEY_P8" > AuthKey.p8
+          mkdir -p "$RUNNER_TEMP/private_keys"
+          KEY_FILE="$RUNNER_TEMP/private_keys/AuthKey_${APPLE_API_KEY_RESOLVED}.p8"
+          printf "%s" "$APPLE_API_KEY_P8" > "$KEY_FILE"
+          export API_PRIVATE_KEYS_DIR="$RUNNER_TEMP/private_keys"
           xcrun altool --validate-app \
             --type osx \
             --file "dist/fPortal-app-store.pkg" \
             --apiKey "$APPLE_API_KEY_RESOLVED" \
             --apiIssuer "$APPLE_API_ISSUER" \
             --verbose
+
+      - name: Warn if App Store validation failed
+        if: ${{ steps.altool_validate.outcome == 'failure' }}
+        run: |
+          echo "::warning::App Store validation failed. Packaging succeeded; check altool logs for API key/profile issues."
 
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4
@@ -258,5 +268,6 @@ jobs:
         if: always()
         shell: bash
         run: |
-          rm -f embedded.provisionprofile app_distribution.p12 installer_distribution.p12 AuthKey.p8
+          rm -f embedded.provisionprofile app_distribution.p12 installer_distribution.p12
+          rm -rf "$RUNNER_TEMP/private_keys"
           security delete-keychain "$KEYCHAIN_PATH" || true
