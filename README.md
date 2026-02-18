@@ -46,7 +46,7 @@ Hook install (run once per clone):
 Workflows:
 - `build.yaml`: PR build validation
 - `app-store-release-test.yaml`: test-run Mac App Store release pipeline (`[release]` commit trigger)
-- `release.yaml`: push to `main`/`master` builds and publishes a GitHub Release
+- `release.yaml`: push to `main`/`master` builds and publishes GitHub Release assets (`fPortal-macos.zip` + optional signed `fPortal-installer.pkg`)
 - `certificate.yaml`: macOS certificate/notarization preflight
 
 Setup guide (all variables + macOS cert instructions):

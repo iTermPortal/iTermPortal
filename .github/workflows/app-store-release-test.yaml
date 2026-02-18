@@ -164,12 +164,12 @@ jobs:
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -t 3600 -u "$KEYCHAIN_PATH"
 
-          security import app_distribution.p12 -k "$KEYCHAIN_PATH" -P "$APPLE_APP_DIST_CERTIFICATE_PASSWORD" \
+          security import app_distribution.p12 -A -k "$KEYCHAIN_PATH" -P "$APPLE_APP_DIST_CERTIFICATE_PASSWORD" \
             -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/xcrun
-          security import installer_distribution.p12 -k "$KEYCHAIN_PATH" -P "$APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD" \
-            -T /usr/bin/productbuild -T /usr/bin/security -T /usr/bin/xcrun
+          security import installer_distribution.p12 -A -k "$KEYCHAIN_PATH" -P "$APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/productbuild -T /usr/bin/productsign -T /usr/bin/security -T /usr/bin/xcrun
 
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
           echo "Available code-sign identities:"
           security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
@@ -212,14 +212,22 @@ jobs:
           /usr/bin/codesign --verify --deep --strict --verbose=4 "$APP_PATH"
 
       - name: Build signed App Store package
+        timeout-minutes: 10
         shell: bash
         run: |
           set -euxo pipefail
-          rm -f dist/fPortal-app-store.pkg
+          rm -f dist/fPortal-app-store.pkg dist/fPortal-app-store-unsigned.pkg
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           productbuild \
             --component "dist/fPortal.app" /Applications \
+            "dist/fPortal-app-store-unsigned.pkg"
+          productsign \
             --sign "$INSTALLER_SIGNING_IDENTITY" \
+            --keychain "$KEYCHAIN_PATH" \
+            "dist/fPortal-app-store-unsigned.pkg" \
             "dist/fPortal-app-store.pkg"
+          rm -f "dist/fPortal-app-store-unsigned.pkg"
+          ls -lh "dist/fPortal-app-store.pkg"
           pkgutil --check-signature "dist/fPortal-app-store.pkg" || true
 
       - name: Optional App Store validation (no upload)
