@@ -1,0 +1,273 @@
+name: Release fPortal (Signed macOS build)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fportal-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: macos-latest
+    env:
+      APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+      APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+      APPLE_APP_DIST_CERTIFICATE: ${{ secrets.APPLE_APP_DIST_CERTIFICATE }}
+      APPLE_APP_DIST_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_APP_DIST_CERTIFICATE_PASSWORD }}
+      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+      APPLE_API_KEY_ID_FPORTAL: ${{ secrets.APPLE_API_KEY_ID_FPORTAL }}
+      APPLE_API_KEY_FPORTAL: ${{ secrets.APPLE_API_KEY_FPORTAL }}
+      APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+      APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve release config and diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SIGNING_ENABLED=false
+          SIGNING_CERT_SOURCE="none"
+          if [[ -n "${APPLE_CERTIFICATE:-}" && -n "${APPLE_CERTIFICATE_PASSWORD:-}" ]]; then
+            SIGNING_ENABLED=true
+            SIGNING_CERT_SOURCE="APPLE_CERTIFICATE"
+          elif [[ -n "${APPLE_APP_DIST_CERTIFICATE:-}" && -n "${APPLE_APP_DIST_CERTIFICATE_PASSWORD:-}" ]]; then
+            SIGNING_ENABLED=true
+            SIGNING_CERT_SOURCE="APPLE_APP_DIST_CERTIFICATE"
+          fi
+
+          if [[ "$SIGNING_ENABLED" == "true" && -z "${KEYCHAIN_PASSWORD:-}" ]]; then
+            echo "::error::KEYCHAIN_PASSWORD is required when a signing certificate is configured."
+            exit 1
+          fi
+
+          APPLE_API_KEY_RESOLVED=""
+          API_KEY_SOURCE="none"
+          if [[ -n "${APPLE_API_KEY:-}" ]]; then
+            APPLE_API_KEY_RESOLVED="$APPLE_API_KEY"
+            API_KEY_SOURCE="APPLE_API_KEY"
+          elif [[ -n "${APPLE_API_KEY_ID_FPORTAL:-}" ]]; then
+            APPLE_API_KEY_RESOLVED="$APPLE_API_KEY_ID_FPORTAL"
+            API_KEY_SOURCE="APPLE_API_KEY_ID_FPORTAL"
+          elif [[ -n "${APPLE_API_KEY_FPORTAL:-}" ]]; then
+            APPLE_API_KEY_RESOLVED="$APPLE_API_KEY_FPORTAL"
+            API_KEY_SOURCE="APPLE_API_KEY_FPORTAL"
+          fi
+
+          NOTARIZE_ENABLED=false
+          if [[ -n "$APPLE_API_KEY_RESOLVED" && -n "${APPLE_API_ISSUER:-}" && -n "${APPLE_API_KEY_P8:-}" ]]; then
+            NOTARIZE_ENABLED=true
+          elif [[ -n "${APPLE_ID:-}" && -n "${APPLE_PASSWORD:-}" && -n "${APPLE_TEAM_ID:-}" ]]; then
+            NOTARIZE_ENABLED=true
+          fi
+
+          {
+            echo "SIGNING_ENABLED=$SIGNING_ENABLED"
+            echo "SIGNING_CERT_SOURCE=$SIGNING_CERT_SOURCE"
+            echo "NOTARIZE_ENABLED=$NOTARIZE_ENABLED"
+            echo "APPLE_API_KEY_RESOLVED=$APPLE_API_KEY_RESOLVED"
+            echo "API_KEY_SOURCE=$API_KEY_SOURCE"
+          } >> "$GITHUB_ENV"
+
+          echo "Release preflight:"
+          echo "  ref: ${GITHUB_REF_NAME}"
+          echo "  commit: ${GITHUB_SHA:0:7}"
+          echo "  signing enabled: $SIGNING_ENABLED"
+          echo "  signing cert source: $SIGNING_CERT_SOURCE"
+          echo "  notarization enabled: $NOTARIZE_ENABLED"
+          echo "  api key source: $API_KEY_SOURCE"
+          echo "  api issuer present: $([[ -n \"${APPLE_API_ISSUER:-}\" ]] && echo yes || echo no)"
+          echo "  p8 present: $([[ -n \"${APPLE_API_KEY_P8:-}\" ]] && echo yes || echo no)"
+          echo "  apple-id fallback present: $([[ -n \"${APPLE_ID:-}\" && -n \"${APPLE_PASSWORD:-}\" && -n \"${APPLE_TEAM_ID:-}\" ]] && echo yes || echo no)"
+
+      - name: Import Apple signing certificate
+        if: ${{ env.SIGNING_ENABLED == 'true' }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          CERT_B64=""
+          CERT_PASS=""
+          if [[ "$SIGNING_CERT_SOURCE" == "APPLE_CERTIFICATE" ]]; then
+            CERT_B64="$APPLE_CERTIFICATE"
+            CERT_PASS="$APPLE_CERTIFICATE_PASSWORD"
+          elif [[ "$SIGNING_CERT_SOURCE" == "APPLE_APP_DIST_CERTIFICATE" ]]; then
+            CERT_B64="$APPLE_APP_DIST_CERTIFICATE"
+            CERT_PASS="$APPLE_APP_DIST_CERTIFICATE_PASSWORD"
+          else
+            echo "::error::Unknown SIGNING_CERT_SOURCE: $SIGNING_CERT_SOURCE"
+            exit 1
+          fi
+
+          echo "$CERT_B64" | base64 --decode > certificate.p12
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -t 3600 -u "$KEYCHAIN_PATH"
+
+          security import certificate.p12 -k "$KEYCHAIN_PATH" -P "$CERT_PASS" \
+            -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/xcrun -T /usr/bin/productbuild
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          echo "Available code-sign identities:"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
+
+          CERT_ID=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
+            awk -F\" '/Developer ID Application|Mac Developer ID Application|Apple Distribution|Mac App Distribution|3rd Party Mac Developer Application/ {print $2; exit}')
+          if [[ -z "$CERT_ID" ]]; then
+            echo "::error::No compatible app signing identity found in imported certificate."
+            exit 1
+          fi
+
+          echo "APPLE_SIGNING_IDENTITY=$CERT_ID" >> "$GITHUB_ENV"
+          echo "CODESIGN_ALLOCATE=$(xcrun -f codesign_allocate)" >> "$GITHUB_ENV"
+
+      - name: Write App Store Connect API key file (optional)
+        if: ${{ env.NOTARIZE_ENABLED == 'true' && env.APPLE_API_KEY_P8 != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf "%s" "$APPLE_API_KEY_P8" > AuthKey.p8
+
+      - name: Build app
+        run: ./scripts/build_applescript_app.sh
+
+      - name: Re-sign app
+        if: ${{ env.SIGNING_ENABLED == 'true' }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          APP_PATH="dist/fPortal.app"
+          /usr/bin/codesign --remove-signature "$APP_PATH" 2>/dev/null || true
+          /usr/bin/codesign --force --deep --options runtime --timestamp \
+            --keychain "$KEYCHAIN_PATH" -s "$APPLE_SIGNING_IDENTITY" "$APP_PATH"
+          /usr/bin/codesign --verify --deep --strict --verbose=4 "$APP_PATH"
+
+      - name: Warn if release is unsigned
+        if: ${{ env.SIGNING_ENABLED != 'true' }}
+        run: |
+          echo "::warning::No signing certificate configured; publishing unsigned build artifact."
+
+      - name: Package app
+        run: |
+          rm -f dist/fPortal-macos.zip
+          ditto -c -k --sequesterRsrc --keepParent dist/fPortal.app dist/fPortal-macos.zip
+
+      - name: Optional notarize and staple
+        id: notarize
+        if: ${{ env.NOTARIZE_ENABLED == 'true' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          try_key() {
+            xcrun notarytool submit dist/fPortal-macos.zip \
+              --key ./AuthKey.p8 --key-id "$APPLE_API_KEY_RESOLVED" --issuer "$APPLE_API_ISSUER" \
+              --wait --output-format json | tee notary-result.json
+          }
+
+          try_apple_id() {
+            xcrun notarytool submit dist/fPortal-macos.zip \
+              --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_PASSWORD" \
+              --wait --output-format json | tee notary-result.json
+          }
+
+          if [[ -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" && -f AuthKey.p8 ]]; then
+            set +e
+            try_key
+            EC=$?
+            set -e
+            if [[ $EC -ne 0 ]]; then
+              echo "::warning::API key notarization failed, trying Apple ID fallback."
+              try_apple_id
+            fi
+          else
+            try_apple_id
+          fi
+
+          xcrun stapler staple -v dist/fPortal.app || true
+          xcrun stapler staple -v dist/fPortal-macos.zip || true
+
+      - name: Warn if notarization failed
+        if: ${{ steps.notarize.outcome == 'failure' }}
+        run: |
+          echo "::warning::Notarization failed, but release packaging continued. Check notary logs in this run."
+
+      - name: Derive release metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f VERSION ]]; then
+            echo "::error::Missing VERSION file."
+            exit 1
+          fi
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          if [[ -z "$VERSION" ]]; then
+            echo "::error::VERSION file is empty."
+            exit 1
+          fi
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          TS="$(date -u +'%Y%m%d%H%M%S')"
+          TAG="v${VERSION}-${TS}-${SHORT_SHA}"
+          NAME="fPortal ${VERSION} (${SHORT_SHA})"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Upload release artifact (debug)
+        uses: actions/upload-artifact@v4
+        with:
+          name: fportal-release-${{ github.run_number }}
+          path: |
+            dist/fPortal-macos.zip
+            notary-result.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Create GitHub release
+        id: gh_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: ${{ steps.meta.outputs.name }}
+          generate_release_notes: true
+          files: |
+            dist/fPortal-macos.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print release URL
+        if: ${{ steps.gh_release.outcome == 'success' }}
+        run: |
+          echo "Release created: ${{ steps.gh_release.outputs.url }}"
+
+      - name: Cleanup
+        if: always()
+        shell: bash
+        run: |
+          rm -f certificate.p12 AuthKey.p8
+          if [[ -n "${KEYCHAIN_PATH:-}" ]]; then
+            security delete-keychain "$KEYCHAIN_PATH" || true
+          fi

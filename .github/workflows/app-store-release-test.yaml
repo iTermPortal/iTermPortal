@@ -1,0 +1,254 @@
+name: App Store Release Pipeline Test (fPortal)
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fportal-app-store-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app_store_release_test:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[release]')) }}
+    runs-on: macos-latest
+    env:
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_APP_DIST_CERTIFICATE: ${{ secrets.APPLE_APP_DIST_CERTIFICATE }}
+      APPLE_APP_DIST_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_APP_DIST_CERTIFICATE_PASSWORD }}
+      APPLE_INSTALLER_DIST_CERTIFICATE: ${{ secrets.APPLE_INSTALLER_DIST_CERTIFICATE }}
+      APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD }}
+      APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+      APPLE_API_KEY_ID_FPORTAL: ${{ secrets.APPLE_API_KEY_ID_FPORTAL }}
+      APPLE_API_KEY_FPORTAL: ${{ secrets.APPLE_API_KEY_FPORTAL }}
+      APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+      APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+      APP_BUNDLE_ID_VAR: ${{ vars.APPLE_APP_BUNDLE_ID }}
+      APP_BUNDLE_ID_SECRET: ${{ secrets.APPLE_APP_BUNDLE_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate required secrets and vars
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          APP_BUNDLE_ID="${APP_BUNDLE_ID_VAR:-}"
+          if [[ -z "$APP_BUNDLE_ID" && -n "${APP_BUNDLE_ID_SECRET:-}" ]]; then
+            APP_BUNDLE_ID="$APP_BUNDLE_ID_SECRET"
+          fi
+
+          APPLE_API_KEY_RESOLVED="${APPLE_API_KEY:-}"
+          if [[ -z "$APPLE_API_KEY_RESOLVED" && -n "${APPLE_API_KEY_ID_FPORTAL:-}" ]]; then
+            APPLE_API_KEY_RESOLVED="$APPLE_API_KEY_ID_FPORTAL"
+          fi
+          if [[ -z "$APPLE_API_KEY_RESOLVED" && -n "${APPLE_API_KEY_FPORTAL:-}" ]]; then
+            APPLE_API_KEY_RESOLVED="$APPLE_API_KEY_FPORTAL"
+          fi
+
+          echo "APP_BUNDLE_ID=$APP_BUNDLE_ID" >> "$GITHUB_ENV"
+          echo "APPLE_API_KEY_RESOLVED=$APPLE_API_KEY_RESOLVED" >> "$GITHUB_ENV"
+
+          required=(
+            APPLE_TEAM_ID
+            APPLE_APP_DIST_CERTIFICATE
+            APPLE_APP_DIST_CERTIFICATE_PASSWORD
+            APPLE_INSTALLER_DIST_CERTIFICATE
+            APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD
+            APPLE_PROVISIONING_PROFILE_BASE64
+            KEYCHAIN_PASSWORD
+          )
+
+          for key in "${required[@]}"; do
+            if [[ -z "${!key:-}" ]]; then
+              echo "::error::Missing required value: $key"
+              exit 1
+            fi
+          done
+
+          if [[ -z "$APP_BUNDLE_ID" ]]; then
+            echo "::error::Missing bundle id. Set either variable APPLE_APP_BUNDLE_ID or secret APPLE_APP_BUNDLE_ID."
+            exit 1
+          fi
+
+      - name: Preflight diagnostics (non-secret)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Bundle ID source:"
+          if [[ -n "${APP_BUNDLE_ID_VAR:-}" ]]; then
+            echo "  using vars.APPLE_APP_BUNDLE_ID"
+          elif [[ -n "${APP_BUNDLE_ID_SECRET:-}" ]]; then
+            echo "  using secrets.APPLE_APP_BUNDLE_ID"
+          fi
+          echo "APP_BUNDLE_ID=$APP_BUNDLE_ID"
+          echo "APPLE_TEAM_ID=$APPLE_TEAM_ID"
+
+          if [[ -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" && -n "${APPLE_API_KEY_P8:-}" ]]; then
+            echo "App Store API validation: ENABLED"
+          else
+            echo "App Store API validation: DISABLED (missing API key, issuer, or p8)"
+          fi
+
+      - name: Build fPortal app bundle
+        run: ./scripts/build_applescript_app.sh
+
+      - name: Prepare app metadata and profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_PATH="dist/fPortal.app"
+          INFO_PLIST="$APP_PATH/Contents/Info.plist"
+          APP_VERSION="$(tr -d '[:space:]' < VERSION)"
+          BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
+
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleIdentifier" "$INFO_PLIST" >/dev/null 2>&1 || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string ${APP_BUNDLE_ID}" "$INFO_PLIST"
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleShortVersionString" "$INFO_PLIST" >/dev/null 2>&1 || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string ${APP_VERSION}" "$INFO_PLIST"
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleVersion" "$INFO_PLIST" >/dev/null 2>&1 || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string ${BUILD_NUMBER}" "$INFO_PLIST"
+
+          echo "$APPLE_PROVISIONING_PROFILE_BASE64" | base64 --decode > embedded.provisionprofile
+          cp embedded.provisionprofile "$APP_PATH/Contents/embedded.provisionprofile"
+
+          # Parse provisioning profile to make mismatches obvious in CI logs.
+          security cms -D -i embedded.provisionprofile > profile.plist
+          PROFILE_APP_IDENTIFIER=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" profile.plist 2>/dev/null || true)
+          PROFILE_TEAM_IDENTIFIER=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.team-identifier" profile.plist 2>/dev/null || true)
+
+          if [[ -z "$PROFILE_APP_IDENTIFIER" ]]; then
+            echo "::error::Provisioning profile could not be parsed (application-identifier missing)."
+            exit 1
+          fi
+
+          PROFILE_BUNDLE_ID="${PROFILE_APP_IDENTIFIER#*.}"
+          echo "PROFILE_APP_IDENTIFIER=$PROFILE_APP_IDENTIFIER"
+          echo "PROFILE_TEAM_IDENTIFIER=$PROFILE_TEAM_IDENTIFIER"
+          echo "PROFILE_BUNDLE_ID=$PROFILE_BUNDLE_ID"
+
+          if [[ "$PROFILE_BUNDLE_ID" != "$APP_BUNDLE_ID" ]]; then
+            echo "::error::Bundle ID mismatch: profile has '$PROFILE_BUNDLE_ID', workflow uses '$APP_BUNDLE_ID'."
+            exit 1
+          fi
+
+          if [[ -n "$PROFILE_TEAM_IDENTIFIER" && "$PROFILE_TEAM_IDENTIFIER" != "$APPLE_TEAM_ID" ]]; then
+            echo "::error::Team ID mismatch: profile has '$PROFILE_TEAM_IDENTIFIER', secret APPLE_TEAM_ID is '$APPLE_TEAM_ID'."
+            exit 1
+          fi
+
+      - name: Import App Store certificates
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          echo "$APPLE_APP_DIST_CERTIFICATE" | base64 --decode > app_distribution.p12
+          echo "$APPLE_INSTALLER_DIST_CERTIFICATE" | base64 --decode > installer_distribution.p12
+
+          KEYCHAIN_PATH="$RUNNER_TEMP/appstore-build.keychain-db"
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -t 3600 -u "$KEYCHAIN_PATH"
+
+          security import app_distribution.p12 -k "$KEYCHAIN_PATH" -P "$APPLE_APP_DIST_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/xcrun
+          security import installer_distribution.p12 -k "$KEYCHAIN_PATH" -P "$APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/productbuild -T /usr/bin/security -T /usr/bin/xcrun
+
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          echo "Available code-sign identities:"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
+          echo "Available installer identities:"
+          security find-identity -v -p basic "$KEYCHAIN_PATH" || true
+
+          APP_SIGNING_IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
+            awk -F\" '/Apple Distribution|Mac App Distribution|3rd Party Mac Developer Application/ {print $2; exit}')
+
+          INSTALLER_SIGNING_IDENTITY=$(security find-identity -v -p basic "$KEYCHAIN_PATH" | \
+            awk -F\" '/Mac Installer Distribution|3rd Party Mac Developer Installer/ {print $2; exit}')
+
+          if [[ -z "$APP_SIGNING_IDENTITY" ]]; then
+            echo "::error::No App Store application signing identity found."
+            security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
+            exit 1
+          fi
+
+          if [[ -z "$INSTALLER_SIGNING_IDENTITY" ]]; then
+            echo "::error::No App Store installer signing identity found."
+            security find-identity -v -p basic "$KEYCHAIN_PATH" || true
+            exit 1
+          fi
+
+          echo "APP_SIGNING_IDENTITY=$APP_SIGNING_IDENTITY" >> "$GITHUB_ENV"
+          echo "INSTALLER_SIGNING_IDENTITY=$INSTALLER_SIGNING_IDENTITY" >> "$GITHUB_ENV"
+
+      - name: Sign app for Mac App Store
+        shell: bash
+        run: |
+          set -euxo pipefail
+          APP_PATH="dist/fPortal.app"
+
+          /usr/bin/codesign --remove-signature "$APP_PATH" 2>/dev/null || true
+          /usr/bin/codesign --force --deep \
+            --entitlements config/entitlements/app-store.plist \
+            --keychain "$KEYCHAIN_PATH" \
+            -s "$APP_SIGNING_IDENTITY" \
+            "$APP_PATH"
+          /usr/bin/codesign --verify --deep --strict --verbose=4 "$APP_PATH"
+
+      - name: Build signed App Store package
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -f dist/fPortal-app-store.pkg
+          productbuild \
+            --component "dist/fPortal.app" /Applications \
+            --sign "$INSTALLER_SIGNING_IDENTITY" \
+            "dist/fPortal-app-store.pkg"
+          pkgutil --check-signature "dist/fPortal-app-store.pkg" || true
+
+      - name: Optional App Store validation (no upload)
+        if: ${{ env.APPLE_API_KEY_RESOLVED != '' && env.APPLE_API_ISSUER != '' && env.APPLE_API_KEY_P8 != '' }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          printf "%s" "$APPLE_API_KEY_P8" > AuthKey.p8
+          xcrun altool --validate-app \
+            --type osx \
+            --file "dist/fPortal-app-store.pkg" \
+            --apiKey "$APPLE_API_KEY_RESOLVED" \
+            --apiIssuer "$APPLE_API_ISSUER" \
+            --verbose
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fportal-app-store-test
+          path: |
+            dist/fPortal.app
+            dist/fPortal-app-store.pkg
+            profile.plist
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Cleanup secrets and keychain
+        if: always()
+        shell: bash
+        run: |
+          rm -f embedded.provisionprofile app_distribution.p12 installer_distribution.p12 AuthKey.p8
+          security delete-keychain "$KEYCHAIN_PATH" || true

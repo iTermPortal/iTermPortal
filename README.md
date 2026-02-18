@@ -41,6 +41,18 @@ Hook install (run once per clone):
 ./scripts/install_git_hooks.sh
 ```
 
+## CI/CD
+
+Workflows:
+- `build.yaml`: PR build validation
+- `app-store-release-test.yaml`: test-run Mac App Store release pipeline (`[release]` commit trigger)
+- `release.yaml`: push to `main`/`master` builds and publishes a GitHub Release
+- `certificate.yaml`: macOS certificate/notarization preflight
+
+Setup guide (all variables + macOS cert instructions):
+- `docs/github-actions.md`
+- `docs/app-store-release.md`
+
 ## Add to Finder Toolbar
 
 1. Open a Finder window.
