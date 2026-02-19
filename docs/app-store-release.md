@@ -1,10 +1,11 @@
 # App Store Release Test (fPortal)
 
-This repo contains `app-store-release-test.yaml` to validate Mac App Store signing/package flow without uploading.
+This repo contains `app-store-release-test.yaml` to validate Mac App Store signing/package flow and optionally upload to App Store Connect.
 
 ## Trigger
 
 - Manual: GitHub -> Actions -> `App Store Release Pipeline Test (fPortal)` -> `Run workflow`
+  - Set `upload_to_app_store=true` to upload the built package to App Store Connect.
 - Commit trigger: include `[release]` in commit message
 
 Examples:
@@ -41,6 +42,7 @@ Optional App Store Connect validation:
 6. Build/sign of `dist/fPortal.app`.
 7. Build/sign of `dist/fPortal-app-store.pkg`.
 8. Optional `altool --validate-app`.
+9. Optional `altool --upload-app` (manual runs only, when `upload_to_app_store=true`).
 
 ## Artifacts
 
@@ -48,3 +50,7 @@ On success, the workflow uploads:
 - `dist/fPortal.app`
 - `dist/fPortal-app-store.pkg`
 - `profile.plist`
+
+Important:
+- `dist/fPortal-app-store.pkg` is the package for App Store Connect upload.
+- `fPortal-direct-install.pkg` from `release.yaml` is for direct installation and is not the App Store submission package.

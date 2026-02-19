@@ -6,11 +6,11 @@
   - Purpose: PR build validation for `fPortal.app`.
   - Trigger: pull requests (`opened`, `synchronize`, `reopened`, `ready_for_review`).
 - `release.yaml`
-  - Purpose: build/package app and create a GitHub Release.
+  - Purpose: build/package app and create a GitHub Release (`.zip` + optional signed direct-install `.pkg`).
   - Trigger: every push to `main` or `master`, plus `workflow_dispatch`.
   - Note: no `[release]` keyword is required for this workflow.
 - `app-store-release-test.yaml`
-  - Purpose: test-run Mac App Store packaging/signing without publishing.
+  - Purpose: Mac App Store packaging/signing with optional upload on manual runs.
   - Trigger: `workflow_dispatch`, or push when commit message contains `[release]`.
 - `certificate.yaml`
   - Purpose: Apple cert/notarization preflight without publishing.
@@ -26,6 +26,11 @@ Required for signed release:
   - Preferred: `APPLE_CERTIFICATE` + `APPLE_CERTIFICATE_PASSWORD`
   - Fallback: `APPLE_APP_DIST_CERTIFICATE` + `APPLE_APP_DIST_CERTIFICATE_PASSWORD`
 
+Optional for signed direct-install `.pkg` in Release assets:
+- One installer certificate/password pair:
+  - Preferred: `APPLE_INSTALLER_CERTIFICATE` + `APPLE_INSTALLER_CERTIFICATE_PASSWORD`
+  - Fallback: `APPLE_INSTALLER_DIST_CERTIFICATE` + `APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD`
+
 Optional for notarization:
 - API key path:
   - `APPLE_API_KEY` or `APPLE_API_KEY_ID_FPORTAL` or `APPLE_API_KEY_FPORTAL`
@@ -38,6 +43,7 @@ Optional for notarization:
 
 Notes:
 - If signing secrets are missing, release still runs and publishes an unsigned artifact.
+- If installer cert secrets are set, release also publishes `fPortal-direct-install.pkg` (install without unzipping).
 - If notarization is configured and fails, the run warns and continues to release creation.
 
 ### For `app-store-release-test.yaml`
@@ -58,6 +64,9 @@ Optional App Store Connect validation:
 - `APPLE_API_KEY` or `APPLE_API_KEY_ID_FPORTAL` or `APPLE_API_KEY_FPORTAL`
 - `APPLE_API_ISSUER`
 - `APPLE_API_KEY_P8`
+
+Manual upload mode:
+- Run workflow with `upload_to_app_store=true` to call `altool --upload-app`.
 
 ## Quick Troubleshooting
 
