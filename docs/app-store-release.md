@@ -32,6 +32,10 @@ Optional App Store Connect validation:
 - `APPLE_API_ISSUER`
 - `APPLE_API_KEY_P8`
 
+Upload prerequisites:
+- App Store Connect must already contain an app record for the exact bundle ID in `APPLE_APP_BUNDLE_ID`.
+- The API key must have access to that app (Admin or App Manager role, with app access not restricted away from this app).
+
 ## What the Workflow Verifies
 
 1. Secrets and bundle-id presence.
@@ -42,13 +46,15 @@ Optional App Store Connect validation:
 6. Build/sign of `dist/fPortal.app`.
 7. Build/sign of `dist/fPortal-app-store.pkg`.
 8. Optional `altool --validate-app`.
-9. Optional `altool --upload-app` (manual runs only, when `upload_to_app_store=true`).
+9. For manual upload mode, CI verifies your API key can see the exact bundle ID in App Store Connect.
+10. Optional `altool --upload-app` (manual runs only, when `upload_to_app_store=true`).
 
 ## Artifacts
 
 On success, the workflow uploads:
 - `dist/fPortal.app`
 - `dist/fPortal-app-store.pkg`
+- `appstore-apps.json` (when API app list check runs)
 - `profile.plist`
 
 Important:

@@ -7,6 +7,7 @@ Behavior:
 - Terminal opens in that Finder window's current folder.
 - If a file is selected, Terminal opens in that file's parent folder.
 - The app runs without a Dock icon (`LSUIElement=true`).
+- A menu bar icon lets you choose the terminal app (`Terminal`, `iTerm2`, `Ghostty`, `Warp`).
 
 Icon source:
 - `assets/icons/negative.png` (converted to app icon during build)
@@ -19,6 +20,12 @@ Icon source:
 
 Output app:
 - `dist/fPortal.app`
+
+Terminal selection:
+1. Launch `dist/fPortal.app` once.
+2. Click the new menu bar icon.
+3. Pick your default terminal.
+4. Next Finder toolbar clicks open in that terminal.
 
 ## Versioning
 
