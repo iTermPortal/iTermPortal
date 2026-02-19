@@ -16,6 +16,7 @@ end open
 
 on openTerminalForFinderContext(inputItems)
 	try
+		my ensureMenuBarHelperRunning()
 		set targetPath to my resolveTargetPath(inputItems)
 		if targetPath is missing value or targetPath is "" then error "Could not resolve a Finder folder."
 		my launchTerminal(targetPath)
@@ -71,6 +72,30 @@ on directoryForPath(candidatePath)
 	return do shell script "dirname " & quotedPath
 end directoryForPath
 
+on ensureMenuBarHelperRunning()
+	try
+		set mePath to POSIX path of (path to me)
+		set helperPath to mePath & "Contents/Library/LoginItems/fPortalMenu.app"
+		do shell script "if [ -d " & quoted form of helperPath & " ]; then open -gj " & quoted form of helperPath & "; fi"
+	end try
+end ensureMenuBarHelperRunning
+
+on resolvePreferredTerminal()
+	try
+		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/fPortal/terminal_choice.txt"
+		set preferredTerminal to do shell script "if [ -f " & quoted form of settingsPath & " ]; then /usr/bin/head -n 1 " & quoted form of settingsPath & "; fi"
+		if preferredTerminal is not "" then return preferredTerminal
+	on error
+		-- Fallback below.
+	end try
+	return "Terminal"
+end resolvePreferredTerminal
+
 on launchTerminal(targetPath)
-	do shell script "open -a Terminal " & quoted form of targetPath
+	set preferredTerminal to my resolvePreferredTerminal()
+	try
+		do shell script "open -a " & quoted form of preferredTerminal & " " & quoted form of targetPath
+	on error
+		do shell script "open -a Terminal " & quoted form of targetPath
+	end try
 end launchTerminal
