@@ -3,7 +3,6 @@ name: Release fPortal (Signed macOS build)
 on:
   push:
     branches:
-      - main
       - master
   workflow_dispatch:
 
