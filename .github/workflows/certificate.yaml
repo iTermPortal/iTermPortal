@@ -3,7 +3,6 @@ name: Apple Certificate Preflight (fPortal)
 on:
   push:
     branches-ignore:
-      - main
       - master
   workflow_dispatch:
 

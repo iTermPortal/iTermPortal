@@ -3,7 +3,6 @@ name: Release fPortal (Signed macOS build)
 on:
   push:
     branches:
-      - main
       - master
   workflow_dispatch:
 
@@ -22,6 +21,10 @@ jobs:
       APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
       APPLE_APP_DIST_CERTIFICATE: ${{ secrets.APPLE_APP_DIST_CERTIFICATE }}
       APPLE_APP_DIST_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_APP_DIST_CERTIFICATE_PASSWORD }}
+      APPLE_INSTALLER_CERTIFICATE: ${{ secrets.APPLE_INSTALLER_CERTIFICATE }}
+      APPLE_INSTALLER_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_INSTALLER_CERTIFICATE_PASSWORD }}
+      APPLE_INSTALLER_DIST_CERTIFICATE: ${{ secrets.APPLE_INSTALLER_DIST_CERTIFICATE }}
+      APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD }}
       KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
       APPLE_API_KEY_ID_FPORTAL: ${{ secrets.APPLE_API_KEY_ID_FPORTAL }}
@@ -31,6 +34,8 @@ jobs:
       APPLE_ID: ${{ secrets.APPLE_ID }}
       APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APP_BUNDLE_ID_VAR: ${{ vars.APPLE_APP_BUNDLE_ID }}
+      APP_BUNDLE_ID_SECRET: ${{ secrets.APPLE_APP_BUNDLE_ID }}
 
     steps:
       - name: Checkout repository
@@ -53,9 +58,24 @@ jobs:
             SIGNING_CERT_SOURCE="APPLE_APP_DIST_CERTIFICATE"
           fi
 
-          if [[ "$SIGNING_ENABLED" == "true" && -z "${KEYCHAIN_PASSWORD:-}" ]]; then
+          INSTALLER_SIGNING_ENABLED=false
+          INSTALLER_CERT_SOURCE="none"
+          if [[ -n "${APPLE_INSTALLER_CERTIFICATE:-}" && -n "${APPLE_INSTALLER_CERTIFICATE_PASSWORD:-}" ]]; then
+            INSTALLER_SIGNING_ENABLED=true
+            INSTALLER_CERT_SOURCE="APPLE_INSTALLER_CERTIFICATE"
+          elif [[ -n "${APPLE_INSTALLER_DIST_CERTIFICATE:-}" && -n "${APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD:-}" ]]; then
+            INSTALLER_SIGNING_ENABLED=true
+            INSTALLER_CERT_SOURCE="APPLE_INSTALLER_DIST_CERTIFICATE"
+          fi
+
+          if [[ ("$SIGNING_ENABLED" == "true" || "$INSTALLER_SIGNING_ENABLED" == "true") && -z "${KEYCHAIN_PASSWORD:-}" ]]; then
             echo "::error::KEYCHAIN_PASSWORD is required when a signing certificate is configured."
             exit 1
+          fi
+
+          PKG_ENABLED=false
+          if [[ "$SIGNING_ENABLED" == "true" && "$INSTALLER_SIGNING_ENABLED" == "true" ]]; then
+            PKG_ENABLED=true
           fi
 
           APPLE_API_KEY_RESOLVED=""
@@ -78,12 +98,24 @@ jobs:
             NOTARIZE_ENABLED=true
           fi
 
+          RELEASE_BUNDLE_ID="${APP_BUNDLE_ID_VAR:-}"
+          if [[ -z "$RELEASE_BUNDLE_ID" && -n "${APP_BUNDLE_ID_SECRET:-}" ]]; then
+            RELEASE_BUNDLE_ID="$APP_BUNDLE_ID_SECRET"
+          fi
+          if [[ -z "$RELEASE_BUNDLE_ID" ]]; then
+            RELEASE_BUNDLE_ID="com.hjoncour.fportal"
+          fi
+
           {
             echo "SIGNING_ENABLED=$SIGNING_ENABLED"
             echo "SIGNING_CERT_SOURCE=$SIGNING_CERT_SOURCE"
+            echo "INSTALLER_SIGNING_ENABLED=$INSTALLER_SIGNING_ENABLED"
+            echo "INSTALLER_CERT_SOURCE=$INSTALLER_CERT_SOURCE"
+            echo "PKG_ENABLED=$PKG_ENABLED"
             echo "NOTARIZE_ENABLED=$NOTARIZE_ENABLED"
             echo "APPLE_API_KEY_RESOLVED=$APPLE_API_KEY_RESOLVED"
             echo "API_KEY_SOURCE=$API_KEY_SOURCE"
+            echo "RELEASE_BUNDLE_ID=$RELEASE_BUNDLE_ID"
           } >> "$GITHUB_ENV"
 
           echo "Release preflight:"
@@ -91,32 +123,22 @@ jobs:
           echo "  commit: ${GITHUB_SHA:0:7}"
           echo "  signing enabled: $SIGNING_ENABLED"
           echo "  signing cert source: $SIGNING_CERT_SOURCE"
+          echo "  installer signing enabled: $INSTALLER_SIGNING_ENABLED"
+          echo "  installer cert source: $INSTALLER_CERT_SOURCE"
+          echo "  pkg asset enabled: $PKG_ENABLED"
           echo "  notarization enabled: $NOTARIZE_ENABLED"
           echo "  api key source: $API_KEY_SOURCE"
+          echo "  release bundle id: $RELEASE_BUNDLE_ID"
           echo "  api issuer present: $([[ -n \"${APPLE_API_ISSUER:-}\" ]] && echo yes || echo no)"
           echo "  p8 present: $([[ -n \"${APPLE_API_KEY_P8:-}\" ]] && echo yes || echo no)"
           echo "  apple-id fallback present: $([[ -n \"${APPLE_ID:-}\" && -n \"${APPLE_PASSWORD:-}\" && -n \"${APPLE_TEAM_ID:-}\" ]] && echo yes || echo no)"
 
       - name: Import Apple signing certificate
-        if: ${{ env.SIGNING_ENABLED == 'true' }}
+        if: ${{ env.SIGNING_ENABLED == 'true' || env.INSTALLER_SIGNING_ENABLED == 'true' }}
         shell: bash
         run: |
           set -euxo pipefail
 
-          CERT_B64=""
-          CERT_PASS=""
-          if [[ "$SIGNING_CERT_SOURCE" == "APPLE_CERTIFICATE" ]]; then
-            CERT_B64="$APPLE_CERTIFICATE"
-            CERT_PASS="$APPLE_CERTIFICATE_PASSWORD"
-          elif [[ "$SIGNING_CERT_SOURCE" == "APPLE_APP_DIST_CERTIFICATE" ]]; then
-            CERT_B64="$APPLE_APP_DIST_CERTIFICATE"
-            CERT_PASS="$APPLE_APP_DIST_CERTIFICATE_PASSWORD"
-          else
-            echo "::error::Unknown SIGNING_CERT_SOURCE: $SIGNING_CERT_SOURCE"
-            exit 1
-          fi
-
-          echo "$CERT_B64" | base64 --decode > certificate.p12
           KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
           echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
 
@@ -126,22 +148,70 @@ jobs:
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -t 3600 -u "$KEYCHAIN_PATH"
 
-          security import certificate.p12 -k "$KEYCHAIN_PATH" -P "$CERT_PASS" \
-            -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/xcrun -T /usr/bin/productbuild
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          if [[ "$SIGNING_ENABLED" == "true" ]]; then
+            CERT_B64=""
+            CERT_PASS=""
+            if [[ "$SIGNING_CERT_SOURCE" == "APPLE_CERTIFICATE" ]]; then
+              CERT_B64="$APPLE_CERTIFICATE"
+              CERT_PASS="$APPLE_CERTIFICATE_PASSWORD"
+            elif [[ "$SIGNING_CERT_SOURCE" == "APPLE_APP_DIST_CERTIFICATE" ]]; then
+              CERT_B64="$APPLE_APP_DIST_CERTIFICATE"
+              CERT_PASS="$APPLE_APP_DIST_CERTIFICATE_PASSWORD"
+            else
+              echo "::error::Unknown SIGNING_CERT_SOURCE: $SIGNING_CERT_SOURCE"
+              exit 1
+            fi
 
-          echo "Available code-sign identities:"
-          security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
+            echo "$CERT_B64" | base64 --decode > certificate.p12
+            security import certificate.p12 -A -k "$KEYCHAIN_PATH" -P "$CERT_PASS" \
+              -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/xcrun -T /usr/bin/productbuild
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
-          CERT_ID=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
-            awk -F\" '/Developer ID Application|Mac Developer ID Application|Apple Distribution|Mac App Distribution|3rd Party Mac Developer Application/ {print $2; exit}')
-          if [[ -z "$CERT_ID" ]]; then
-            echo "::error::No compatible app signing identity found in imported certificate."
-            exit 1
+            echo "Available code-sign identities:"
+            security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
+
+            CERT_ID=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
+              awk -F\" '/Developer ID Application|Mac Developer ID Application|Apple Distribution|Mac App Distribution|3rd Party Mac Developer Application/ {print $2; exit}')
+            if [[ -z "$CERT_ID" ]]; then
+              echo "::error::No compatible app signing identity found in imported certificate."
+              exit 1
+            fi
+
+            echo "APPLE_SIGNING_IDENTITY=$CERT_ID" >> "$GITHUB_ENV"
+            echo "CODESIGN_ALLOCATE=$(xcrun -f codesign_allocate)" >> "$GITHUB_ENV"
           fi
 
-          echo "APPLE_SIGNING_IDENTITY=$CERT_ID" >> "$GITHUB_ENV"
-          echo "CODESIGN_ALLOCATE=$(xcrun -f codesign_allocate)" >> "$GITHUB_ENV"
+          if [[ "$INSTALLER_SIGNING_ENABLED" == "true" ]]; then
+            INSTALLER_CERT_B64=""
+            INSTALLER_CERT_PASS=""
+            if [[ "$INSTALLER_CERT_SOURCE" == "APPLE_INSTALLER_CERTIFICATE" ]]; then
+              INSTALLER_CERT_B64="$APPLE_INSTALLER_CERTIFICATE"
+              INSTALLER_CERT_PASS="$APPLE_INSTALLER_CERTIFICATE_PASSWORD"
+            elif [[ "$INSTALLER_CERT_SOURCE" == "APPLE_INSTALLER_DIST_CERTIFICATE" ]]; then
+              INSTALLER_CERT_B64="$APPLE_INSTALLER_DIST_CERTIFICATE"
+              INSTALLER_CERT_PASS="$APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD"
+            else
+              echo "::error::Unknown INSTALLER_CERT_SOURCE: $INSTALLER_CERT_SOURCE"
+              exit 1
+            fi
+
+            echo "$INSTALLER_CERT_B64" | base64 --decode > installer_certificate.p12
+            security import installer_certificate.p12 -A -k "$KEYCHAIN_PATH" -P "$INSTALLER_CERT_PASS" \
+              -T /usr/bin/productbuild -T /usr/bin/productsign -T /usr/bin/security -T /usr/bin/xcrun
+            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+            echo "Available installer identities:"
+            security find-identity -v -p basic "$KEYCHAIN_PATH" || true
+
+            INSTALLER_ID=$(security find-identity -v -p basic "$KEYCHAIN_PATH" | \
+              awk -F\" '/Developer ID Installer|Mac Installer Distribution|3rd Party Mac Developer Installer/ {print $2; exit}')
+            if [[ -z "$INSTALLER_ID" ]]; then
+              echo "::error::No compatible installer signing identity found in imported installer certificate."
+              exit 1
+            fi
+
+            echo "INSTALLER_SIGNING_IDENTITY=$INSTALLER_ID" >> "$GITHUB_ENV"
+          fi
 
       - name: Write App Store Connect API key file (optional)
         if: ${{ env.NOTARIZE_ENABLED == 'true' && env.APPLE_API_KEY_P8 != '' }}
@@ -151,6 +221,8 @@ jobs:
           printf "%s" "$APPLE_API_KEY_P8" > AuthKey.p8
 
       - name: Build app
+        env:
+          FPORTAL_BUNDLE_ID: ${{ env.RELEASE_BUNDLE_ID }}
         run: ./scripts/build_applescript_app.sh
 
       - name: Re-sign app
@@ -164,6 +236,19 @@ jobs:
             --keychain "$KEYCHAIN_PATH" -s "$APPLE_SIGNING_IDENTITY" "$APP_PATH"
           /usr/bin/codesign --verify --deep --strict --verbose=4 "$APP_PATH"
 
+      - name: Validate app bundle metadata
+        shell: bash
+        run: |
+          set -euxo pipefail
+          APP_PATH="dist/fPortal.app"
+          INFO_PLIST="$APP_PATH/Contents/Info.plist"
+          [[ -d "$APP_PATH" ]] || { echo "::error::Missing $APP_PATH"; exit 1; }
+          [[ -d "$APP_PATH/Contents" ]] || { echo "::error::Missing $APP_PATH/Contents"; exit 1; }
+          [[ -f "$INFO_PLIST" ]] || { echo "::error::Missing $INFO_PLIST"; exit 1; }
+          /usr/libexec/PlistBuddy -c "Print :CFBundlePackageType" "$INFO_PLIST"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$INFO_PLIST"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$INFO_PLIST"
+
       - name: Warn if release is unsigned
         if: ${{ env.SIGNING_ENABLED != 'true' }}
         run: |
@@ -174,6 +259,31 @@ jobs:
           rm -f dist/fPortal-macos.zip
           ditto -c -k --sequesterRsrc --keepParent dist/fPortal.app dist/fPortal-macos.zip
 
+      - name: Build signed installer package (.pkg)
+        if: ${{ env.PKG_ENABLED == 'true' }}
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -f dist/fPortal-installer.pkg dist/fPortal-installer-unsigned.pkg
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          productbuild \
+            --component "dist/fPortal.app" /Applications \
+            "dist/fPortal-installer-unsigned.pkg"
+          productsign \
+            --sign "$INSTALLER_SIGNING_IDENTITY" \
+            --keychain "$KEYCHAIN_PATH" \
+            "dist/fPortal-installer-unsigned.pkg" \
+            "dist/fPortal-installer.pkg"
+          rm -f "dist/fPortal-installer-unsigned.pkg"
+          ls -lh "dist/fPortal-installer.pkg"
+          pkgutil --check-signature "dist/fPortal-installer.pkg" || true
+
+      - name: Warn if signed installer package is unavailable
+        if: ${{ env.PKG_ENABLED != 'true' }}
+        run: |
+          echo "::warning::Signed installer package (.pkg) was not created. Configure both app cert and installer cert secrets to enable it."
+
       - name: Optional notarize and staple
         id: notarize
         if: ${{ env.NOTARIZE_ENABLED == 'true' }}
@@ -182,14 +292,20 @@ jobs:
         run: |
           set -euxo pipefail
 
+          NOTARY_TARGET="dist/fPortal-macos.zip"
+          if [[ -f "dist/fPortal-installer.pkg" ]]; then
+            NOTARY_TARGET="dist/fPortal-installer.pkg"
+          fi
+          echo "Notary target: $NOTARY_TARGET"
+
           try_key() {
-            xcrun notarytool submit dist/fPortal-macos.zip \
+            xcrun notarytool submit "$NOTARY_TARGET" \
               --key ./AuthKey.p8 --key-id "$APPLE_API_KEY_RESOLVED" --issuer "$APPLE_API_ISSUER" \
               --wait --output-format json | tee notary-result.json
           }
 
           try_apple_id() {
-            xcrun notarytool submit dist/fPortal-macos.zip \
+            xcrun notarytool submit "$NOTARY_TARGET" \
               --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_PASSWORD" \
               --wait --output-format json | tee notary-result.json
           }
@@ -209,6 +325,9 @@ jobs:
 
           xcrun stapler staple -v dist/fPortal.app || true
           xcrun stapler staple -v dist/fPortal-macos.zip || true
+          if [[ -f "dist/fPortal-installer.pkg" ]]; then
+            xcrun stapler staple -v dist/fPortal-installer.pkg || true
+          fi
 
       - name: Warn if notarization failed
         if: ${{ steps.notarize.outcome == 'failure' }}
@@ -242,6 +361,7 @@ jobs:
           name: fportal-release-${{ github.run_number }}
           path: |
             dist/fPortal-macos.zip
+            dist/fPortal-installer.pkg
             notary-result.json
           if-no-files-found: ignore
           retention-days: 7
@@ -255,6 +375,7 @@ jobs:
           generate_release_notes: true
           files: |
             dist/fPortal-macos.zip
+            dist/fPortal-installer.pkg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -267,7 +388,7 @@ jobs:
         if: always()
         shell: bash
         run: |
-          rm -f certificate.p12 AuthKey.p8
+          rm -f certificate.p12 installer_certificate.p12 AuthKey.p8
           if [[ -n "${KEYCHAIN_PATH:-}" ]]; then
             security delete-keychain "$KEYCHAIN_PATH" || true
           fi

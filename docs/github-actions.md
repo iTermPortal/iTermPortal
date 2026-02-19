@@ -6,7 +6,7 @@
   - Purpose: PR build validation for `fPortal.app`.
   - Trigger: pull requests (`opened`, `synchronize`, `reopened`, `ready_for_review`).
 - `release.yaml`
-  - Purpose: build/package app and create a GitHub Release.
+  - Purpose: build/package app and create a GitHub Release (`.zip` + optional signed `.pkg`).
   - Trigger: every push to `main` or `master`, plus `workflow_dispatch`.
   - Note: no `[release]` keyword is required for this workflow.
 - `app-store-release-test.yaml`
@@ -26,6 +26,11 @@ Required for signed release:
   - Preferred: `APPLE_CERTIFICATE` + `APPLE_CERTIFICATE_PASSWORD`
   - Fallback: `APPLE_APP_DIST_CERTIFICATE` + `APPLE_APP_DIST_CERTIFICATE_PASSWORD`
 
+Optional for signed installer `.pkg` in Release assets:
+- One installer certificate/password pair:
+  - Preferred: `APPLE_INSTALLER_CERTIFICATE` + `APPLE_INSTALLER_CERTIFICATE_PASSWORD`
+  - Fallback: `APPLE_INSTALLER_DIST_CERTIFICATE` + `APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD`
+
 Optional for notarization:
 - API key path:
   - `APPLE_API_KEY` or `APPLE_API_KEY_ID_FPORTAL` or `APPLE_API_KEY_FPORTAL`
@@ -38,6 +43,7 @@ Optional for notarization:
 
 Notes:
 - If signing secrets are missing, release still runs and publishes an unsigned artifact.
+- If installer cert secrets are set, release also publishes `fPortal-installer.pkg` (install without unzipping).
 - If notarization is configured and fails, the run warns and continues to release creation.
 
 ### For `app-store-release-test.yaml`

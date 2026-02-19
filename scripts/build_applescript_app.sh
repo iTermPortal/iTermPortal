@@ -12,6 +12,7 @@ INFO_PLIST="$APP_PATH/Contents/Info.plist"
 RESOURCES_DIR="$APP_PATH/Contents/Resources"
 APP_ICON_PATH="$RESOURCES_DIR/applet.icns"
 DROPLET_ICON_PATH="$RESOURCES_DIR/droplet.icns"
+BUNDLE_ID="${FPORTAL_BUNDLE_ID:-com.hjoncour.fportal}"
 TMP_DIR=""
 
 if [[ ! -f "$SOURCE_SCRIPT" ]]; then
@@ -84,6 +85,11 @@ cp "$GENERATED_ICON_PATH" "$DROPLET_ICON_PATH"
 /usr/libexec/PlistBuddy -c "Delete :CFBundleShortVersionString" "$INFO_PLIST" >/dev/null 2>&1 || true
 /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string $(date +%Y%m%d%H%M%S)" "$INFO_PLIST"
 /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$INFO_PLIST"
+if /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$INFO_PLIST" >/dev/null 2>&1; then
+  /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" "$INFO_PLIST"
+else
+  /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$INFO_PLIST"
+fi
 
 # Ad-hoc sign avoids Gatekeeper warnings for local builds where possible.
 codesign --force --deep --sign - "$APP_PATH" >/dev/null
@@ -91,3 +97,4 @@ codesign --force --deep --sign - "$APP_PATH" >/dev/null
 echo "Built: $APP_PATH"
 echo "No Dock icon: LSUIElement=true"
 echo "Icon source: $ICON_SOURCE"
+echo "Bundle ID: $BUNDLE_ID"
