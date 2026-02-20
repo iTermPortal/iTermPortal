@@ -1,9 +1,6 @@
 - macos certs
-- Opens iTerm2 new tab instead of creating new terminal
 
 Issues:
-    - Terminal:
-        - doesn't open in a new tab
     iTerm2:
         - Opens new teminal in separate screen
 
@@ -11,5 +8,4 @@ Issues:
         - Opens in the wrong folder, sometimes???
     
 
-No issues:
-- Warp
+- New option: new instance (currently) vs new window (to add)

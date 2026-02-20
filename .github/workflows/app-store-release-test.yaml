@@ -115,7 +115,7 @@ jobs:
           set -euo pipefail
           APP_PATH="dist/fPortal.app"
           INFO_PLIST="$APP_PATH/Contents/Info.plist"
-          APP_VERSION="$(tr -d '[:space:]' < VERSION)"
+          APP_VERSION="$(tr -d '[:space:]' < config/VERSION)"
           BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
 
           /usr/libexec/PlistBuddy -c "Delete :CFBundleIdentifier" "$INFO_PLIST" >/dev/null 2>&1 || true
@@ -130,7 +130,7 @@ jobs:
 
           # Parse provisioning profile to make mismatches obvious in CI logs.
           security cms -D -i embedded.provisionprofile > profile.plist
-          PROFILE_APP_IDENTIFIER=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" profile.plist 2>/dev/null || true)
+          PROFILE_APP_IDENTIFIER=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.application-identifier" profile.plist 2>/dev/null || true)
           PROFILE_TEAM_IDENTIFIER=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.team-identifier" profile.plist 2>/dev/null || true)
 
           if [[ -z "$PROFILE_APP_IDENTIFIER" ]]; then
@@ -203,19 +203,116 @@ jobs:
           echo "APP_SIGNING_IDENTITY=$APP_SIGNING_IDENTITY" >> "$GITHUB_ENV"
           echo "INSTALLER_SIGNING_IDENTITY=$INSTALLER_SIGNING_IDENTITY" >> "$GITHUB_ENV"
 
+      - name: Generate entitlements with application identifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_ID="${APPLE_TEAM_ID}.${APP_BUNDLE_ID}"
+
+          cat > config/entitlements/app-store-main.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>com.apple.security.app-sandbox</key>
+            <true/>
+            <key>com.apple.security.files.user-selected.read-write</key>
+            <true/>
+            <key>com.apple.security.automation.apple-events</key>
+            <true/>
+            <key>com.apple.application-identifier</key>
+            <string>${APP_ID}</string>
+            <key>com.apple.developer.team-identifier</key>
+            <string>${APPLE_TEAM_ID}</string>
+          </dict>
+          </plist>
+          EOF
+
+          cat > config/entitlements/app-store-helper.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>com.apple.security.app-sandbox</key>
+            <true/>
+            <key>com.apple.developer.team-identifier</key>
+            <string>${APPLE_TEAM_ID}</string>
+          </dict>
+          </plist>
+          EOF
+
+          echo "Main entitlements:"
+          cat config/entitlements/app-store-main.plist
+          echo "Helper entitlements:"
+          cat config/entitlements/app-store-helper.plist
+
       - name: Sign app for Mac App Store
         shell: bash
         run: |
           set -euxo pipefail
           APP_PATH="dist/fPortal.app"
+          HELPER_PATH="$APP_PATH/Contents/Library/LoginItems/fPortalMenu.app"
+          MAIN_ENTITLEMENTS="config/entitlements/app-store-main.plist"
+          HELPER_ENTITLEMENTS="config/entitlements/app-store-helper.plist"
 
+          # Strip all existing ad-hoc signatures (recursive for bundles).
+          /usr/bin/codesign --remove-signature "$HELPER_PATH" 2>/dev/null || true
           /usr/bin/codesign --remove-signature "$APP_PATH" 2>/dev/null || true
-          /usr/bin/codesign --force --deep \
-            --entitlements config/entitlements/app-store.plist \
+
+          # Sign inside-out: helper first, then main app.
+          # Each component gets its own entitlements, hardened runtime, and a secure timestamp.
+          /usr/bin/codesign --force \
+            --entitlements "$HELPER_ENTITLEMENTS" \
+            --options runtime \
+            --timestamp \
+            --keychain "$KEYCHAIN_PATH" \
+            -s "$APP_SIGNING_IDENTITY" \
+            "$HELPER_PATH"
+
+          /usr/bin/codesign --force \
+            --entitlements "$MAIN_ENTITLEMENTS" \
+            --options runtime \
+            --timestamp \
             --keychain "$KEYCHAIN_PATH" \
             -s "$APP_SIGNING_IDENTITY" \
             "$APP_PATH"
+
           /usr/bin/codesign --verify --deep --strict --verbose=4 "$APP_PATH"
+
+      - name: Verify entitlements on all executables
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_PATH="dist/fPortal.app"
+          HELPER_BINARY="$APP_PATH/Contents/Library/LoginItems/fPortalMenu.app/Contents/MacOS/fPortalMenu"
+          MAIN_BINARY="$APP_PATH/Contents/MacOS/droplet"
+          failed=0
+
+          echo "=== Main binary (droplet) entitlements ==="
+          codesign -d --entitlements - "$MAIN_BINARY" 2>&1
+          if ! codesign -d --entitlements - "$MAIN_BINARY" 2>&1 | grep -q "com.apple.security.app-sandbox"; then
+            echo "::error::droplet is missing com.apple.security.app-sandbox entitlement"
+            failed=1
+          fi
+
+          echo ""
+          echo "=== Helper binary (fPortalMenu) entitlements ==="
+          codesign -d --entitlements - "$HELPER_BINARY" 2>&1
+          if ! codesign -d --entitlements - "$HELPER_BINARY" 2>&1 | grep -q "com.apple.security.app-sandbox"; then
+            echo "::error::fPortalMenu is missing com.apple.security.app-sandbox entitlement"
+            failed=1
+          fi
+
+          echo ""
+          echo "=== Signing identities ==="
+          codesign -dvv "$MAIN_BINARY" 2>&1 || true
+          echo ""
+          codesign -dvv "$HELPER_BINARY" 2>&1 || true
+
+          if [[ "$failed" -ne 0 ]]; then
+            exit 1
+          fi
+          echo "All entitlements verified successfully."
 
       - name: Build signed App Store package
         timeout-minutes: 10

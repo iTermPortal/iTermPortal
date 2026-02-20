@@ -7,43 +7,36 @@ on launchITerm2(targetPath, openMode)
 end launchITerm2
 
 on launchITerm2NewTerminal(targetPath)
-	set cdCommand to "cd " & quoted form of targetPath
 	try
-		tell application id "com.googlecode.iterm2"
-			activate
-			set newWindow to (create window with default profile)
-			tell current session of newWindow
-				write text cdCommand
-			end tell
-		end tell
+		do shell script "open -na iTerm " & quoted form of targetPath
 	on error
-		try
-			do shell script "open -na iTerm " & quoted form of targetPath
-		on error
-			my launchFallbackTerminal("iTerm", targetPath, "new_terminal")
-		end try
+		my launchFallbackTerminal("iTerm", targetPath, "new_terminal")
 	end try
 end launchITerm2NewTerminal
 
 on launchITerm2NewTab(targetPath)
 	set cdCommand to "cd " & quoted form of targetPath
 	try
-		tell application id "com.googlecode.iterm2"
-			activate
-			if (count of windows) is 0 then
-				set newWindow to (create window with default profile)
-				tell current session of newWindow
-					write text cdCommand
+		set isRunning to do shell script "pgrep -x iTerm2 > /dev/null 2>&1 && echo yes || echo no"
+		if isRunning is "yes" then
+			do shell script "open -a iTerm"
+			delay 0.3
+			tell application "System Events"
+				tell process "iTerm2"
+					set frontmost to true
+					keystroke "t" using command down
 				end tell
-			else
-				tell current window
-					create tab with default profile
-					tell current session of current tab
-						write text cdCommand
-					end tell
+			end tell
+			delay 0.4
+			tell application "System Events"
+				tell process "iTerm2"
+					keystroke cdCommand
+					key code 36
 				end tell
-			end if
-		end tell
+			end tell
+		else
+			my launchITerm2NewTerminal(targetPath)
+		end if
 	on error
 		my launchFallbackTerminal("iTerm", targetPath, "new_tab")
 	end try
