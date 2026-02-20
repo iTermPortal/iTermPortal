@@ -3,6 +3,13 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SOURCE_SCRIPT="$ROOT_DIR/applescript/OpenTerminalHere.applescript"
+BASE_SCRIPT="$ROOT_DIR/applescript/OpenTerminalHere.base.applescript"
+TERMINAL_SCRIPT_SOURCES=(
+  "$ROOT_DIR/applescript/terminals/ITerm2.applescript"
+  "$ROOT_DIR/applescript/terminals/Terminal.applescript"
+  "$ROOT_DIR/applescript/terminals/Ghostty.applescript"
+  "$ROOT_DIR/applescript/terminals/Warp.applescript"
+)
 HELPER_SOURCE="$ROOT_DIR/swift/FPortalStatusBar.swift"
 ICON_SOURCE="$ROOT_DIR/assets/icons/negative.png"
 DIST_DIR="$ROOT_DIR/dist"
@@ -22,10 +29,17 @@ HELPER_INFO_PLIST="$HELPER_APP_PATH/Contents/Info.plist"
 BUNDLE_ID="${FPORTAL_BUNDLE_ID:-com.hjoncour.fportal}"
 TMP_DIR=""
 
-if [[ ! -f "$SOURCE_SCRIPT" ]]; then
-  echo "Missing source script: $SOURCE_SCRIPT" >&2
+if [[ ! -f "$BASE_SCRIPT" ]]; then
+  echo "Missing base script: $BASE_SCRIPT" >&2
   exit 1
 fi
+
+for script_source in "${TERMINAL_SCRIPT_SOURCES[@]}"; do
+  if [[ ! -f "$script_source" ]]; then
+    echo "Missing terminal script source: $script_source" >&2
+    exit 1
+  fi
+done
 
 if [[ ! -f "$ICON_SOURCE" ]]; then
   echo "Missing icon source: $ICON_SOURCE" >&2
@@ -64,10 +78,25 @@ cleanup() {
 }
 trap cleanup EXIT
 
+compose_applescript_source() {
+  {
+    echo "-- GENERATED FILE: DO NOT EDIT DIRECTLY."
+    echo "-- Edit '$BASE_SCRIPT' and files under 'applescript/terminals/'."
+    echo ""
+    cat "$BASE_SCRIPT"
+    for script_source in "${TERMINAL_SCRIPT_SOURCES[@]}"; do
+      echo ""
+      echo "-- >>> $(basename "$script_source")"
+      cat "$script_source"
+    done
+  } > "$SOURCE_SCRIPT"
+}
+
 mkdir -p "$DIST_DIR"
 rm -rf "$LEGACY_APP_PATH"
 rm -rf "$APP_PATH"
 
+compose_applescript_source
 osacompile -o "$APP_PATH" "$SOURCE_SCRIPT"
 
 TMP_DIR="$(mktemp -d "$DIST_DIR/.iconbuild.XXXXXX")"
