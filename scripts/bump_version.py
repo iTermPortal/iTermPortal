@@ -61,7 +61,7 @@ def main() -> int:
         return 0
 
     repo_root = Path(__file__).resolve().parent.parent
-    version_file = repo_root / "VERSION"
+    version_file = repo_root / "config" / "VERSION"
 
     if not version_file.exists():
         print(f"Missing VERSION file: {version_file}", file=sys.stderr)
