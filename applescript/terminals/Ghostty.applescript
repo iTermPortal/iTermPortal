@@ -8,7 +8,7 @@ end launchGhostty
 
 on launchGhosttyNewTerminal(targetPath)
 	try
-		do shell script "open -na Ghostty --args --gtk-single-instance=false --window-inherit-working-directory=false --working-directory=" & quoted form of targetPath
+		do shell script "open -na Ghostty --args --working-directory=" & quoted form of targetPath
 	on error
 		try
 			do shell script "open -na Ghostty " & quoted form of targetPath
@@ -20,7 +20,26 @@ end launchGhosttyNewTerminal
 
 on launchGhosttyNewTab(targetPath)
 	try
-		do shell script "open -a Ghostty " & quoted form of targetPath
+		if application "Ghostty" is running then
+			tell application "Ghostty" to activate
+			delay 0.3
+			set cdCommand to "cd " & quoted form of targetPath
+			tell application "System Events"
+				tell process "Ghostty"
+					set frontmost to true
+					keystroke "t" using command down
+				end tell
+			end tell
+			delay 0.3
+			tell application "System Events"
+				tell process "Ghostty"
+					keystroke cdCommand
+					key code 36 -- press Enter
+				end tell
+			end tell
+		else
+			my launchGhosttyNewTerminal(targetPath)
+		end if
 	on error
 		my launchGhosttyNewTerminal(targetPath)
 	end try

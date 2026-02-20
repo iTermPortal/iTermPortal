@@ -23,47 +23,37 @@ on launchTerminalAppNewTab(targetPath)
 				do script cdCommand
 				return
 			end if
-			set targetWindow to front window
-			set originalTabCount to (count of tabs of targetWindow)
 		end tell
 
-		-- Force New Tab via UI scripting.
-		set createdTab to false
+		-- Create new tab via Cmd+T (locale-independent, requires Accessibility).
+		set tabCreated to false
 		try
 			tell application "System Events"
 				tell process "Terminal"
 					set frontmost to true
-					click menu item "New Tab" of menu "Shell" of menu bar 1
+					keystroke "t" using command down
 				end tell
 			end tell
-			delay 0.1
-			tell application "Terminal"
-				if (count of tabs of targetWindow) > originalTabCount then
-					set createdTab to true
-					do script cdCommand in selected tab of targetWindow
-					return
-				end if
-			end tell
+			set tabCreated to true
 		end try
 
-		-- Retry with keyboard shortcut, then fall back to new window.
-		if createdTab is false then
+		if tabCreated then
+			delay 0.5
+			tell application "System Events"
+				tell process "Terminal"
+					keystroke cdCommand
+					key code 36 -- press Enter
+				end tell
+			end tell
+		else
+			-- System Events failed — likely missing Accessibility permissions.
 			try
-				tell application "System Events"
-					tell process "Terminal"
-						set frontmost to true
-						keystroke "t" using command down
-					end tell
-				end tell
-				delay 0.1
-				tell application "Terminal"
-					if (count of tabs of targetWindow) > originalTabCount then
-						do script cdCommand in selected tab of targetWindow
-						return
-					end if
-				end tell
+				display dialog "fPortal needs Accessibility permissions to open new tabs in Terminal." & return & return & "Go to System Settings > Privacy & Security > Accessibility, then add fPortal." buttons {"Open System Settings", "Use New Window"} default button "Open System Settings" with icon caution
+				set userChoice to button returned of result
+				if userChoice is "Open System Settings" then
+					do shell script "open 'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility'"
+				end if
 			end try
-
 			my launchTerminalAppNewTerminal(targetPath)
 		end if
 	on error

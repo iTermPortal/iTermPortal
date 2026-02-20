@@ -18,7 +18,7 @@ fi
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 BUMP_SCRIPT="$REPO_ROOT/scripts/bump_version.py"
-VERSION_FILE="$REPO_ROOT/VERSION"
+VERSION_FILE="$REPO_ROOT/config/VERSION"
 
 if [[ ! -f "$BUMP_SCRIPT" || ! -f "$VERSION_FILE" ]]; then
   exit 0
@@ -59,12 +59,12 @@ fi
 
 # One bump max per branch/PR: if any commit since divergence already
 # touched VERSION, skip all future auto-bumps.
-if git log --format="%H" "$MERGE_BASE"..HEAD -- VERSION 2>/dev/null | grep -q "."; then
+if git log --format="%H" "$MERGE_BASE"..HEAD -- config/VERSION 2>/dev/null | grep -q "."; then
   exit 0
 fi
 
 CURRENT_VERSION="$(tr -d '[:space:]' < "$VERSION_FILE")"
-BASE_VERSION="$(git show "$MERGE_BASE:VERSION" 2>/dev/null | tr -d '[:space:]' || true)"
+BASE_VERSION="$(git show "$MERGE_BASE:config/VERSION" 2>/dev/null | tr -d '[:space:]' || true)"
 if [[ -z "$BASE_VERSION" ]]; then
   BASE_VERSION="$CURRENT_VERSION"
 fi
