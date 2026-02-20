@@ -154,43 +154,36 @@ on launchITerm2(targetPath, openMode)
 end launchITerm2
 
 on launchITerm2NewTerminal(targetPath)
-	set cdCommand to "cd " & quoted form of targetPath
 	try
-		tell application id "com.googlecode.iterm2"
-			activate
-			set newWindow to (create window with default profile)
-			tell current session of newWindow
-				write text cdCommand
-			end tell
-		end tell
+		do shell script "open -na iTerm " & quoted form of targetPath
 	on error
-		try
-			do shell script "open -na iTerm " & quoted form of targetPath
-		on error
-			my launchFallbackTerminal("iTerm", targetPath, "new_terminal")
-		end try
+		my launchFallbackTerminal("iTerm", targetPath, "new_terminal")
 	end try
 end launchITerm2NewTerminal
 
 on launchITerm2NewTab(targetPath)
 	set cdCommand to "cd " & quoted form of targetPath
 	try
-		tell application id "com.googlecode.iterm2"
-			activate
-			if (count of windows) is 0 then
-				set newWindow to (create window with default profile)
-				tell current session of newWindow
-					write text cdCommand
+		set isRunning to do shell script "pgrep -x iTerm2 > /dev/null 2>&1 && echo yes || echo no"
+		if isRunning is "yes" then
+			do shell script "open -a iTerm"
+			delay 0.3
+			tell application "System Events"
+				tell process "iTerm2"
+					set frontmost to true
+					keystroke "t" using command down
 				end tell
-			else
-				tell current window
-					create tab with default profile
-					tell current session of current tab
-						write text cdCommand
-					end tell
+			end tell
+			delay 0.4
+			tell application "System Events"
+				tell process "iTerm2"
+					keystroke cdCommand
+					key code 36
 				end tell
-			end if
-		end tell
+			end tell
+		else
+			my launchITerm2NewTerminal(targetPath)
+		end if
 	on error
 		my launchFallbackTerminal("iTerm", targetPath, "new_tab")
 	end try
@@ -222,47 +215,37 @@ on launchTerminalAppNewTab(targetPath)
 				do script cdCommand
 				return
 			end if
-			set targetWindow to front window
-			set originalTabCount to (count of tabs of targetWindow)
 		end tell
 
-		-- Force New Tab via UI scripting.
-		set createdTab to false
+		-- Create new tab via Cmd+T (locale-independent, requires Accessibility).
+		set tabCreated to false
 		try
 			tell application "System Events"
 				tell process "Terminal"
 					set frontmost to true
-					click menu item "New Tab" of menu "Shell" of menu bar 1
+					keystroke "t" using command down
 				end tell
 			end tell
-			delay 0.1
-			tell application "Terminal"
-				if (count of tabs of targetWindow) > originalTabCount then
-					set createdTab to true
-					do script cdCommand in selected tab of targetWindow
-					return
-				end if
-			end tell
+			set tabCreated to true
 		end try
 
-		-- Retry with keyboard shortcut, then fall back to new window.
-		if createdTab is false then
+		if tabCreated then
+			delay 0.5
+			tell application "System Events"
+				tell process "Terminal"
+					keystroke cdCommand
+					key code 36 -- press Enter
+				end tell
+			end tell
+		else
+			-- System Events failed — likely missing Accessibility permissions.
 			try
-				tell application "System Events"
-					tell process "Terminal"
-						set frontmost to true
-						keystroke "t" using command down
-					end tell
-				end tell
-				delay 0.1
-				tell application "Terminal"
-					if (count of tabs of targetWindow) > originalTabCount then
-						do script cdCommand in selected tab of targetWindow
-						return
-					end if
-				end tell
+				display dialog "fPortal needs Accessibility permissions to open new tabs in Terminal." & return & return & "Go to System Settings > Privacy & Security > Accessibility, then add fPortal." buttons {"Open System Settings", "Use New Window"} default button "Open System Settings" with icon caution
+				set userChoice to button returned of result
+				if userChoice is "Open System Settings" then
+					do shell script "open 'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility'"
+				end if
 			end try
-
 			my launchTerminalAppNewTerminal(targetPath)
 		end if
 	on error
@@ -281,7 +264,7 @@ end launchGhostty
 
 on launchGhosttyNewTerminal(targetPath)
 	try
-		do shell script "open -na Ghostty --args --gtk-single-instance=false --window-inherit-working-directory=false --working-directory=" & quoted form of targetPath
+		do shell script "open -na Ghostty --args --working-directory=" & quoted form of targetPath
 	on error
 		try
 			do shell script "open -na Ghostty " & quoted form of targetPath
@@ -293,7 +276,26 @@ end launchGhosttyNewTerminal
 
 on launchGhosttyNewTab(targetPath)
 	try
-		do shell script "open -a Ghostty " & quoted form of targetPath
+		if application "Ghostty" is running then
+			tell application "Ghostty" to activate
+			delay 0.3
+			set cdCommand to "cd " & quoted form of targetPath
+			tell application "System Events"
+				tell process "Ghostty"
+					set frontmost to true
+					keystroke "t" using command down
+				end tell
+			end tell
+			delay 0.3
+			tell application "System Events"
+				tell process "Ghostty"
+					keystroke cdCommand
+					key code 36 -- press Enter
+				end tell
+			end tell
+		else
+			my launchGhosttyNewTerminal(targetPath)
+		end if
 	on error
 		my launchGhosttyNewTerminal(targetPath)
 	end try

@@ -339,11 +339,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! -f VERSION ]]; then
-            echo "::error::Missing VERSION file."
+          if [[ ! -f config/VERSION ]]; then
+            echo "::error::Missing config/VERSION file."
             exit 1
           fi
-          VERSION="$(tr -d '[:space:]' < VERSION)"
+          VERSION="$(tr -d '[:space:]' < config/VERSION)"
           if [[ -z "$VERSION" ]]; then
             echo "::error::VERSION file is empty."
             exit 1

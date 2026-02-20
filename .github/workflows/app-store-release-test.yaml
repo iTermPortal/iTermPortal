@@ -115,7 +115,7 @@ jobs:
           set -euo pipefail
           APP_PATH="dist/fPortal.app"
           INFO_PLIST="$APP_PATH/Contents/Info.plist"
-          APP_VERSION="$(tr -d '[:space:]' < VERSION)"
+          APP_VERSION="$(tr -d '[:space:]' < config/VERSION)"
           BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
 
           /usr/libexec/PlistBuddy -c "Delete :CFBundleIdentifier" "$INFO_PLIST" >/dev/null 2>&1 || true
@@ -130,7 +130,7 @@ jobs:
 
           # Parse provisioning profile to make mismatches obvious in CI logs.
           security cms -D -i embedded.provisionprofile > profile.plist
-          PROFILE_APP_IDENTIFIER=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" profile.plist 2>/dev/null || true)
+          PROFILE_APP_IDENTIFIER=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.application-identifier" profile.plist 2>/dev/null || true)
           PROFILE_TEAM_IDENTIFIER=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.team-identifier" profile.plist 2>/dev/null || true)
 
           if [[ -z "$PROFILE_APP_IDENTIFIER" ]]; then

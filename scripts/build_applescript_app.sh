@@ -27,7 +27,24 @@ HELPER_EXECUTABLE_NAME="fPortalMenu"
 HELPER_EXECUTABLE_PATH="$HELPER_APP_PATH/Contents/MacOS/$HELPER_EXECUTABLE_NAME"
 HELPER_INFO_PLIST="$HELPER_APP_PATH/Contents/Info.plist"
 BUNDLE_ID="${FPORTAL_BUNDLE_ID:-com.hjoncour.fportal}"
+VERSION_FILE="$ROOT_DIR/config/VERSION"
+LEGACY_VERSION_FILE="$ROOT_DIR/VERSION"
 TMP_DIR=""
+
+if [[ ! -f "$VERSION_FILE" && -f "$LEGACY_VERSION_FILE" ]]; then
+  VERSION_FILE="$LEGACY_VERSION_FILE"
+fi
+
+if [[ ! -f "$VERSION_FILE" ]]; then
+  echo "Missing VERSION file. Expected '$ROOT_DIR/config/VERSION'." >&2
+  exit 1
+fi
+
+APP_VERSION="$(tr -d '[:space:]' < "$VERSION_FILE")"
+if [[ -z "$APP_VERSION" ]]; then
+  echo "VERSION file is empty: $VERSION_FILE" >&2
+  exit 1
+fi
 
 if [[ ! -f "$BASE_SCRIPT" ]]; then
   echo "Missing base script: $BASE_SCRIPT" >&2
@@ -151,9 +168,9 @@ cat > "$HELPER_INFO_PLIST" <<EOF
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>
-  <string>1.0</string>
+  <string>$APP_VERSION</string>
   <key>CFBundleVersion</key>
-  <string>1</string>
+  <string>$APP_VERSION</string>
   <key>LSUIElement</key>
   <true/>
   <key>NSPrincipalClass</key>
@@ -173,7 +190,7 @@ codesign --force --deep --sign - "$HELPER_APP_PATH" >/dev/null
 /usr/libexec/PlistBuddy -c "Delete :CFBundleVersion" "$INFO_PLIST" >/dev/null 2>&1 || true
 /usr/libexec/PlistBuddy -c "Delete :CFBundleShortVersionString" "$INFO_PLIST" >/dev/null 2>&1 || true
 /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string $(date +%Y%m%d%H%M%S)" "$INFO_PLIST"
-/usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$INFO_PLIST"
+/usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string $APP_VERSION" "$INFO_PLIST"
 if /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$INFO_PLIST" >/dev/null 2>&1; then
   /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" "$INFO_PLIST"
 else
