@@ -2,7 +2,7 @@
 
 Issues:
     iTerm2:
-        - Opens new teminal in separate screen
+        - Favor latest terminal used to open a new tab
 
     Ghostty:
         - Opens in the wrong folder, sometimes???
