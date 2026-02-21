@@ -381,7 +381,7 @@ jobs:
             --apiIssuer "$APPLE_API_ISSUER" \
             --output-format json > appstore-apps.json
 
-          if ! rg -F "\"$APP_BUNDLE_ID\"" appstore-apps.json >/dev/null 2>&1; then
+          if ! grep -qF "$APP_BUNDLE_ID" appstore-apps.json; then
             echo "::error::Bundle ID '$APP_BUNDLE_ID' is not visible to this App Store Connect API key."
             echo "::error::Fix one of: (1) create app in App Store Connect with this exact bundle id, (2) change APPLE_APP_BUNDLE_ID to existing app id, (3) grant this API key access to that app."
             echo "Visible app list was written to appstore-apps.json artifact."
