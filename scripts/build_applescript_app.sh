@@ -12,6 +12,7 @@ TERMINAL_SCRIPT_SOURCES=(
 )
 HELPER_SOURCE="$ROOT_DIR/swift/FPortalStatusBar.swift"
 ICON_SOURCE="$ROOT_DIR/assets/icons/negative.png"
+APPSTORE_ICON_SOURCE="$ROOT_DIR/assets/icons/input.png"
 DIST_DIR="$ROOT_DIR/dist"
 APP_NAME="fPortal.app"
 APP_PATH="$DIST_DIR/$APP_NAME"
@@ -120,6 +121,7 @@ TMP_DIR="$(mktemp -d "$DIST_DIR/.iconbuild.XXXXXX")"
 ICONSET_DIR="$TMP_DIR/fPortal.iconset"
 mkdir -p "$ICONSET_DIR"
 
+# Small sizes: use negative.png (clean toolbar/menu bar icon).
 while read -r size iconName; do
   sips -z "$size" "$size" "$ICON_SOURCE" --out "$ICONSET_DIR/$iconName" >/dev/null
 done <<'EOF'
@@ -130,6 +132,12 @@ done <<'EOF'
 128 icon_128x128.png
 256 icon_128x128@2x.png
 256 icon_256x256.png
+EOF
+
+# Large sizes: use input.png (App Store / TestFlight icon).
+while read -r size iconName; do
+  sips -z "$size" "$size" "$APPSTORE_ICON_SOURCE" --out "$ICONSET_DIR/$iconName" >/dev/null
+done <<'EOF'
 512 icon_256x256@2x.png
 512 icon_512x512.png
 1024 icon_512x512@2x.png
