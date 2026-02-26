@@ -164,19 +164,20 @@ end launchITerm2NewTerminal
 on launchITerm2NewTab(targetPath)
 	set cdCommand to "cd " & quoted form of targetPath
 	try
-		tell application id "com.googlecode.iterm2"
-			activate
-			if (count of windows) = 0 then
-				create window with default profile
-			else
-				tell current window
-					create tab with default profile
-				end tell
-			end if
-			tell current session of current window
-				write text cdCommand
-			end tell
-		end tell
+		set scriptSource to "tell application \"iTerm\"" & return & ¬
+			"activate" & return & ¬
+			"if (count of windows) = 0 then" & return & ¬
+			"create window with default profile" & return & ¬
+			"else" & return & ¬
+			"tell current window" & return & ¬
+			"create tab with default profile" & return & ¬
+			"end tell" & return & ¬
+			"end if" & return & ¬
+			"tell current session of current window" & return & ¬
+			"write text " & quote & cdCommand & quote & return & ¬
+			"end tell" & return & ¬
+			"end tell"
+		run script scriptSource
 	on error
 		my launchFallbackTerminal("iTerm", targetPath, "new_tab")
 	end try
