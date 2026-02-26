@@ -75,14 +75,14 @@ end directoryForPath
 on ensureMenuBarHelperRunning()
 	try
 		set mePath to POSIX path of (path to me)
-		set helperPath to mePath & "Contents/Library/LoginItems/fPortalMenu.app"
+		set helperPath to mePath & "Contents/Library/LoginItems/iTermPortalMenu.app"
 		do shell script "if [ -d " & quoted form of helperPath & " ]; then open -gj " & quoted form of helperPath & "; fi"
 	end try
 end ensureMenuBarHelperRunning
 
 on resolvePreferredTerminal()
 	try
-		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/fPortal/terminal_choice.txt"
+		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/iTermPortal/terminal_choice.txt"
 		set preferredTerminal to do shell script "if [ -f " & quoted form of settingsPath & " ]; then /usr/bin/head -n 1 " & quoted form of settingsPath & "; fi"
 		if preferredTerminal is not "" then return preferredTerminal
 	on error
@@ -93,7 +93,7 @@ end resolvePreferredTerminal
 
 on resolveOpenMode()
 	try
-		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/fPortal/open_mode.txt"
+		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/iTermPortal/open_mode.txt"
 		set openMode to do shell script "if [ -f " & quoted form of settingsPath & " ]; then /usr/bin/head -n 1 " & quoted form of settingsPath & "; fi"
 		if openMode is "new_tab" then return "new_tab"
 	on error

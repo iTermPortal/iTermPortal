@@ -1,4 +1,4 @@
-# fPortal: Finder "Open Terminal Here" (AppleScript)
+# iTermPortal: Finder "Open Terminal Here" (AppleScript)
 
 This repository builds a tiny AppleScript app for Finder's toolbar.
 
@@ -19,10 +19,10 @@ Icon source:
 ```
 
 Output app:
-- `dist/fPortal.app`
+- `dist/iTermPortal.app`
 
 Terminal selection:
-1. Launch `dist/fPortal.app` once.
+1. Launch `dist/iTermPortal.app` once.
 2. Click the new menu bar icon.
 3. Pick your default terminal.
 4. Next Finder toolbar clicks open in that terminal.
@@ -53,7 +53,7 @@ Hook install (run once per clone):
 Workflows:
 - `build.yaml`: PR build validation
 - `app-store-release-test.yaml`: Mac App Store package pipeline (`[release]` trigger, optional manual upload)
-- `release.yaml`: push to `main`/`master` builds and publishes GitHub Release assets (`fPortal-macos.zip` + optional signed `fPortal-direct-install.pkg`)
+- `release.yaml`: push to `main`/`master` builds and publishes GitHub Release assets (`iTermPortal-macos.zip` + optional signed `iTermPortal-direct-install.pkg`)
 - `certificate.yaml`: macOS certificate/notarization preflight
 
 Setup guide (all variables + macOS cert instructions):
@@ -63,9 +63,9 @@ Setup guide (all variables + macOS cert instructions):
 ## Add to Finder Toolbar
 
 1. Open a Finder window.
-2. Hold `Command` and drag `dist/fPortal.app` into Finder's toolbar.
+2. Hold `Command` and drag `dist/iTermPortal.app` into Finder's toolbar.
 3. Click the new toolbar icon to run it.
-4. If Finder still shows an old icon, remove the toolbar item, relaunch Finder, and drag `dist/fPortal.app` back in.
+4. If Finder still shows an old icon, remove the toolbar item, relaunch Finder, and drag `dist/iTermPortal.app` back in.
 
 ## First-Run Permissions
 

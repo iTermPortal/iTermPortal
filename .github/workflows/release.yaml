@@ -1,4 +1,4 @@
-name: Release fPortal (Signed macOS build)
+name: Release iTermPortal (Signed macOS build)
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: fportal-release-${{ github.ref }}
+  group: itermportal-release-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -230,7 +230,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          APP_PATH="dist/fPortal.app"
+          APP_PATH="dist/iTermPortal.app"
           /usr/bin/codesign --remove-signature "$APP_PATH" 2>/dev/null || true
           /usr/bin/codesign --force --deep --options runtime --timestamp \
             --keychain "$KEYCHAIN_PATH" -s "$APPLE_SIGNING_IDENTITY" "$APP_PATH"
@@ -240,7 +240,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          APP_PATH="dist/fPortal.app"
+          APP_PATH="dist/iTermPortal.app"
           INFO_PLIST="$APP_PATH/Contents/Info.plist"
           [[ -d "$APP_PATH" ]] || { echo "::error::Missing $APP_PATH"; exit 1; }
           [[ -d "$APP_PATH/Contents" ]] || { echo "::error::Missing $APP_PATH/Contents"; exit 1; }
@@ -256,8 +256,8 @@ jobs:
 
       - name: Package app
         run: |
-          rm -f dist/fPortal-macos.zip
-          ditto -c -k --sequesterRsrc --keepParent dist/fPortal.app dist/fPortal-macos.zip
+          rm -f dist/iTermPortal-macos.zip
+          ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
 
       - name: Build signed installer package (.pkg)
         if: ${{ env.PKG_ENABLED == 'true' }}
@@ -265,19 +265,19 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          rm -f dist/fPortal-direct-install.pkg dist/fPortal-direct-install-unsigned.pkg
+          rm -f dist/iTermPortal-direct-install.pkg dist/iTermPortal-direct-install-unsigned.pkg
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           productbuild \
-            --component "dist/fPortal.app" /Applications \
-            "dist/fPortal-direct-install-unsigned.pkg"
+            --component "dist/iTermPortal.app" /Applications \
+            "dist/iTermPortal-direct-install-unsigned.pkg"
           productsign \
             --sign "$INSTALLER_SIGNING_IDENTITY" \
             --keychain "$KEYCHAIN_PATH" \
-            "dist/fPortal-direct-install-unsigned.pkg" \
-            "dist/fPortal-direct-install.pkg"
-          rm -f "dist/fPortal-direct-install-unsigned.pkg"
-          ls -lh "dist/fPortal-direct-install.pkg"
-          pkgutil --check-signature "dist/fPortal-direct-install.pkg" || true
+            "dist/iTermPortal-direct-install-unsigned.pkg" \
+            "dist/iTermPortal-direct-install.pkg"
+          rm -f "dist/iTermPortal-direct-install-unsigned.pkg"
+          ls -lh "dist/iTermPortal-direct-install.pkg"
+          pkgutil --check-signature "dist/iTermPortal-direct-install.pkg" || true
 
       - name: Warn if signed installer package is unavailable
         if: ${{ env.PKG_ENABLED != 'true' }}
@@ -292,9 +292,9 @@ jobs:
         run: |
           set -euxo pipefail
 
-          NOTARY_TARGET="dist/fPortal-macos.zip"
-          if [[ -f "dist/fPortal-direct-install.pkg" ]]; then
-            NOTARY_TARGET="dist/fPortal-direct-install.pkg"
+          NOTARY_TARGET="dist/iTermPortal-macos.zip"
+          if [[ -f "dist/iTermPortal-direct-install.pkg" ]]; then
+            NOTARY_TARGET="dist/iTermPortal-direct-install.pkg"
           fi
           echo "Notary target: $NOTARY_TARGET"
 
@@ -323,10 +323,10 @@ jobs:
             try_apple_id
           fi
 
-          xcrun stapler staple -v dist/fPortal.app || true
-          xcrun stapler staple -v dist/fPortal-macos.zip || true
-          if [[ -f "dist/fPortal-direct-install.pkg" ]]; then
-            xcrun stapler staple -v dist/fPortal-direct-install.pkg || true
+          xcrun stapler staple -v dist/iTermPortal.app || true
+          xcrun stapler staple -v dist/iTermPortal-macos.zip || true
+          if [[ -f "dist/iTermPortal-direct-install.pkg" ]]; then
+            xcrun stapler staple -v dist/iTermPortal-direct-install.pkg || true
           fi
 
       - name: Warn if notarization failed
@@ -351,17 +351,17 @@ jobs:
           SHORT_SHA="${GITHUB_SHA:0:7}"
           TS="$(date -u +'%Y%m%d%H%M%S')"
           TAG="v${VERSION}-${TS}-${SHORT_SHA}"
-          NAME="fPortal ${VERSION} (${SHORT_SHA})"
+          NAME="iTermPortal ${VERSION} (${SHORT_SHA})"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
 
       - name: Upload release artifact (debug)
         uses: actions/upload-artifact@v4
         with:
-          name: fportal-release-${{ github.run_number }}
+          name: itermportal-release-${{ github.run_number }}
           path: |
-            dist/fPortal-macos.zip
-            dist/fPortal-direct-install.pkg
+            dist/iTermPortal-macos.zip
+            dist/iTermPortal-direct-install.pkg
             notary-result.json
           if-no-files-found: ignore
           retention-days: 7
@@ -374,8 +374,8 @@ jobs:
           name: ${{ steps.meta.outputs.name }}
           generate_release_notes: true
           files: |
-            dist/fPortal-macos.zip
-            dist/fPortal-direct-install.pkg
+            dist/iTermPortal-macos.zip
+            dist/iTermPortal-direct-install.pkg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -1,5 +1,5 @@
 -- GENERATED FILE: DO NOT EDIT DIRECTLY.
--- Edit '/Users/hjoncour/Projects/iTermPortal/fPortal/applescript/OpenTerminalHere.base.applescript' and files under 'applescript/terminals/'.
+-- Edit 'applescript/OpenTerminalHere.base.applescript' and files under 'applescript/terminals/'.
 
 use scripting additions
 
@@ -78,14 +78,14 @@ end directoryForPath
 on ensureMenuBarHelperRunning()
 	try
 		set mePath to POSIX path of (path to me)
-		set helperPath to mePath & "Contents/Library/LoginItems/fPortalMenu.app"
+		set helperPath to mePath & "Contents/Library/LoginItems/iTermPortalMenu.app"
 		do shell script "if [ -d " & quoted form of helperPath & " ]; then open -gj " & quoted form of helperPath & "; fi"
 	end try
 end ensureMenuBarHelperRunning
 
 on resolvePreferredTerminal()
 	try
-		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/fPortal/terminal_choice.txt"
+		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/iTermPortal/terminal_choice.txt"
 		set preferredTerminal to do shell script "if [ -f " & quoted form of settingsPath & " ]; then /usr/bin/head -n 1 " & quoted form of settingsPath & "; fi"
 		if preferredTerminal is not "" then return preferredTerminal
 	on error
@@ -96,7 +96,7 @@ end resolvePreferredTerminal
 
 on resolveOpenMode()
 	try
-		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/fPortal/open_mode.txt"
+		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/iTermPortal/open_mode.txt"
 		set openMode to do shell script "if [ -f " & quoted form of settingsPath & " ]; then /usr/bin/head -n 1 " & quoted form of settingsPath & "; fi"
 		if openMode is "new_tab" then return "new_tab"
 	on error
@@ -231,7 +231,7 @@ on launchTerminalAppNewTab(targetPath)
 		else
 			-- System Events failed — likely missing Accessibility permissions.
 			try
-				display dialog "fPortal needs Accessibility permissions to open new tabs in Terminal." & return & return & "Go to System Settings > Privacy & Security > Accessibility, then add fPortal." buttons {"Open System Settings", "Use New Window"} default button "Open System Settings" with icon caution
+				display dialog "iTermPortal needs Accessibility permissions to open new tabs in Terminal." & return & return & "Go to System Settings > Privacy & Security > Accessibility, then add iTermPortal." buttons {"Open System Settings", "Use New Window"} default button "Open System Settings" with icon caution
 				set userChoice to button returned of result
 				if userChoice is "Open System Settings" then
 					do shell script "open 'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility'"

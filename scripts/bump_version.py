@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Automatic version bumping for fPortal.
+Automatic version bumping for iTermPortal.
 
 Version format:
     major.feature.fix
