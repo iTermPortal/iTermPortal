@@ -22,9 +22,9 @@ end launchGhosttyNewTerminal
 
 on launchGhosttyNewWindow(targetPath)
 	try
-		do shell script "open -a Ghostty --args --working-directory=" & quoted form of targetPath
+		do shell script "open -a Ghostty " & quoted form of targetPath
 	on error
-		my launchNewWindow("Ghostty", targetPath)
+		my launchFallbackTerminal("Ghostty", targetPath, "new_window")
 	end try
 end launchGhosttyNewWindow
 

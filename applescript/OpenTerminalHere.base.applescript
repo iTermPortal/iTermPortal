@@ -95,8 +95,9 @@ on resolveOpenMode()
 	try
 		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/iTermPortal/open_mode.txt"
 		set openMode to do shell script "if [ -f " & quoted form of settingsPath & " ]; then /usr/bin/head -n 1 " & quoted form of settingsPath & "; fi"
-		if openMode is "new_tab" then return "new_tab"
+		if openMode is "new_terminal" then return "new_terminal"
 		if openMode is "new_window" then return "new_window"
+		if openMode is "new_tab" then return "new_tab"
 	on error
 		-- Fallback below.
 	end try
