@@ -96,10 +96,11 @@ on resolveOpenMode()
 		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/iTermPortal/open_mode.txt"
 		set openMode to do shell script "if [ -f " & quoted form of settingsPath & " ]; then /usr/bin/head -n 1 " & quoted form of settingsPath & "; fi"
 		if openMode is "new_tab" then return "new_tab"
+		if openMode is "new_window" then return "new_window"
 	on error
 		-- Fallback below.
 	end try
-	return "new_terminal"
+	return "new_window"
 end resolveOpenMode
 
 on launchTerminal(targetPath)
@@ -140,3 +141,11 @@ on launchFallbackTerminal(preferredTerminal, targetPath, openMode)
 		do shell script "open -a Terminal " & quoted form of targetPath
 	end try
 end launchFallbackTerminal
+
+on launchNewWindow(appName, targetPath)
+	try
+		do shell script "open -a " & quoted form of appName & " " & quoted form of targetPath
+	on error
+		my launchFallbackTerminal(appName, targetPath, "new_window")
+	end try
+end launchNewWindow

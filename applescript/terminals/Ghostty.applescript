@@ -1,6 +1,8 @@
 on launchGhostty(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchGhosttyNewTab(targetPath)
+	else if openMode is "new_window" then
+		my launchGhosttyNewWindow(targetPath)
 	else
 		my launchGhosttyNewTerminal(targetPath)
 	end if
@@ -17,6 +19,14 @@ on launchGhosttyNewTerminal(targetPath)
 		end try
 	end try
 end launchGhosttyNewTerminal
+
+on launchGhosttyNewWindow(targetPath)
+	try
+		do shell script "open -a Ghostty --args --working-directory=" & quoted form of targetPath
+	on error
+		my launchNewWindow("Ghostty", targetPath)
+	end try
+end launchGhosttyNewWindow
 
 on launchGhosttyNewTab(targetPath)
 	try

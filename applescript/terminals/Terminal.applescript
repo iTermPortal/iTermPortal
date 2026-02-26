@@ -1,6 +1,8 @@
 on launchTerminalApp(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchTerminalAppNewTab(targetPath)
+	else if openMode is "new_window" then
+		my launchNewWindow("Terminal", targetPath)
 	else
 		my launchTerminalAppNewTerminal(targetPath)
 	end if

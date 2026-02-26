@@ -1,6 +1,8 @@
 on launchITerm2(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchITerm2NewTab(targetPath)
+	else if openMode is "new_window" then
+		my launchNewWindow("iTerm", targetPath)
 	else
 		my launchITerm2NewTerminal(targetPath)
 	end if
