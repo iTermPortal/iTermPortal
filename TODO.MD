@@ -7,5 +7,6 @@ Issues:
     Ghostty:
         - Opens in the wrong folder, sometimes???
     
+    Warp opened a new window instead of a new tab
 
 - New option: new instance (currently) vs new window (to add)

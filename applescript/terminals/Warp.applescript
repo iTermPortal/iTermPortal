@@ -16,7 +16,8 @@ end launchWarpNewTerminal
 
 on launchWarpNewTab(targetPath)
 	try
-		do shell script "open -a Warp " & quoted form of targetPath
+		set encodedPath to do shell script "python3 -c 'import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))' " & quoted form of targetPath
+		do shell script "open 'warp://action/new_tab?path=" & encodedPath & "'"
 	on error
 		my launchWarpNewTerminal(targetPath)
 	end try

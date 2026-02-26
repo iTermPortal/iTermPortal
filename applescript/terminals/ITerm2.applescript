@@ -17,26 +17,20 @@ end launchITerm2NewTerminal
 on launchITerm2NewTab(targetPath)
 	set cdCommand to "cd " & quoted form of targetPath
 	try
-		set isRunning to do shell script "pgrep -x iTerm2 > /dev/null 2>&1 && echo yes || echo no"
-		if isRunning is "yes" then
-			do shell script "open -a iTerm"
-			delay 0.3
-			tell application "System Events"
-				tell process "iTerm2"
-					set frontmost to true
-					keystroke "t" using command down
-				end tell
-			end tell
-			delay 0.4
-			tell application "System Events"
-				tell process "iTerm2"
-					keystroke cdCommand
-					key code 36
-				end tell
-			end tell
-		else
-			my launchITerm2NewTerminal(targetPath)
-		end if
+		set scriptSource to "tell application \"iTerm\"" & return & ¬
+			"activate" & return & ¬
+			"if (count of windows) = 0 then" & return & ¬
+			"create window with default profile" & return & ¬
+			"else" & return & ¬
+			"tell current window" & return & ¬
+			"create tab with default profile" & return & ¬
+			"end tell" & return & ¬
+			"end if" & return & ¬
+			"tell current session of current window" & return & ¬
+			"write text " & quote & cdCommand & quote & return & ¬
+			"end tell" & return & ¬
+			"end tell"
+		run script scriptSource
 	on error
 		my launchFallbackTerminal("iTerm", targetPath, "new_tab")
 	end try
