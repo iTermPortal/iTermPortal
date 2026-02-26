@@ -20,13 +20,14 @@ private let terminalOptions: [TerminalOption] = [
 ]
 
 private let openModeOptions: [OpenModeOption] = [
-    OpenModeOption(title: "New terminal", value: "new_terminal"),
+    OpenModeOption(title: "New instance", value: "new_terminal"),
+    OpenModeOption(title: "New window", value: "new_window"),
     OpenModeOption(title: "New tab", value: "new_tab")
 ]
 
 private enum PreferenceStore {
     private static let defaultTerminal = "Terminal"
-    private static let defaultOpenMode = "new_terminal"
+    private static let defaultOpenMode = "new_window"
 
     static func currentTerminal() -> String {
         readValue(from: terminalSettingsURL(), defaultValue: defaultTerminal)

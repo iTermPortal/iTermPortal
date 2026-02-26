@@ -1,6 +1,8 @@
 on launchWarp(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchWarpNewTab(targetPath)
+	else if openMode is "new_window" then
+		my launchNewWindow("Warp", targetPath)
 	else
 		my launchWarpNewTerminal(targetPath)
 	end if

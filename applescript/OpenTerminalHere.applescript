@@ -98,11 +98,13 @@ on resolveOpenMode()
 	try
 		set settingsPath to POSIX path of (path to home folder) & "Library/Application Support/iTermPortal/open_mode.txt"
 		set openMode to do shell script "if [ -f " & quoted form of settingsPath & " ]; then /usr/bin/head -n 1 " & quoted form of settingsPath & "; fi"
+		if openMode is "new_terminal" then return "new_terminal"
+		if openMode is "new_window" then return "new_window"
 		if openMode is "new_tab" then return "new_tab"
 	on error
 		-- Fallback below.
 	end try
-	return "new_terminal"
+	return "new_window"
 end resolveOpenMode
 
 on launchTerminal(targetPath)
@@ -144,10 +146,20 @@ on launchFallbackTerminal(preferredTerminal, targetPath, openMode)
 	end try
 end launchFallbackTerminal
 
+on launchNewWindow(appName, targetPath)
+	try
+		do shell script "open -a " & quoted form of appName & " " & quoted form of targetPath
+	on error
+		my launchFallbackTerminal(appName, targetPath, "new_window")
+	end try
+end launchNewWindow
+
 -- >>> ITerm2.applescript
 on launchITerm2(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchITerm2NewTab(targetPath)
+	else if openMode is "new_window" then
+		my launchNewWindow("iTerm", targetPath)
 	else
 		my launchITerm2NewTerminal(targetPath)
 	end if
@@ -187,6 +199,8 @@ end launchITerm2NewTab
 on launchTerminalApp(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchTerminalAppNewTab(targetPath)
+	else if openMode is "new_window" then
+		my launchNewWindow("Terminal", targetPath)
 	else
 		my launchTerminalAppNewTerminal(targetPath)
 	end if
@@ -248,6 +262,8 @@ end launchTerminalAppNewTab
 on launchGhostty(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchGhosttyNewTab(targetPath)
+	else if openMode is "new_window" then
+		my launchGhosttyNewWindow(targetPath)
 	else
 		my launchGhosttyNewTerminal(targetPath)
 	end if
@@ -265,6 +281,14 @@ on launchGhosttyNewTerminal(targetPath)
 	end try
 end launchGhosttyNewTerminal
 
+on launchGhosttyNewWindow(targetPath)
+	try
+		do shell script "open -a Ghostty " & quoted form of targetPath
+	on error
+		my launchFallbackTerminal("Ghostty", targetPath, "new_window")
+	end try
+end launchGhosttyNewWindow
+
 on launchGhosttyNewTab(targetPath)
 	try
 		do shell script "open -a Ghostty " & quoted form of targetPath
@@ -277,6 +301,8 @@ end launchGhosttyNewTab
 on launchWarp(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchWarpNewTab(targetPath)
+	else if openMode is "new_window" then
+		my launchNewWindow("Warp", targetPath)
 	else
 		my launchWarpNewTerminal(targetPath)
 	end if
