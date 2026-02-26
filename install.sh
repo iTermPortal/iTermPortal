@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-APP_NAME="fPortal.app"
+APP_NAME="iTermPortal.app"
 SOURCE_APP="$ROOT_DIR/dist/$APP_NAME"
 DEST_DIR="/Applications"
 DEST_APP="$DEST_DIR/$APP_NAME"

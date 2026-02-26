@@ -1,10 +1,10 @@
-# App Store Release Test (fPortal)
+# App Store Release Test (iTermPortal)
 
 This repo contains `app-store-release-test.yaml` to validate Mac App Store signing/package flow and optionally upload to App Store Connect.
 
 ## Trigger
 
-- Manual: GitHub -> Actions -> `App Store Release Pipeline Test (fPortal)` -> `Run workflow`
+- Manual: GitHub -> Actions -> `App Store Release Pipeline Test (iTermPortal)` -> `Run workflow`
   - Set `upload_to_app_store=true` to upload the built package to App Store Connect.
 - Commit trigger: include `[release]` in commit message
 
@@ -43,8 +43,8 @@ Upload prerequisites:
 3. Bundle ID and Team ID match profile entitlements.
 4. App signing identity import.
 5. Installer signing identity import.
-6. Build/sign of `dist/fPortal.app`.
-7. Build/sign of `dist/fPortal-app-store.pkg`.
+6. Build/sign of `dist/iTermPortal.app`.
+7. Build/sign of `dist/iTermPortal-app-store.pkg`.
 8. Optional `altool --validate-app`.
 9. For manual upload mode, CI verifies your API key can see the exact bundle ID in App Store Connect.
 10. Optional `altool --upload-app` (manual runs only, when `upload_to_app_store=true`).
@@ -52,11 +52,11 @@ Upload prerequisites:
 ## Artifacts
 
 On success, the workflow uploads:
-- `dist/fPortal.app`
-- `dist/fPortal-app-store.pkg`
+- `dist/iTermPortal.app`
+- `dist/iTermPortal-app-store.pkg`
 - `appstore-apps.json` (when API app list check runs)
 - `profile.plist`
 
 Important:
-- `dist/fPortal-app-store.pkg` is the package for App Store Connect upload.
-- `fPortal-direct-install.pkg` from `release.yaml` is for direct installation and is not the App Store submission package.
+- `dist/iTermPortal-app-store.pkg` is the package for App Store Connect upload.
+- `iTermPortal-direct-install.pkg` from `release.yaml` is for direct installation and is not the App Store submission package.

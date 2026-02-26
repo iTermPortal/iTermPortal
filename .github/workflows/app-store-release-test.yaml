@@ -1,4 +1,4 @@
-name: App Store Release Pipeline Test (fPortal)
+name: App Store Release Pipeline Test (iTermPortal)
 
 on:
   push:
@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: fportal-app-store-test-${{ github.ref }}
+  group: itermportal-app-store-test-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -106,14 +106,14 @@ jobs:
             echo "App Store API validation: DISABLED (missing API key, issuer, or p8)"
           fi
 
-      - name: Build fPortal app bundle
+      - name: Build iTermPortal app bundle
         run: ./scripts/build_applescript_app.sh
 
       - name: Prepare app metadata and profile
         shell: bash
         run: |
           set -euo pipefail
-          APP_PATH="dist/fPortal.app"
+          APP_PATH="dist/iTermPortal.app"
           INFO_PLIST="$APP_PATH/Contents/Info.plist"
           APP_VERSION="$(tr -d '[:space:]' < config/VERSION)"
           BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
@@ -250,8 +250,8 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          APP_PATH="dist/fPortal.app"
-          HELPER_PATH="$APP_PATH/Contents/Library/LoginItems/fPortalMenu.app"
+          APP_PATH="dist/iTermPortal.app"
+          HELPER_PATH="$APP_PATH/Contents/Library/LoginItems/iTermPortalMenu.app"
           MAIN_ENTITLEMENTS="config/entitlements/app-store-main.plist"
           HELPER_ENTITLEMENTS="config/entitlements/app-store-helper.plist"
 
@@ -283,8 +283,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APP_PATH="dist/fPortal.app"
-          HELPER_BINARY="$APP_PATH/Contents/Library/LoginItems/fPortalMenu.app/Contents/MacOS/fPortalMenu"
+          APP_PATH="dist/iTermPortal.app"
+          HELPER_BINARY="$APP_PATH/Contents/Library/LoginItems/iTermPortalMenu.app/Contents/MacOS/iTermPortalMenu"
           MAIN_BINARY="$APP_PATH/Contents/MacOS/droplet"
           failed=0
 
@@ -296,10 +296,10 @@ jobs:
           fi
 
           echo ""
-          echo "=== Helper binary (fPortalMenu) entitlements ==="
+          echo "=== Helper binary (iTermPortalMenu) entitlements ==="
           codesign -d --entitlements - "$HELPER_BINARY" 2>&1
           if ! codesign -d --entitlements - "$HELPER_BINARY" 2>&1 | grep -q "com.apple.security.app-sandbox"; then
-            echo "::error::fPortalMenu is missing com.apple.security.app-sandbox entitlement"
+            echo "::error::iTermPortalMenu is missing com.apple.security.app-sandbox entitlement"
             failed=1
           fi
 
@@ -319,19 +319,19 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          rm -f dist/fPortal-app-store.pkg dist/fPortal-app-store-unsigned.pkg
+          rm -f dist/iTermPortal-app-store.pkg dist/iTermPortal-app-store-unsigned.pkg
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           productbuild \
-            --component "dist/fPortal.app" /Applications \
-            "dist/fPortal-app-store-unsigned.pkg"
+            --component "dist/iTermPortal.app" /Applications \
+            "dist/iTermPortal-app-store-unsigned.pkg"
           productsign \
             --sign "$INSTALLER_SIGNING_IDENTITY" \
             --keychain "$KEYCHAIN_PATH" \
-            "dist/fPortal-app-store-unsigned.pkg" \
-            "dist/fPortal-app-store.pkg"
-          rm -f "dist/fPortal-app-store-unsigned.pkg"
-          ls -lh "dist/fPortal-app-store.pkg"
-          pkgutil --check-signature "dist/fPortal-app-store.pkg" || true
+            "dist/iTermPortal-app-store-unsigned.pkg" \
+            "dist/iTermPortal-app-store.pkg"
+          rm -f "dist/iTermPortal-app-store-unsigned.pkg"
+          ls -lh "dist/iTermPortal-app-store.pkg"
+          pkgutil --check-signature "dist/iTermPortal-app-store.pkg" || true
 
       - name: Optional App Store validation (no upload)
         id: altool_validate
@@ -346,7 +346,7 @@ jobs:
           export API_PRIVATE_KEYS_DIR="$RUNNER_TEMP/private_keys"
           xcrun altool --validate-app \
             --type osx \
-            --file "dist/fPortal-app-store.pkg" \
+            --file "dist/iTermPortal-app-store.pkg" \
             --apiKey "$APPLE_API_KEY_RESOLVED" \
             --apiIssuer "$APPLE_API_ISSUER" \
             --verbose
@@ -400,7 +400,7 @@ jobs:
           export API_PRIVATE_KEYS_DIR="$RUNNER_TEMP/private_keys"
           xcrun altool --upload-app \
             --type osx \
-            --file "dist/fPortal-app-store.pkg" \
+            --file "dist/iTermPortal-app-store.pkg" \
             --apiKey "$APPLE_API_KEY_RESOLVED" \
             --apiIssuer "$APPLE_API_ISSUER" \
             --verbose
@@ -408,10 +408,10 @@ jobs:
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: fportal-app-store-test
+          name: itermportal-app-store-test
           path: |
-            dist/fPortal.app
-            dist/fPortal-app-store.pkg
+            dist/iTermPortal.app
+            dist/iTermPortal-app-store.pkg
             appstore-apps.json
             profile.plist
           if-no-files-found: error

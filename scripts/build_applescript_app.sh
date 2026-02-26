@@ -10,11 +10,11 @@ TERMINAL_SCRIPT_SOURCES=(
   "$ROOT_DIR/applescript/terminals/Ghostty.applescript"
   "$ROOT_DIR/applescript/terminals/Warp.applescript"
 )
-HELPER_SOURCE="$ROOT_DIR/swift/FPortalStatusBar.swift"
+HELPER_SOURCE="$ROOT_DIR/swift/ITermPortalStatusBar.swift"
 ICON_SOURCE="$ROOT_DIR/assets/icons/negative.png"
 APPSTORE_ICON_SOURCE="$ROOT_DIR/assets/icons/input.png"
 DIST_DIR="$ROOT_DIR/dist"
-APP_NAME="fPortal.app"
+APP_NAME="iTermPortal.app"
 APP_PATH="$DIST_DIR/$APP_NAME"
 LEGACY_APP_PATH="$DIST_DIR/Open Terminal Here.app"
 INFO_PLIST="$APP_PATH/Contents/Info.plist"
@@ -22,9 +22,9 @@ RESOURCES_DIR="$APP_PATH/Contents/Resources"
 APP_ICON_PATH="$RESOURCES_DIR/applet.icns"
 DROPLET_ICON_PATH="$RESOURCES_DIR/droplet.icns"
 BUNDLE_ICON_PATH="$RESOURCES_DIR/AppIcon.icns"
-HELPER_APP_NAME="fPortalMenu.app"
+HELPER_APP_NAME="iTermPortalMenu.app"
 HELPER_APP_PATH="$APP_PATH/Contents/Library/LoginItems/$HELPER_APP_NAME"
-HELPER_EXECUTABLE_NAME="fPortalMenu"
+HELPER_EXECUTABLE_NAME="iTermPortalMenu"
 HELPER_EXECUTABLE_PATH="$HELPER_APP_PATH/Contents/MacOS/$HELPER_EXECUTABLE_NAME"
 HELPER_INFO_PLIST="$HELPER_APP_PATH/Contents/Info.plist"
 BUNDLE_ID="${FPORTAL_BUNDLE_ID:-com.hjoncour.fportal}"
@@ -99,7 +99,7 @@ trap cleanup EXIT
 compose_applescript_source() {
   {
     echo "-- GENERATED FILE: DO NOT EDIT DIRECTLY."
-    echo "-- Edit '$BASE_SCRIPT' and files under 'applescript/terminals/'."
+    echo "-- Edit 'applescript/OpenTerminalHere.base.applescript' and files under 'applescript/terminals/'."
     echo ""
     cat "$BASE_SCRIPT"
     for script_source in "${TERMINAL_SCRIPT_SOURCES[@]}"; do
@@ -118,7 +118,7 @@ compose_applescript_source
 osacompile -o "$APP_PATH" "$SOURCE_SCRIPT"
 
 TMP_DIR="$(mktemp -d "$DIST_DIR/.iconbuild.XXXXXX")"
-ICONSET_DIR="$TMP_DIR/fPortal.iconset"
+ICONSET_DIR="$TMP_DIR/iTermPortal.iconset"
 mkdir -p "$ICONSET_DIR"
 
 # Small sizes: use negative.png (clean toolbar/menu bar icon).
@@ -143,7 +143,7 @@ done <<'EOF'
 1024 icon_512x512@2x.png
 EOF
 
-GENERATED_ICON_PATH="$TMP_DIR/fPortal.icns"
+GENERATED_ICON_PATH="$TMP_DIR/iTermPortal.icns"
 iconutil -c icns "$ICONSET_DIR" -o "$GENERATED_ICON_PATH"
 cp "$GENERATED_ICON_PATH" "$APP_ICON_PATH"
 cp "$GENERATED_ICON_PATH" "$DROPLET_ICON_PATH"
@@ -172,7 +172,7 @@ cat > "$HELPER_INFO_PLIST" <<EOF
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>
-  <string>fPortal Menu</string>
+  <string>iTermPortal Menu</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>

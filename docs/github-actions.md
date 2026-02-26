@@ -3,7 +3,7 @@
 ## Workflows
 
 - `build.yaml`
-  - Purpose: PR build validation for `fPortal.app`.
+  - Purpose: PR build validation for `iTermPortal.app`.
   - Trigger: pull requests (`opened`, `synchronize`, `reopened`, `ready_for_review`).
 - `release.yaml`
   - Purpose: build/package app and create a GitHub Release (`.zip` + optional signed direct-install `.pkg`).
@@ -43,7 +43,7 @@ Optional for notarization:
 
 Notes:
 - If signing secrets are missing, release still runs and publishes an unsigned artifact.
-- If installer cert secrets are set, release also publishes `fPortal-direct-install.pkg` (install without unzipping).
+- If installer cert secrets are set, release also publishes `iTermPortal-direct-install.pkg` (install without unzipping).
 - If notarization is configured and fails, the run warns and continues to release creation.
 
 ### For `app-store-release-test.yaml`

@@ -1,4 +1,4 @@
-name: PR Build - fPortal
+name: PR Build - iTermPortal
 
 on:
   pull_request:
@@ -16,19 +16,19 @@ jobs:
 
       - name: Verify app bundle
         run: |
-          test -d "dist/fPortal.app"
-          /usr/libexec/PlistBuddy -c "Print :LSUIElement" "dist/fPortal.app/Contents/Info.plist"
-          /usr/libexec/PlistBuddy -c "Print :CFBundleIconFile" "dist/fPortal.app/Contents/Info.plist"
+          test -d "dist/iTermPortal.app"
+          /usr/libexec/PlistBuddy -c "Print :LSUIElement" "dist/iTermPortal.app/Contents/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIconFile" "dist/iTermPortal.app/Contents/Info.plist"
 
       - name: Package artifact
         run: |
-          rm -f dist/fPortal-macos.zip
-          ditto -c -k --sequesterRsrc --keepParent dist/fPortal.app dist/fPortal-macos.zip
+          rm -f dist/iTermPortal-macos.zip
+          ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fportal-macos-pr-build
-          path: dist/fPortal-macos.zip
+          name: itermportal-macos-pr-build
+          path: dist/iTermPortal-macos.zip
           if-no-files-found: error
           retention-days: 7

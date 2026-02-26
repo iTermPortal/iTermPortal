@@ -69,7 +69,7 @@ private enum PreferenceStore {
             in: .userDomainMask
         ).first!
         return appSupport
-            .appendingPathComponent("fPortal", isDirectory: true)
+            .appendingPathComponent("iTermPortal", isDirectory: true)
     }
 
     private static func terminalSettingsURL() -> URL {
@@ -103,10 +103,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             image.isTemplate = true
             button.image = image
         } else {
-            button.title = "fP"
+            button.title = "iTP"
         }
 
-        button.toolTip = "fPortal"
+        button.toolTip = "iTermPortal"
         statusItem.menu = menu
     }
 
@@ -150,7 +150,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         menu.addItem(NSMenuItem.separator())
-        let quit = NSMenuItem(title: "Quit fPortal Menu", action: #selector(quitApp), keyEquivalent: "q")
+        let quit = NSMenuItem(title: "Quit iTermPortal Menu", action: #selector(quitApp), keyEquivalent: "q")
         quit.target = self
         menu.addItem(quit)
     }
