@@ -1,5 +1,5 @@
 -- GENERATED FILE: DO NOT EDIT DIRECTLY.
--- Edit '/Users/hjoncour/Projects/fPortal/applescript/OpenTerminalHere.base.applescript' and files under 'applescript/terminals/'.
+-- Edit '/Users/hjoncour/Projects/iTermPortal/fPortal/applescript/OpenTerminalHere.base.applescript' and files under 'applescript/terminals/'.
 
 use scripting additions
 
@@ -164,26 +164,19 @@ end launchITerm2NewTerminal
 on launchITerm2NewTab(targetPath)
 	set cdCommand to "cd " & quoted form of targetPath
 	try
-		set isRunning to do shell script "pgrep -x iTerm2 > /dev/null 2>&1 && echo yes || echo no"
-		if isRunning is "yes" then
-			do shell script "open -a iTerm"
-			delay 0.3
-			tell application "System Events"
-				tell process "iTerm2"
-					set frontmost to true
-					keystroke "t" using command down
+		tell application id "com.googlecode.iterm2"
+			activate
+			if (count of windows) = 0 then
+				create window with default profile
+			else
+				tell current window
+					create tab with default profile
 				end tell
+			end if
+			tell current session of current window
+				write text cdCommand
 			end tell
-			delay 0.4
-			tell application "System Events"
-				tell process "iTerm2"
-					keystroke cdCommand
-					key code 36
-				end tell
-			end tell
-		else
-			my launchITerm2NewTerminal(targetPath)
-		end if
+		end tell
 	on error
 		my launchFallbackTerminal("iTerm", targetPath, "new_tab")
 	end try
@@ -230,12 +223,9 @@ on launchTerminalAppNewTab(targetPath)
 		end try
 
 		if tabCreated then
-			delay 0.5
-			tell application "System Events"
-				tell process "Terminal"
-					keystroke cdCommand
-					key code 36 -- press Enter
-				end tell
+			delay 0.3
+			tell application "Terminal"
+				do script cdCommand in front window
 			end tell
 		else
 			-- System Events failed — likely missing Accessibility permissions.
@@ -276,26 +266,7 @@ end launchGhosttyNewTerminal
 
 on launchGhosttyNewTab(targetPath)
 	try
-		if application "Ghostty" is running then
-			tell application "Ghostty" to activate
-			delay 0.3
-			set cdCommand to "cd " & quoted form of targetPath
-			tell application "System Events"
-				tell process "Ghostty"
-					set frontmost to true
-					keystroke "t" using command down
-				end tell
-			end tell
-			delay 0.3
-			tell application "System Events"
-				tell process "Ghostty"
-					keystroke cdCommand
-					key code 36 -- press Enter
-				end tell
-			end tell
-		else
-			my launchGhosttyNewTerminal(targetPath)
-		end if
+		do shell script "open -a Ghostty " & quoted form of targetPath
 	on error
 		my launchGhosttyNewTerminal(targetPath)
 	end try
@@ -320,7 +291,8 @@ end launchWarpNewTerminal
 
 on launchWarpNewTab(targetPath)
 	try
-		do shell script "open -a Warp " & quoted form of targetPath
+		set encodedPath to do shell script "python3 -c 'import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))' " & quoted form of targetPath
+		do shell script "open 'warp://action/new_tab?path=" & encodedPath & "'"
 	on error
 		my launchWarpNewTerminal(targetPath)
 	end try

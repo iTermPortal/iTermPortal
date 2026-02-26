@@ -38,12 +38,9 @@ on launchTerminalAppNewTab(targetPath)
 		end try
 
 		if tabCreated then
-			delay 0.5
-			tell application "System Events"
-				tell process "Terminal"
-					keystroke cdCommand
-					key code 36 -- press Enter
-				end tell
+			delay 0.3
+			tell application "Terminal"
+				do script cdCommand in front window
 			end tell
 		else
 			-- System Events failed — likely missing Accessibility permissions.
