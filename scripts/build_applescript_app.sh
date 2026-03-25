@@ -30,22 +30,17 @@ HELPER_EXECUTABLE_NAME="iTermPortalMenu"
 HELPER_EXECUTABLE_PATH="$HELPER_APP_PATH/Contents/MacOS/$HELPER_EXECUTABLE_NAME"
 HELPER_INFO_PLIST="$HELPER_APP_PATH/Contents/Info.plist"
 BUNDLE_ID="${FPORTAL_BUNDLE_ID:-com.hjoncour.fportal}"
-VERSION_FILE="$ROOT_DIR/config/VERSION"
-LEGACY_VERSION_FILE="$ROOT_DIR/VERSION"
+SSMVER_FILE="$ROOT_DIR/ssmver.toml"
 TMP_DIR=""
 
-if [[ ! -f "$VERSION_FILE" && -f "$LEGACY_VERSION_FILE" ]]; then
-  VERSION_FILE="$LEGACY_VERSION_FILE"
-fi
-
-if [[ ! -f "$VERSION_FILE" ]]; then
-  echo "Missing VERSION file. Expected '$ROOT_DIR/config/VERSION'." >&2
+if [[ ! -f "$SSMVER_FILE" ]]; then
+  echo "Missing version file: $SSMVER_FILE" >&2
   exit 1
 fi
 
-APP_VERSION="$(tr -d '[:space:]' < "$VERSION_FILE")"
+APP_VERSION="$(grep -m1 '^version' "$SSMVER_FILE" | sed 's/.*= *"//;s/"//')"
 if [[ -z "$APP_VERSION" ]]; then
-  echo "VERSION file is empty: $VERSION_FILE" >&2
+  echo "No version found in $SSMVER_FILE" >&2
   exit 1
 fi
 
@@ -237,9 +232,6 @@ else
   /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string $BUNDLE_ID" "$INFO_PLIST"
 fi
 
-# Ad-hoc sign avoids Gatekeeper warnings for local builds where possible.
-codesign --force --deep --sign - "$APP_PATH" >/dev/null
-
 # AppleScript applets can still show the default Script Editor icon unless the
 # bundle itself has a custom icon resource at its root.
 CUSTOM_ICON_REZ="$TMP_DIR/custom-icon.r"
@@ -252,6 +244,12 @@ Rez -append "$CUSTOM_ICON_REZ" -o "$CUSTOM_ICON_RESOURCE" >/dev/null
 SetFile -a C "$APP_PATH"
 SetFile -a V "$CUSTOM_ICON_RESOURCE"
 touch "$APP_PATH"
+
+# Clear xattrs (resource forks, FinderInfo) that codesign rejects, then
+# ad-hoc sign as the very last step.  Any bundle modification after signing
+# invalidates the signature and causes macOS to silently block Apple Events.
+xattr -cr "$APP_PATH"
+codesign --force --deep --sign - "$APP_PATH" >/dev/null
 
 echo "Built: $APP_PATH"
 echo "No Dock icon: LSUIElement=true"
