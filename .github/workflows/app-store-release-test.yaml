@@ -255,6 +255,9 @@ jobs:
           MAIN_ENTITLEMENTS="config/entitlements/app-store-main.plist"
           HELPER_ENTITLEMENTS="config/entitlements/app-store-helper.plist"
 
+          # Remove resource forks and Finder metadata that codesign rejects.
+          xattr -cr "$APP_PATH"
+
           # Strip all existing ad-hoc signatures (recursive for bundles).
           /usr/bin/codesign --remove-signature "$HELPER_PATH" 2>/dev/null || true
           /usr/bin/codesign --remove-signature "$APP_PATH" 2>/dev/null || true
@@ -404,6 +407,13 @@ jobs:
             --apiKey "$APPLE_API_KEY_RESOLVED" \
             --apiIssuer "$APPLE_API_ISSUER" \
             --verbose
+
+      - name: Remove macOS Icon files before artifact upload
+        shell: bash
+        run: |
+          # The macOS Icon\r file (custom icon) contains a carriage return in its
+          # filename which GitHub artifact upload rejects.
+          find dist/iTermPortal.app -name $'Icon\r' -delete || true
 
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4

@@ -234,6 +234,7 @@ jobs:
           xattr -cr "$APP_PATH"
           /usr/bin/codesign --remove-signature "$APP_PATH" 2>/dev/null || true
           /usr/bin/codesign --force --deep --options runtime --timestamp \
+            --entitlements config/entitlements/direct-install.plist \
             --keychain "$KEYCHAIN_PATH" -s "$APPLE_SIGNING_IDENTITY" "$APP_PATH"
           /usr/bin/codesign --verify --deep --strict --verbose=4 "$APP_PATH"
 
