@@ -170,10 +170,22 @@ jobs:
             echo "Available code-sign identities:"
             security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
 
+            # Prefer Developer ID Application for direct distribution (enables notarization).
+            # Fall back to Apple Distribution if that's all that's available, but notarization
+            # will be skipped — Gatekeeper will warn users without a Developer ID cert.
             CERT_ID=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
-              awk -F\" '/Developer ID Application|Mac Developer ID Application|Apple Distribution|Mac App Distribution|3rd Party Mac Developer Application/ {print $2; exit}')
+              awk -F\" '/Developer ID Application/ {print $2; exit}')
+            if [[ -z "$CERT_ID" ]]; then
+              CERT_ID=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
+                awk -F\" '/Apple Distribution|Mac App Distribution|3rd Party Mac Developer Application/ {print $2; exit}')
+              if [[ -n "$CERT_ID" ]]; then
+                echo "::warning::Using App Store distribution cert for signing. Notarization requires a Developer ID Application cert — releases will show a Gatekeeper warning. Add APPLE_CERTIFICATE (Developer ID Application) to fix this."
+                echo "NOTARIZE_ENABLED=false" >> "$GITHUB_ENV"
+              fi
+            fi
             if [[ -z "$CERT_ID" ]]; then
               echo "::error::No compatible app signing identity found in imported certificate."
+              security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
               exit 1
             fi
 
@@ -207,6 +219,7 @@ jobs:
               awk -F\" '/Developer ID Installer|Mac Installer Distribution|3rd Party Mac Developer Installer/ {print $2; exit}')
             if [[ -z "$INSTALLER_ID" ]]; then
               echo "::error::No compatible installer signing identity found in imported installer certificate."
+              security find-identity -v -p basic "$KEYCHAIN_PATH" || true
               exit 1
             fi
 
@@ -231,10 +244,32 @@ jobs:
         run: |
           set -euxo pipefail
           APP_PATH="dist/iTermPortal.app"
+          HELPER_PATH="$APP_PATH/Contents/Library/LoginItems/iTermPortalMenu.app"
+
+          # Remove resource forks / Finder metadata that codesign rejects.
           xattr -cr "$APP_PATH"
+
+          # Strip existing signatures.
+          /usr/bin/codesign --remove-signature "$HELPER_PATH" 2>/dev/null || true
           /usr/bin/codesign --remove-signature "$APP_PATH" 2>/dev/null || true
-          /usr/bin/codesign --force --deep --options runtime --timestamp \
-            --keychain "$KEYCHAIN_PATH" -s "$APPLE_SIGNING_IDENTITY" "$APP_PATH"
+
+          # Sign inside-out: helper first (no sandbox for direct distribution).
+          /usr/bin/codesign --force \
+            --options runtime \
+            --timestamp \
+            --keychain "$KEYCHAIN_PATH" \
+            -s "$APPLE_SIGNING_IDENTITY" \
+            "$HELPER_PATH"
+
+          # Sign main app with apple-events entitlement (required for AppleScript).
+          /usr/bin/codesign --force \
+            --entitlements config/entitlements/direct-install.plist \
+            --options runtime \
+            --timestamp \
+            --keychain "$KEYCHAIN_PATH" \
+            -s "$APPLE_SIGNING_IDENTITY" \
+            "$APP_PATH"
+
           /usr/bin/codesign --verify --deep --strict --verbose=4 "$APP_PATH"
 
       - name: Validate app bundle metadata
@@ -255,7 +290,63 @@ jobs:
         run: |
           echo "::warning::No signing certificate configured; publishing unsigned build artifact."
 
-      - name: Package app
+      - name: Notarize and staple app
+        id: notarize_app
+        if: ${{ env.NOTARIZE_ENABLED == 'true' && env.SIGNING_ENABLED == 'true' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          # Package the app into a zip for submission.
+          rm -f dist/iTermPortal-macos.zip
+          ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
+
+          notarize_submit() {
+            local target="$1"
+            local result_file="$2"
+            if [[ -f AuthKey.p8 && -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" ]]; then
+              xcrun notarytool submit "$target" \
+                --key ./AuthKey.p8 --key-id "$APPLE_API_KEY_RESOLVED" --issuer "$APPLE_API_ISSUER" \
+                --wait --output-format json | tee "$result_file"
+            else
+              xcrun notarytool submit "$target" \
+                --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_PASSWORD" \
+                --wait --output-format json | tee "$result_file"
+            fi
+
+            STATUS=$(python3 -c "import json; print(json.load(open('$result_file')).get('status',''))" 2>/dev/null || echo "")
+            SUBMISSION_ID=$(python3 -c "import json; print(json.load(open('$result_file')).get('id',''))" 2>/dev/null || echo "")
+
+            if [[ "$STATUS" != "Accepted" ]]; then
+              echo "::error::Notarization was not accepted for $target. Status: '$STATUS'"
+              # Fetch the detailed log from Apple so we can see exactly what failed.
+              if [[ -n "$SUBMISSION_ID" ]]; then
+                echo "Fetching notarization log for submission $SUBMISSION_ID ..."
+                if [[ -f AuthKey.p8 && -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" ]]; then
+                  xcrun notarytool log "$SUBMISSION_ID" \
+                    --key ./AuthKey.p8 --key-id "$APPLE_API_KEY_RESOLVED" --issuer "$APPLE_API_ISSUER" \
+                    2>&1 || true
+                else
+                  xcrun notarytool log "$SUBMISSION_ID" \
+                    --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_PASSWORD" \
+                    2>&1 || true
+                fi
+              fi
+              exit 1
+            fi
+            echo "Notarization accepted for $target (submission $SUBMISSION_ID)."
+          }
+
+          notarize_submit "dist/iTermPortal-macos.zip" "notary-result.json"
+
+          # Staple the notarization ticket to the app, then repackage the zip.
+          xcrun stapler staple -v dist/iTermPortal.app
+          rm -f dist/iTermPortal-macos.zip
+          ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
+
+      - name: Package app (no notarization)
+        if: ${{ env.SIGNING_ENABLED != 'true' || steps.notarize_app.outcome == 'failure' || steps.notarize_app.outcome == 'skipped' }}
         run: |
           rm -f dist/iTermPortal-macos.zip
           ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
@@ -268,6 +359,7 @@ jobs:
           set -euxo pipefail
           rm -f dist/iTermPortal-direct-install.pkg dist/iTermPortal-direct-install-unsigned.pkg
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          # Build from the already-notarized and stapled app.
           productbuild \
             --component "dist/iTermPortal.app" /Applications \
             "dist/iTermPortal-direct-install-unsigned.pkg"
@@ -278,62 +370,51 @@ jobs:
             "dist/iTermPortal-direct-install.pkg"
           rm -f "dist/iTermPortal-direct-install-unsigned.pkg"
           ls -lh "dist/iTermPortal-direct-install.pkg"
-          pkgutil --check-signature "dist/iTermPortal-direct-install.pkg" || true
+          pkgutil --check-signature "dist/iTermPortal-direct-install.pkg"
 
-      - name: Warn if signed installer package is unavailable
-        if: ${{ env.PKG_ENABLED != 'true' }}
-        run: |
-          echo "::warning::Signed direct-install package (.pkg) was not created. Configure both app cert and installer cert secrets to enable it."
-
-      - name: Optional notarize and staple
-        id: notarize
-        if: ${{ env.NOTARIZE_ENABLED == 'true' }}
+      - name: Notarize and staple pkg
+        id: notarize_pkg
+        if: ${{ env.PKG_ENABLED == 'true' && env.NOTARIZE_ENABLED == 'true' && steps.notarize_app.outcome != 'failure' }}
         continue-on-error: true
         shell: bash
         run: |
           set -euxo pipefail
 
-          NOTARY_TARGET="dist/iTermPortal-macos.zip"
-          if [[ -f "dist/iTermPortal-direct-install.pkg" ]]; then
-            NOTARY_TARGET="dist/iTermPortal-direct-install.pkg"
-          fi
-          echo "Notary target: $NOTARY_TARGET"
-
-          try_key() {
-            xcrun notarytool submit "$NOTARY_TARGET" \
+          if [[ -f AuthKey.p8 && -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" ]]; then
+            xcrun notarytool submit "dist/iTermPortal-direct-install.pkg" \
               --key ./AuthKey.p8 --key-id "$APPLE_API_KEY_RESOLVED" --issuer "$APPLE_API_ISSUER" \
-              --wait --output-format json | tee notary-result.json
-          }
-
-          try_apple_id() {
-            xcrun notarytool submit "$NOTARY_TARGET" \
-              --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_PASSWORD" \
-              --wait --output-format json | tee notary-result.json
-          }
-
-          if [[ -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" && -f AuthKey.p8 ]]; then
-            set +e
-            try_key
-            EC=$?
-            set -e
-            if [[ $EC -ne 0 ]]; then
-              echo "::warning::API key notarization failed, trying Apple ID fallback."
-              try_apple_id
-            fi
+              --wait --output-format json | tee notary-result-pkg.json
           else
-            try_apple_id
+            xcrun notarytool submit "dist/iTermPortal-direct-install.pkg" \
+              --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_PASSWORD" \
+              --wait --output-format json | tee notary-result-pkg.json
           fi
 
-          xcrun stapler staple -v dist/iTermPortal.app || true
-          xcrun stapler staple -v dist/iTermPortal-macos.zip || true
-          if [[ -f "dist/iTermPortal-direct-install.pkg" ]]; then
-            xcrun stapler staple -v dist/iTermPortal-direct-install.pkg || true
+          STATUS=$(python3 -c "import json; print(json.load(open('notary-result-pkg.json')).get('status',''))" 2>/dev/null || echo "")
+          SUBMISSION_ID=$(python3 -c "import json; print(json.load(open('notary-result-pkg.json')).get('id',''))" 2>/dev/null || echo "")
+          if [[ "$STATUS" != "Accepted" ]]; then
+            echo "::error::PKG notarization was not accepted. Status: '$STATUS'"
+            if [[ -n "$SUBMISSION_ID" ]]; then
+              echo "Fetching notarization log for submission $SUBMISSION_ID ..."
+              if [[ -f AuthKey.p8 && -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" ]]; then
+                xcrun notarytool log "$SUBMISSION_ID" \
+                  --key ./AuthKey.p8 --key-id "$APPLE_API_KEY_RESOLVED" --issuer "$APPLE_API_ISSUER" \
+                  2>&1 || true
+              else
+                xcrun notarytool log "$SUBMISSION_ID" \
+                  --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_PASSWORD" \
+                  2>&1 || true
+              fi
+            fi
+            exit 1
           fi
 
-      - name: Warn if notarization failed
-        if: ${{ steps.notarize.outcome == 'failure' }}
+          xcrun stapler staple -v dist/iTermPortal-direct-install.pkg
+
+      - name: Warn if signed installer package is unavailable
+        if: ${{ env.PKG_ENABLED != 'true' }}
         run: |
-          echo "::warning::Notarization failed, but release packaging continued. Check notary logs in this run."
+          echo "::warning::Signed direct-install package (.pkg) was not created. Configure both app cert and installer cert secrets to enable it."
 
       - name: Derive release metadata
         id: meta

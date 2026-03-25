@@ -12,6 +12,7 @@ TERMINAL_SCRIPT_SOURCES=(
 )
 HELPER_SOURCE="$ROOT_DIR/swift/ITermPortalStatusBar.swift"
 ICON_SOURCE="$ROOT_DIR/assets/icons/negative.png"
+APPSTORE_ICON_SOURCE="$ROOT_DIR/assets/icons/input.png"
 DIST_DIR="$ROOT_DIR/dist"
 APP_NAME="iTermPortal.app"
 APP_PATH="$DIST_DIR/$APP_NAME"
@@ -62,6 +63,11 @@ done
 
 if [[ ! -f "$ICON_SOURCE" ]]; then
   echo "Missing icon source: $ICON_SOURCE" >&2
+  exit 1
+fi
+
+if [[ ! -f "$APPSTORE_ICON_SOURCE" ]]; then
+  echo "Missing App Store icon source: $APPSTORE_ICON_SOURCE" >&2
   exit 1
 fi
 
@@ -137,7 +143,8 @@ TMP_DIR="$(mktemp -d "$DIST_DIR/.iconbuild.XXXXXX")"
 ICONSET_DIR="$TMP_DIR/iTermPortal.iconset"
 mkdir -p "$ICONSET_DIR"
 
-# Use the transparent icon artwork for every app icon size.
+# Use negative.png for all installed-app icon sizes; input.png for the 1024px
+# App Store listing icon (icon_512x512@2x.png).
 while read -r size iconName; do
   sips -z "$size" "$size" "$ICON_SOURCE" --out "$ICONSET_DIR/$iconName" >/dev/null
 done <<'EOF'
@@ -150,8 +157,8 @@ done <<'EOF'
 256 icon_256x256.png
 512 icon_256x256@2x.png
 512 icon_512x512.png
-1024 icon_512x512@2x.png
 EOF
+sips -z 1024 1024 "$APPSTORE_ICON_SOURCE" --out "$ICONSET_DIR/icon_512x512@2x.png" >/dev/null
 
 GENERATED_ICON_PATH="$TMP_DIR/iTermPortal.icns"
 iconutil -c icns "$ICONSET_DIR" -o "$GENERATED_ICON_PATH"
