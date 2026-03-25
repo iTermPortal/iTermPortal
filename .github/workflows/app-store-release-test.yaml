@@ -255,6 +255,9 @@ jobs:
           MAIN_ENTITLEMENTS="config/entitlements/app-store-main.plist"
           HELPER_ENTITLEMENTS="config/entitlements/app-store-helper.plist"
 
+          # Remove resource forks and Finder metadata that codesign rejects.
+          xattr -cr "$APP_PATH"
+
           # Strip all existing ad-hoc signatures (recursive for bundles).
           /usr/bin/codesign --remove-signature "$HELPER_PATH" 2>/dev/null || true
           /usr/bin/codesign --remove-signature "$APP_PATH" 2>/dev/null || true
@@ -414,6 +417,8 @@ jobs:
             dist/iTermPortal-app-store.pkg
             appstore-apps.json
             profile.plist
+          exclude: |
+            dist/iTermPortal.app/Icon?
           if-no-files-found: error
           retention-days: 7
 

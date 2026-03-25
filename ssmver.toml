@@ -1,0 +1,25 @@
+version = "0.1.1"
+
+[settings]
+mode = "branch"
+prompt = "never"
+prompt_prefixes = [
+    "feature",
+    "release",
+]
+
+[sync]
+monorepo = "lockstep"
+constants = "curated"
+exclude = []
+
+[prefixes]
+feature = "minor"
+fix = "patch"
+release = "major"
+
+[release]
+enabled = false
+on_bump = []
+match = ""
+skip = ""
