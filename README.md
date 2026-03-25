@@ -29,7 +29,7 @@ Terminal selection:
 
 ## Versioning
 
-Uses ssmver
+Uses [ssmver](https://github.com/hjoncour/ssmver)
 
 ## CI/CD
 
