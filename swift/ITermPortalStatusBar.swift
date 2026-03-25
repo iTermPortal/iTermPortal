@@ -82,11 +82,81 @@ private enum PreferenceStore {
     }
 }
 
+private final class AboutWindowController {
+    private var window: NSWindow?
+
+    func show() {
+        if let existing = window, existing.isVisible {
+            existing.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "–"
+
+        let panel = NSPanel(
+            contentRect: NSRect(x: 0, y: 0, width: 280, height: 260),
+            styleMask: [.titled, .closable],
+            backing: .buffered,
+            defer: false
+        )
+        panel.title = "About iTermPortal"
+        panel.isReleasedWhenClosed = false
+        panel.center()
+        panel.isMovableByWindowBackground = true
+        panel.becomesKeyOnlyIfNeeded = false
+        panel.level = .floating
+
+        let content = NSView(frame: panel.contentRect(forFrameRect: panel.frame))
+
+        let imageView = NSImageView(frame: NSRect(x: 90, y: 140, width: 100, height: 100))
+        if let iconURL = Bundle.main.url(forResource: "AppIcon", withExtension: "icns"),
+           let image = NSImage(contentsOf: iconURL) {
+            imageView.image = image
+        }
+        imageView.imageScaling = .scaleProportionallyUpOrDown
+        content.addSubview(imageView)
+
+        let nameLabel = NSTextField(labelWithString: "iTermPortal")
+        nameLabel.font = NSFont.boldSystemFont(ofSize: 18)
+        nameLabel.alignment = .center
+        nameLabel.frame = NSRect(x: 0, y: 105, width: 280, height: 28)
+        content.addSubview(nameLabel)
+
+        let versionLabel = NSTextField(labelWithString: "Version \(version)")
+        versionLabel.font = NSFont.systemFont(ofSize: 12)
+        versionLabel.textColor = .secondaryLabelColor
+        versionLabel.alignment = .center
+        versionLabel.frame = NSRect(x: 0, y: 80, width: 280, height: 20)
+        content.addSubview(versionLabel)
+
+        let authorLabel = NSTextField(labelWithString: "by Hugo Joncour")
+        authorLabel.font = NSFont.systemFont(ofSize: 12)
+        authorLabel.textColor = .secondaryLabelColor
+        authorLabel.alignment = .center
+        authorLabel.frame = NSRect(x: 0, y: 55, width: 280, height: 20)
+        content.addSubview(authorLabel)
+
+        let copyrightLabel = NSTextField(labelWithString: "© 2025-2026 Hugo Joncour. All rights reserved.")
+        copyrightLabel.font = NSFont.systemFont(ofSize: 10)
+        copyrightLabel.textColor = .tertiaryLabelColor
+        copyrightLabel.alignment = .center
+        copyrightLabel.frame = NSRect(x: 0, y: 25, width: 280, height: 16)
+        content.addSubview(copyrightLabel)
+
+        panel.contentView = content
+        panel.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        window = panel
+    }
+}
+
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let menu = NSMenu()
     private var terminalItems: [String: NSMenuItem] = [:]
     private var openModeItems: [String: NSMenuItem] = [:]
+    private let aboutController = AboutWindowController()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -151,6 +221,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         menu.addItem(NSMenuItem.separator())
+        let about = NSMenuItem(title: "About iTermPortal", action: #selector(showAbout), keyEquivalent: "")
+        about.target = self
+        menu.addItem(about)
+
         let quit = NSMenuItem(title: "Quit iTermPortal Menu", action: #selector(quitApp), keyEquivalent: "q")
         quit.target = self
         menu.addItem(quit)
@@ -182,6 +256,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let mode = sender.representedObject as? String else { return }
         PreferenceStore.setOpenMode(mode)
         refreshChecks()
+    }
+
+    @objc private func showAbout() {
+        aboutController.show()
     }
 
     @objc private func quitApp() {
