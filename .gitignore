@@ -66,3 +66,4 @@ dist/
 __pycache__/
 *.pyc
 .ssmver/
+.docs/

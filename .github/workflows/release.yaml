@@ -293,7 +293,6 @@ jobs:
       - name: Notarize and staple app
         id: notarize_app
         if: ${{ env.NOTARIZE_ENABLED == 'true' && env.SIGNING_ENABLED == 'true' }}
-        continue-on-error: true
         shell: bash
         run: |
           set -euxo pipefail
@@ -346,7 +345,7 @@ jobs:
           ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
 
       - name: Package app (no notarization)
-        if: ${{ env.SIGNING_ENABLED != 'true' || steps.notarize_app.outcome == 'failure' || steps.notarize_app.outcome == 'skipped' }}
+        if: ${{ steps.notarize_app.outcome == 'skipped' }}
         run: |
           rm -f dist/iTermPortal-macos.zip
           ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
@@ -374,8 +373,7 @@ jobs:
 
       - name: Notarize and staple pkg
         id: notarize_pkg
-        if: ${{ env.PKG_ENABLED == 'true' && env.NOTARIZE_ENABLED == 'true' && steps.notarize_app.outcome != 'failure' }}
-        continue-on-error: true
+        if: ${{ env.PKG_ENABLED == 'true' && env.NOTARIZE_ENABLED == 'true' }}
         shell: bash
         run: |
           set -euxo pipefail
@@ -421,13 +419,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! -f config/VERSION ]]; then
-            echo "::error::Missing config/VERSION file."
+          if [[ ! -f ssmver.toml ]]; then
+            echo "::error::Missing ssmver.toml file."
             exit 1
           fi
-          VERSION="$(tr -d '[:space:]' < config/VERSION)"
+          VERSION="$(grep -m1 '^version' ssmver.toml | sed 's/.*= *"//;s/"//')"
           if [[ -z "$VERSION" ]]; then
-            echo "::error::VERSION file is empty."
+            echo "::error::No version found in ssmver.toml."
             exit 1
           fi
           SHORT_SHA="${GITHUB_SHA:0:7}"

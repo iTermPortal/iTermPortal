@@ -115,7 +115,7 @@ jobs:
           set -euo pipefail
           APP_PATH="dist/iTermPortal.app"
           INFO_PLIST="$APP_PATH/Contents/Info.plist"
-          APP_VERSION="$(tr -d '[:space:]' < config/VERSION)"
+          APP_VERSION="$(grep -m1 '^version' ssmver.toml | sed 's/.*= *"//;s/"//')"
           BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
 
           /usr/libexec/PlistBuddy -c "Delete :CFBundleIdentifier" "$INFO_PLIST" >/dev/null 2>&1 || true
@@ -334,12 +334,10 @@ jobs:
             "dist/iTermPortal-app-store.pkg"
           rm -f "dist/iTermPortal-app-store-unsigned.pkg"
           ls -lh "dist/iTermPortal-app-store.pkg"
-          pkgutil --check-signature "dist/iTermPortal-app-store.pkg" || true
+          pkgutil --check-signature "dist/iTermPortal-app-store.pkg"
 
-      - name: Optional App Store validation (no upload)
-        id: altool_validate
+      - name: App Store validation (no upload)
         if: ${{ env.APPLE_API_KEY_RESOLVED != '' && env.APPLE_API_ISSUER != '' && env.APPLE_API_KEY_P8 != '' }}
-        continue-on-error: true
         shell: bash
         run: |
           set -euxo pipefail
@@ -353,11 +351,6 @@ jobs:
             --apiKey "$APPLE_API_KEY_RESOLVED" \
             --apiIssuer "$APPLE_API_ISSUER" \
             --verbose
-
-      - name: Warn if App Store validation failed
-        if: ${{ steps.altool_validate.outcome == 'failure' }}
-        run: |
-          echo "::warning::App Store validation failed. Packaging succeeded; check altool logs for API key/profile issues."
 
       - name: Validate upload prerequisites
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_app_store == true }}
