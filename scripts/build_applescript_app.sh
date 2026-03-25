@@ -12,7 +12,6 @@ TERMINAL_SCRIPT_SOURCES=(
 )
 HELPER_SOURCE="$ROOT_DIR/swift/ITermPortalStatusBar.swift"
 ICON_SOURCE="$ROOT_DIR/assets/icons/negative.png"
-APPSTORE_ICON_SOURCE="$ROOT_DIR/assets/icons/input.png"
 DIST_DIR="$ROOT_DIR/dist"
 APP_NAME="iTermPortal.app"
 APP_PATH="$DIST_DIR/$APP_NAME"
@@ -22,6 +21,8 @@ RESOURCES_DIR="$APP_PATH/Contents/Resources"
 APP_ICON_PATH="$RESOURCES_DIR/applet.icns"
 DROPLET_ICON_PATH="$RESOURCES_DIR/droplet.icns"
 BUNDLE_ICON_PATH="$RESOURCES_DIR/AppIcon.icns"
+ASSET_CATALOG_PATH="$RESOURCES_DIR/Assets.car"
+CUSTOM_ICON_RESOURCE="$APP_PATH/Icon"$'\r'
 HELPER_APP_NAME="iTermPortalMenu.app"
 HELPER_APP_PATH="$APP_PATH/Contents/Library/LoginItems/$HELPER_APP_NAME"
 HELPER_EXECUTABLE_NAME="iTermPortalMenu"
@@ -89,6 +90,21 @@ if ! command -v swiftc >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v Rez >/dev/null 2>&1; then
+  echo "Rez is required and was not found." >&2
+  exit 1
+fi
+
+if ! command -v DeRez >/dev/null 2>&1; then
+  echo "DeRez is required and was not found." >&2
+  exit 1
+fi
+
+if ! command -v SetFile >/dev/null 2>&1; then
+  echo "SetFile is required and was not found." >&2
+  exit 1
+fi
+
 cleanup() {
   if [[ -n "${TMP_DIR:-}" && -d "${TMP_DIR:-}" ]]; then
     rm -rf "$TMP_DIR"
@@ -121,8 +137,7 @@ TMP_DIR="$(mktemp -d "$DIST_DIR/.iconbuild.XXXXXX")"
 ICONSET_DIR="$TMP_DIR/iTermPortal.iconset"
 mkdir -p "$ICONSET_DIR"
 
-# All sizes: use negative.png (transparent background).
-# The App Store workflow overrides the large sizes with input.png as needed.
+# Use the transparent icon artwork for every app icon size.
 while read -r size iconName; do
   sips -z "$size" "$size" "$ICON_SOURCE" --out "$ICONSET_DIR/$iconName" >/dev/null
 done <<'EOF'
@@ -143,6 +158,7 @@ iconutil -c icns "$ICONSET_DIR" -o "$GENERATED_ICON_PATH"
 cp "$GENERATED_ICON_PATH" "$APP_ICON_PATH"
 cp "$GENERATED_ICON_PATH" "$DROPLET_ICON_PATH"
 cp "$GENERATED_ICON_PATH" "$BUNDLE_ICON_PATH"
+rm -f "$ASSET_CATALOG_PATH"
 
 rm -rf "$HELPER_APP_PATH"
 mkdir -p "$HELPER_APP_PATH/Contents/MacOS" "$HELPER_APP_PATH/Contents/Resources"
@@ -186,6 +202,7 @@ codesign --force --deep --sign - "$HELPER_APP_PATH" >/dev/null
 
 /usr/libexec/PlistBuddy -c "Delete :LSUIElement" "$INFO_PLIST" >/dev/null 2>&1 || true
 /usr/libexec/PlistBuddy -c "Add :LSUIElement bool true" "$INFO_PLIST"
+/usr/libexec/PlistBuddy -c "Delete :CFBundleIconName" "$INFO_PLIST" >/dev/null 2>&1 || true
 /usr/libexec/PlistBuddy -c "Delete :CFBundleIconFile" "$INFO_PLIST" >/dev/null 2>&1 || true
 /usr/libexec/PlistBuddy -c "Add :CFBundleIconFile string AppIcon.icns" "$INFO_PLIST"
 # Fix CFBundleDocumentTypes: osacompile creates entries missing CFBundleTypeName (required by App Store).
@@ -215,6 +232,19 @@ fi
 
 # Ad-hoc sign avoids Gatekeeper warnings for local builds where possible.
 codesign --force --deep --sign - "$APP_PATH" >/dev/null
+
+# AppleScript applets can still show the default Script Editor icon unless the
+# bundle itself has a custom icon resource at its root.
+CUSTOM_ICON_REZ="$TMP_DIR/custom-icon.r"
+CUSTOM_ICON_SOURCE="$TMP_DIR/custom-icon-source.png"
+cp "$ICON_SOURCE" "$CUSTOM_ICON_SOURCE"
+sips -i "$CUSTOM_ICON_SOURCE" >/dev/null
+DeRez -only icns "$CUSTOM_ICON_SOURCE" > "$CUSTOM_ICON_REZ"
+rm -f "$CUSTOM_ICON_RESOURCE"
+Rez -append "$CUSTOM_ICON_REZ" -o "$CUSTOM_ICON_RESOURCE" >/dev/null
+SetFile -a C "$APP_PATH"
+SetFile -a V "$CUSTOM_ICON_RESOURCE"
+touch "$APP_PATH"
 
 echo "Built: $APP_PATH"
 echo "No Dock icon: LSUIElement=true"
