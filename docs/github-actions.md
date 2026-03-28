@@ -12,9 +12,17 @@
 - `app-store-release-test.yaml`
   - Purpose: Mac App Store packaging/signing with optional upload on manual runs.
   - Trigger: `workflow_dispatch`, or push when commit message contains `[release]`.
+  - Current limitation: this workflow now fails fast while the app still depends on Finder Apple events. The direct-install release is unsandboxed, while the App Store build is sandboxed.
 - `certificate.yaml`
   - Purpose: Apple cert/notarization preflight without publishing.
   - Trigger: `workflow_dispatch`, or non-`main`/`master` pushes with commit message containing `[apple-cert-check]`.
+
+## Distribution Parity
+
+- `release.yaml` produces the direct-install build. It is not sandboxed, so its Finder AppleScript automation path can work after Automation approval.
+- `app-store-release-test.yaml` is intended to produce the Mac App Store build. It is sandboxed, so the current Finder AppleScript approach is not a reliable runtime path there, and the workflow now fails fast while that limitation remains.
+- If you need App Store parity, test the App Store artifact itself (`dist/iTermPortal-app-store.pkg`) or a TestFlight/App Store Connect build. Do not rely on the GitHub Release asset as an App Store stand-in.
+- Long term, parity requires moving the Finder integration to a sandbox-compatible design, such as a Finder Sync extension or another extension-based workflow that does not depend on scripting Finder directly.
 
 ## Secret Mapping
 

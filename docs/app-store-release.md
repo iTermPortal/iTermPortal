@@ -2,6 +2,12 @@
 
 This repo contains `app-store-release-test.yaml` to validate Mac App Store signing/package flow and optionally upload to App Store Connect.
 
+Important:
+- The current app resolves Finder context by scripting Finder directly from AppleScript.
+- That works in the direct-install build because it is unsandboxed.
+- The Mac App Store build is sandboxed, so signing/package success does not mean the runtime behavior matches the GitHub release.
+- The workflow now fails fast before packaging while this limitation exists, so broken App Store runtime builds are easier to catch in CI.
+
 ## Trigger
 
 - Manual: GitHub -> Actions -> `App Store Release Pipeline Test (iTermPortal)` -> `Run workflow`
@@ -38,6 +44,8 @@ Upload prerequisites:
 
 ## What the Workflow Verifies
 
+When the fail-fast guard does not trigger, the workflow verifies:
+
 1. Secrets and bundle-id presence.
 2. Provisioning profile parsing.
 3. Bundle ID and Team ID match profile entitlements.
@@ -48,6 +56,12 @@ Upload prerequisites:
 8. Optional `altool --validate-app`.
 9. For manual upload mode, CI verifies your API key can see the exact bundle ID in App Store Connect.
 10. Optional `altool --upload-app` (manual runs only, when `upload_to_app_store=true`).
+
+## Runtime Parity
+
+- `release.yaml` and `app-store-release-test.yaml` do not currently produce runtime-equivalent builds.
+- For reliable App Store testing, install and test `dist/iTermPortal-app-store.pkg` itself or use TestFlight/App Store Connect distribution.
+- If the goal is one code path that behaves the same on GitHub and in the Mac App Store, the Finder toolbar integration needs to move away from direct Finder Apple events and onto a sandbox-compatible mechanism.
 
 ## Artifacts
 

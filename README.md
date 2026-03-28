@@ -43,6 +43,12 @@ Setup guide (all variables + macOS cert instructions):
 - `docs/github-actions.md`
 - `docs/app-store-release.md`
 
+## Distribution Modes
+
+- GitHub/direct-install builds are signed for direct distribution and are not sandboxed. They can read Finder context by sending Apple events to Finder after the user grants Automation permission.
+- Mac App Store builds are sandboxed. The current AppleScript implementation still resolves the target folder by scripting Finder (`tell application "Finder"`), so the App Store build is not a reliable behavioral match for the GitHub release.
+- For App Store parity testing, use the artifact produced by `app-store-release-test.yaml` or a TestFlight/App Store Connect build. Do not treat the GitHub release artifact as an App Store proxy.
+
 ## Add to Finder Toolbar
 
 1. Open a Finder window.
@@ -53,7 +59,7 @@ Setup guide (all variables + macOS cert instructions):
 ## First-Run Permissions
 
 On first use, macOS may prompt for Automation permissions so the app can read Finder context.
-Grant once; repeated clicks should run without prompts.
+Grant once; repeated clicks should run without prompts in the direct-install build.
 
 ## Acceptance Checks
 

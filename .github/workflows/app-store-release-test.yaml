@@ -106,6 +106,20 @@ jobs:
             echo "App Store API validation: DISABLED (missing API key, issuer, or p8)"
           fi
 
+      - name: Fail fast on unsupported Finder automation path
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if rg -n 'tell application "Finder"|target of front Finder window|selection as alias list' \
+            applescript/OpenTerminalHere.base.applescript \
+            applescript/OpenTerminalHere.applescript >/dev/null; then
+            echo "::error::Current runtime still resolves the target folder by scripting Finder."
+            echo "::error::That works in the direct-install build because it is unsandboxed, but it is not a reliable Mac App Store runtime path under App Sandbox."
+            echo "::error::Do not use the GitHub release artifact as an App Store proxy. Test the App Store artifact itself, or migrate the Finder integration to a sandbox-compatible design before uploading."
+            exit 1
+          fi
+
       - name: Build iTermPortal app bundle
         run: ./scripts/build_applescript_app.sh
 
