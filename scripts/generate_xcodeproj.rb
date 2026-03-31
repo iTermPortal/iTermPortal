@@ -82,6 +82,30 @@ project.root_object.build_configuration_list.default_configuration_name = 'Relea
   target.build_configuration_list.default_configuration_name = 'Release'
 end
 
+project.root_object.attributes['TargetAttributes'] = {
+  app_target.uuid => {
+    'CreatedOnToolsVersion' => '16.4',
+    'ProvisioningStyle' => 'Automatic',
+    'SystemCapabilities' => {
+      'com.apple.AppSandbox' => { 'enabled' => 1 },
+      'com.apple.ApplicationGroups.iOS' => { 'enabled' => 1 }
+    }
+  },
+  extension_target.uuid => {
+    'CreatedOnToolsVersion' => '16.4',
+    'ProvisioningStyle' => 'Automatic',
+    'SystemCapabilities' => {
+      'com.apple.AppSandbox' => { 'enabled' => 1 },
+      'com.apple.ApplicationGroups.iOS' => { 'enabled' => 1 },
+      'com.apple.FinderSync' => { 'enabled' => 1 }
+    }
+  },
+  test_target.uuid => {
+    'CreatedOnToolsVersion' => '16.4',
+    'ProvisioningStyle' => 'Automatic'
+  }
+}
+
 def ensure_file_reference(project, relative_path)
   existing = project.files.find { |file| file.path == relative_path }
   return existing if existing
@@ -146,8 +170,6 @@ build_file.settings = { 'ATTRIBUTES' => %w[CodeSignOnCopy RemoveHeadersOnCopy] }
 
 base_project_settings = {
   'CLANG_ENABLE_OBJC_ARC' => 'YES',
-  'CODE_SIGN_STYLE' => 'Manual',
-  'CODE_SIGN_INJECT_BASE_ENTITLEMENTS' => 'NO',
   'CURRENT_PROJECT_VERSION' => '1',
   'DEVELOPMENT_TEAM' => '',
   'ENABLE_HARDENED_RUNTIME' => 'YES',
@@ -161,28 +183,34 @@ project.build_configurations.each do |config|
 end
 
 app_target.build_configurations.each do |config|
+  automatic_local_signing = %w[Debug Release].include?(config.name)
   config.build_settings.merge!(
     'ASSETCATALOG_COMPILER_APPICON_NAME' => 'AppIcon',
     'ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME' => '',
     'CODE_SIGN_ENTITLEMENTS' => config.name == 'AppStore' ? 'Entitlements/iTermPortal-AppStore.entitlements' : 'Entitlements/iTermPortal-DirectInstall.entitlements',
-    'ENABLE_APP_SANDBOX' => config.name == 'AppStore' ? 'YES' : 'NO',
+    'CODE_SIGN_INJECT_BASE_ENTITLEMENTS' => automatic_local_signing ? 'YES' : 'NO',
+    'CODE_SIGN_STYLE' => automatic_local_signing ? 'Automatic' : 'Manual',
+    'ENABLE_APP_SANDBOX' => 'YES',
     'GENERATE_INFOPLIST_FILE' => 'NO',
     'INFOPLIST_FILE' => 'Resources/iTermPortal/Info.plist',
     'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/../Frameworks',
-    'PRODUCT_BUNDLE_IDENTIFIER' => 'com.hjoncour.fportal',
+    'PRODUCT_BUNDLE_IDENTIFIER' => 'com.hjoncour.fPortal',
     'PRODUCT_NAME' => PROJECT_NAME,
     'SWIFT_EMIT_LOC_STRINGS' => 'NO'
   )
 end
 
 extension_target.build_configurations.each do |config|
+  automatic_local_signing = %w[Debug Release].include?(config.name)
   config.build_settings.merge!(
     'CODE_SIGN_ENTITLEMENTS' => config.name == 'AppStore' ? 'Entitlements/iTermPortalSync-AppStore.entitlements' : 'Entitlements/iTermPortalSync-DirectInstall.entitlements',
-    'ENABLE_APP_SANDBOX' => config.name == 'AppStore' ? 'YES' : 'NO',
+    'CODE_SIGN_INJECT_BASE_ENTITLEMENTS' => automatic_local_signing ? 'YES' : 'NO',
+    'CODE_SIGN_STYLE' => automatic_local_signing ? 'Automatic' : 'Manual',
+    'ENABLE_APP_SANDBOX' => 'YES',
     'GENERATE_INFOPLIST_FILE' => 'NO',
     'INFOPLIST_FILE' => 'Resources/iTermPortalSync/Info.plist',
     'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks',
-    'PRODUCT_BUNDLE_IDENTIFIER' => 'com.hjoncour.fportal.sync',
+    'PRODUCT_BUNDLE_IDENTIFIER' => 'com.hjoncour.fPortal.FinderExtension',
     'PRODUCT_NAME' => 'iTermPortalSync',
     'SKIP_INSTALL' => 'YES',
     'SWIFT_EMIT_LOC_STRINGS' => 'NO'
@@ -197,7 +225,7 @@ test_target.build_configurations.each do |config|
     'GENERATE_INFOPLIST_FILE' => 'YES',
     'INFOPLIST_KEY_CFBundleDisplayName' => 'iTermPortalTests',
     'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks',
-    'PRODUCT_BUNDLE_IDENTIFIER' => 'com.hjoncour.fportal.tests',
+    'PRODUCT_BUNDLE_IDENTIFIER' => 'com.hjoncour.fPortal.tests',
     'PRODUCT_NAME' => '$(TARGET_NAME)',
     'SWIFT_EMIT_LOC_STRINGS' => 'NO',
     'TEST_HOST' => ''

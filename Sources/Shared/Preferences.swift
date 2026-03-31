@@ -65,7 +65,7 @@ final class SharedPreferences {
         static let openMode = "openMode"
     }
 
-    static let suiteName = "group.com.hjoncour.fportal"
+    static let suiteName = "group.com.hjoncour.fPortal"
     static let shared = SharedPreferences()
 
     let defaults: UserDefaults

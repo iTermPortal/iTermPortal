@@ -1,0 +1,98 @@
+{
+  "" : {
+    "diagnostics" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/iTermPortal-master.dia",
+    "emit-module-dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/iTermPortal-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/iTermPortal-master-emit-module.dia",
+    "swift-dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/iTermPortal-master.swiftdeps"
+  },
+  "/Users/hjoncour/Projects/iTermPortal/iTermPortal/Sources/Shared/Preferences.swift" : {
+    "const-values" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/Preferences.swiftconstvalues",
+    "dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/Preferences.d",
+    "diagnostics" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/Preferences.dia",
+    "index-unit-output-path" : "/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/Preferences.o",
+    "llvm-bc" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/Preferences.bc",
+    "object" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/Preferences.o",
+    "swift-dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/Preferences.swiftdeps",
+    "swiftmodule" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/Preferences~partial.swiftmodule"
+  },
+  "/Users/hjoncour/Projects/iTermPortal/iTermPortal/Sources/Shared/StringExtensions.swift" : {
+    "const-values" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/StringExtensions.swiftconstvalues",
+    "dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/StringExtensions.d",
+    "diagnostics" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/StringExtensions.dia",
+    "index-unit-output-path" : "/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/StringExtensions.o",
+    "llvm-bc" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/StringExtensions.bc",
+    "object" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/StringExtensions.o",
+    "swift-dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/StringExtensions.swiftdeps",
+    "swiftmodule" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/StringExtensions~partial.swiftmodule"
+  },
+  "/Users/hjoncour/Projects/iTermPortal/iTermPortal/Sources/Shared/TerminalLauncher.swift" : {
+    "const-values" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/TerminalLauncher.swiftconstvalues",
+    "dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/TerminalLauncher.d",
+    "diagnostics" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/TerminalLauncher.dia",
+    "index-unit-output-path" : "/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/TerminalLauncher.o",
+    "llvm-bc" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/TerminalLauncher.bc",
+    "object" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/TerminalLauncher.o",
+    "swift-dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/TerminalLauncher.swiftdeps",
+    "swiftmodule" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/TerminalLauncher~partial.swiftmodule"
+  },
+  "/Users/hjoncour/Projects/iTermPortal/iTermPortal/Sources/iTermPortal/AboutWindowController.swift" : {
+    "const-values" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AboutWindowController.swiftconstvalues",
+    "dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AboutWindowController.d",
+    "diagnostics" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AboutWindowController.dia",
+    "index-unit-output-path" : "/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AboutWindowController.o",
+    "llvm-bc" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AboutWindowController.bc",
+    "object" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AboutWindowController.o",
+    "swift-dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AboutWindowController.swiftdeps",
+    "swiftmodule" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AboutWindowController~partial.swiftmodule"
+  },
+  "/Users/hjoncour/Projects/iTermPortal/iTermPortal/Sources/iTermPortal/AppDelegate.swift" : {
+    "const-values" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AppDelegate.swiftconstvalues",
+    "dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AppDelegate.d",
+    "diagnostics" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AppDelegate.dia",
+    "index-unit-output-path" : "/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AppDelegate.o",
+    "llvm-bc" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AppDelegate.bc",
+    "object" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AppDelegate.o",
+    "swift-dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AppDelegate.swiftdeps",
+    "swiftmodule" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/AppDelegate~partial.swiftmodule"
+  },
+  "/Users/hjoncour/Projects/iTermPortal/iTermPortal/Sources/iTermPortal/OnboardingWindowController.swift" : {
+    "const-values" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/OnboardingWindowController.swiftconstvalues",
+    "dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/OnboardingWindowController.d",
+    "diagnostics" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/OnboardingWindowController.dia",
+    "index-unit-output-path" : "/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/OnboardingWindowController.o",
+    "llvm-bc" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/OnboardingWindowController.bc",
+    "object" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/OnboardingWindowController.o",
+    "swift-dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/OnboardingWindowController.swiftdeps",
+    "swiftmodule" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/OnboardingWindowController~partial.swiftmodule"
+  },
+  "/Users/hjoncour/Projects/iTermPortal/iTermPortal/Sources/iTermPortal/PreferenceMigration.swift" : {
+    "const-values" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/PreferenceMigration.swiftconstvalues",
+    "dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/PreferenceMigration.d",
+    "diagnostics" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/PreferenceMigration.dia",
+    "index-unit-output-path" : "/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/PreferenceMigration.o",
+    "llvm-bc" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/PreferenceMigration.bc",
+    "object" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/PreferenceMigration.o",
+    "swift-dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/PreferenceMigration.swiftdeps",
+    "swiftmodule" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/PreferenceMigration~partial.swiftmodule"
+  },
+  "/Users/hjoncour/Projects/iTermPortal/iTermPortal/Sources/iTermPortal/main.swift" : {
+    "const-values" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/main.swiftconstvalues",
+    "dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/main.d",
+    "diagnostics" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/main.dia",
+    "index-unit-output-path" : "/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/main.o",
+    "llvm-bc" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/main.bc",
+    "object" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/main.o",
+    "swift-dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/main.swiftdeps",
+    "swiftmodule" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/main~partial.swiftmodule"
+  },
+  "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/TeamTestDerivedData/Build/Intermediates.noindex/iTermPortal.build/Debug/iTermPortal.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

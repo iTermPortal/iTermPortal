@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4022754E7A27DDC884ADCA7B"
+               BlueprintIdentifier = "9D655530DB9262FD89A493BE"
                BuildableName = "iTermPortal.app"
                BlueprintName = "iTermPortal"
                ReferencedContainer = "container:iTermPortal.xcodeproj">
@@ -30,7 +30,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4022754E7A27DDC884ADCA7B"
+            BlueprintIdentifier = "9D655530DB9262FD89A493BE"
             BuildableName = "iTermPortal.app"
             BlueprintName = "iTermPortal"
             ReferencedContainer = "container:iTermPortal.xcodeproj">
@@ -53,7 +53,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4022754E7A27DDC884ADCA7B"
+            BlueprintIdentifier = "9D655530DB9262FD89A493BE"
             BuildableName = "iTermPortal.app"
             BlueprintName = "iTermPortal"
             ReferencedContainer = "container:iTermPortal.xcodeproj">
@@ -70,7 +70,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4022754E7A27DDC884ADCA7B"
+            BlueprintIdentifier = "9D655530DB9262FD89A493BE"
             BuildableName = "iTermPortal.app"
             BlueprintName = "iTermPortal"
             ReferencedContainer = "container:iTermPortal.xcodeproj">

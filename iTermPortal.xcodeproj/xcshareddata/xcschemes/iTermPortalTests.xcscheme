@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C65A989D82A49971B3A60794"
+               BlueprintIdentifier = "8CB41CEC4A3F686996C09023"
                BuildableName = "iTermPortalTests.xctest"
                BlueprintName = "iTermPortalTests"
                ReferencedContainer = "container:iTermPortal.xcodeproj">
@@ -32,7 +32,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C65A989D82A49971B3A60794"
+               BlueprintIdentifier = "8CB41CEC4A3F686996C09023"
                BuildableName = "iTermPortalTests.xctest"
                BlueprintName = "iTermPortalTests"
                ReferencedContainer = "container:iTermPortal.xcodeproj">

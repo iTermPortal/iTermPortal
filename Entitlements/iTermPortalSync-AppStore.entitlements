@@ -4,11 +4,9 @@
 <dict>
     <key>com.apple.security.app-sandbox</key>
     <true/>
-    <key>com.apple.developer.finder-sync</key>
-    <true/>
     <key>com.apple.security.application-groups</key>
     <array>
-        <string>group.com.hjoncour.fportal</string>
+        <string>group.com.hjoncour.fPortal</string>
     </array>
     <key>com.apple.security.automation.apple-events</key>
     <true/>

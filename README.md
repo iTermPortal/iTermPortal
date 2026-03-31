@@ -20,7 +20,31 @@ That produces:
 - `dist/iTermPortal.app`
 - `dist/iTermPortal.app/Contents/MacOS/iTermPortal`
 
-Unsigned local build:
+The default script build is ad hoc signed after the Xcode build.
+That is enough to launch the app, but Finder Sync itself still needs a real Apple Development or release signature to respond reliably inside Finder.
+
+If you want the Finder toolbar button to work in a local development install, build with your Apple Development team:
+
+```bash
+./scripts/build_app.sh --development-team YOURTEAMID --allow-provisioning-updates
+```
+
+If Xcode cannot access your Apple account, you can still build locally with manual signing assets:
+
+```bash
+./scripts/build_app.sh \
+  --signing-identity "Developer ID Application: Your Name (TEAMID)" \
+  --main-profile /path/to/iTermPortal.provisionprofile \
+  --sync-profile /path/to/iTermPortalSync.provisionprofile
+```
+
+Those profiles must target:
+- `com.hjoncour.fPortal`
+- `com.hjoncour.fPortal.FinderExtension`
+
+Raw `xcodebuild` output is not enough for Finder Sync by itself because the app and extension still need ad hoc signing with entitlements. For local installs, prefer `./scripts/build_app.sh`.
+
+Manual unsigned build:
 
 ```bash
 xcodebuild \
@@ -43,7 +67,53 @@ Install to `/Applications` with a single command:
 ./install.sh
 ```
 
+For a Finder Sync-capable local install, use:
+
+```bash
+./install.sh --development-team YOURTEAMID --allow-provisioning-updates
+```
+
+Or, if you have downloaded provisioning profiles already:
+
+```bash
+./install.sh \
+  --signing-identity "Developer ID Application: Your Name (TEAMID)" \
+  --main-profile /path/to/iTermPortal.provisionprofile \
+  --sync-profile /path/to/iTermPortalSync.provisionprofile
+```
+
 Use `./install.sh --dest /some/other/folder` to install somewhere else without touching `/Applications`.
+
+## Troubleshooting Signing
+
+If the build fails because Xcode only found a generic `Mac Team Provisioning Profile`, you need explicit profiles for:
+
+- `com.hjoncour.fPortal`
+- `com.hjoncour.fPortal.FinderExtension`
+
+And they must include:
+
+- App Group `group.com.hjoncour.fPortal` on both targets
+
+Finder Sync itself is declared by the extension target and `NSExtensionPointIdentifier = com.apple.FinderSync` in the extension Info.plist.
+
+If the build fails with:
+
+```text
+No Account for Team "TEAMID"
+```
+
+Xcode's command-line tools cannot access that Apple account on the current Mac.
+Re-authenticate in `Xcode > Settings > Accounts`, or use manual signing:
+
+```bash
+./install.sh \
+  --signing-identity "Developer ID Application: Your Name (TEAMID)" \
+  --main-profile /path/to/iTermPortal.provisionprofile \
+  --sync-profile /path/to/iTermPortalSync.provisionprofile
+```
+
+The build scripts now validate those profiles before signing so you get a direct error if the bundle IDs or entitlements do not match.
 
 Unit tests:
 

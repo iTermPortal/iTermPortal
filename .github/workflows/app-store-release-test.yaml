@@ -5,6 +5,12 @@ on:
     branches:
       - "**"
   workflow_dispatch:
+    inputs:
+      upload_to_app_store:
+        description: "Upload built export to App Store Connect"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -21,9 +27,16 @@ jobs:
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       APPLE_APP_DIST_CERTIFICATE: ${{ secrets.APPLE_APP_DIST_CERTIFICATE }}
       APPLE_APP_DIST_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_APP_DIST_CERTIFICATE_PASSWORD }}
+      APPLE_INSTALLER_DIST_CERTIFICATE: ${{ secrets.APPLE_INSTALLER_DIST_CERTIFICATE }}
+      APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD }}
       APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
       APPLE_SYNC_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_SYNC_PROVISIONING_PROFILE_BASE64 }}
       KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+      APPLE_API_KEY_ID_FPORTAL: ${{ secrets.APPLE_API_KEY_ID_FPORTAL }}
+      APPLE_API_KEY_FPORTAL: ${{ secrets.APPLE_API_KEY_FPORTAL }}
+      APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+      APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
       APP_BUNDLE_ID_VAR: ${{ vars.APPLE_APP_BUNDLE_ID }}
       APP_BUNDLE_ID_SECRET: ${{ secrets.APPLE_APP_BUNDLE_ID }}
 
@@ -40,13 +53,15 @@ jobs:
             APP_BUNDLE_ID="$APP_BUNDLE_ID_SECRET"
           fi
           if [[ -z "$APP_BUNDLE_ID" ]]; then
-            APP_BUNDLE_ID="com.hjoncour.fportal"
+            APP_BUNDLE_ID="com.hjoncour.fPortal"
           fi
-          if [[ "$APP_BUNDLE_ID" != "com.hjoncour.fportal" ]]; then
-            echo "::error::This project currently expects bundle id com.hjoncour.fportal, got '$APP_BUNDLE_ID'."
+          if [[ "$APP_BUNDLE_ID" != "com.hjoncour.fPortal" ]]; then
+            echo "::error::This project currently expects bundle id com.hjoncour.fPortal, got '$APP_BUNDLE_ID'."
             exit 1
           fi
+          APP_EXTENSION_BUNDLE_ID="${APP_BUNDLE_ID}.FinderExtension"
           echo "APP_BUNDLE_ID=$APP_BUNDLE_ID" >> "$GITHUB_ENV"
+          echo "APP_EXTENSION_BUNDLE_ID=$APP_EXTENSION_BUNDLE_ID" >> "$GITHUB_ENV"
 
       - name: Validate required secrets
         shell: bash
@@ -146,7 +161,7 @@ jobs:
             <key>signingStyle</key><string>manual</string>
             <key>provisioningProfiles</key><dict>
               <key>$APP_BUNDLE_ID</key><string>$MAIN_UUID</string>
-              <key>$APP_BUNDLE_ID.sync</key><string>$SYNC_UUID</string>
+              <key>$APP_EXTENSION_BUNDLE_ID</key><string>$SYNC_UUID</string>
             </dict>
           </dict></plist>
           EOF
@@ -171,11 +186,9 @@ jobs:
 
           codesign -d --entitlements - "$APP" 2>&1 | grep -q "app-sandbox" || \
             { echo "::error::Main app missing sandbox entitlement"; exit 1; }
-          codesign -d --entitlements - "$APP" 2>&1 | grep -q "group.com.hjoncour.fportal" || \
+          codesign -d --entitlements - "$APP" 2>&1 | grep -q "group.com.hjoncour.fPortal" || \
             { echo "::error::Main app missing app group entitlement"; exit 1; }
-          codesign -d --entitlements - "$SYNC" 2>&1 | grep -q "com.apple.developer.finder-sync" || \
-            { echo "::error::Extension missing finder-sync entitlement"; exit 1; }
-          codesign -d --entitlements - "$SYNC" 2>&1 | grep -q "group.com.hjoncour.fportal" || \
+          codesign -d --entitlements - "$SYNC" 2>&1 | grep -q "group.com.hjoncour.fPortal" || \
             { echo "::error::Extension missing app group entitlement"; exit 1; }
 
       - name: Upload export artifacts
