@@ -1,0 +1,859 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		087047F2E3ADC95762C1B94B /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0CF5563C9D72A2F0AF6F73 /* main.swift */; };
+		0BE4C173BF73BE4249F4464E /* TerminalLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8699CB11C981493B845E3EAD /* TerminalLauncher.swift */; };
+		0DA38322B3B6048975235D4D /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BB41FE5E07BF922A164EEFF /* ServiceManagement.framework */; };
+		1EE40B09F264C2F64E896139 /* AboutWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ECC177C5F66C860FB36F2B2 /* AboutWindowController.swift */; };
+		2CCB40587DD87DA7B2B9E644 /* FinderSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 213FF1DB260C2C660F85630C /* FinderSync.swift */; };
+		2FD074F96B7F1BCC226CB097 /* TerminalLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8699CB11C981493B845E3EAD /* TerminalLauncher.swift */; };
+		408F50D1D1BDFF63CE114A49 /* iTermPortalSync.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 4E2185F8BD9B8F63505DB2D8 /* iTermPortalSync.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		409A2026040EF632DE3FE230 /* PreferenceMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21A167ECF9FC9BEDC1F5F22 /* PreferenceMigration.swift */; };
+		54F1583FFF06D27FA0D265DC /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6604577F4DCB964510FAE2F /* Preferences.swift */; };
+		5BAE449591786F407A9FDD9B /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6604577F4DCB964510FAE2F /* Preferences.swift */; };
+		7FF4162E5B20F4435D5E02B5 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFD7E2E41BBABED4BB8B400 /* StringExtensions.swift */; };
+		86360CA8779171AE1A342223 /* FinderSync.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 966128B4DD7DF90E136A5F60 /* FinderSync.framework */; };
+		922CE776778AD83B063893F8 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 493881ABABF0D6E861394D3E /* Cocoa.framework */; };
+		A4045EF6B16A8C0CF2F8759D /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFD7E2E41BBABED4BB8B400 /* StringExtensions.swift */; };
+		AC31365AC3BEB8655A5DA2EF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810BDDE33EE70500615B2FFC /* AppDelegate.swift */; };
+		B7A61AAA1DA50ED5AE7B51F1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 493881ABABF0D6E861394D3E /* Cocoa.framework */; };
+		B95DD6A5D32C574601E0E3AF /* TerminalLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8699CB11C981493B845E3EAD /* TerminalLauncher.swift */; };
+		C3335F2A8C83AF44392CAD8B /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFD7E2E41BBABED4BB8B400 /* StringExtensions.swift */; };
+		CC56F370EC5023E6AA84B4FE /* PreferenceMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21A167ECF9FC9BEDC1F5F22 /* PreferenceMigration.swift */; };
+		CEBA321A7228E75EC0EB75CC /* OnboardingWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB5019C6BD620AA5446D89F0 /* OnboardingWindowController.swift */; };
+		D68816BD0EBCAC1345831DD1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 792E2C0521C7E7340CE73D7D /* Assets.xcassets */; };
+		E5844C2F830F7AB0BFAF3F6C /* iTermPortalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64EDB1FC0DD10BC89071963E /* iTermPortalTests.swift */; };
+		E762A37791F03B664119C0AC /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6604577F4DCB964510FAE2F /* Preferences.swift */; };
+		E7801E25A9E672BA709B7486 /* FinderSync.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BD4CF2DDB736691333B1B8F /* FinderSync.framework */; };
+		F74C3EC16F4C45C57C440013 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 493881ABABF0D6E861394D3E /* Cocoa.framework */; };
+		F7C4E63533913A555DBD4EA1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 24068291C385F30033C0864B /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E36A108060EDBF7E61B50A98 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B2B9F11459B7863E061EEC7E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8A70C04D87E909B1556CC23F;
+			remoteInfo = iTermPortalSync;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EE594F5428BAF46CD5445EA2 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				408F50D1D1BDFF63CE114A49 /* iTermPortalSync.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1B0CF5563C9D72A2F0AF6F73 /* main.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = main.swift; path = Sources/iTermPortal/main.swift; sourceTree = "<group>"; };
+		213FF1DB260C2C660F85630C /* FinderSync.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FinderSync.swift; path = Sources/iTermPortalSync/FinderSync.swift; sourceTree = "<group>"; };
+		24068291C385F30033C0864B /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Resources/iTermPortal/Assets.xcassets; sourceTree = "<group>"; };
+		2BD4CF2DDB736691333B1B8F /* FinderSync.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FinderSync.framework; path = ../../../../../System/Library/Frameworks/FinderSync.framework; sourceTree = "<group>"; };
+		2F9550928A45DBA41621133C /* iTermPortal-AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; name = "iTermPortal-AppStore.entitlements"; path = "Entitlements/iTermPortal-AppStore.entitlements"; sourceTree = "<group>"; };
+		493881ABABF0D6E861394D3E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		4E2185F8BD9B8F63505DB2D8 /* iTermPortalSync.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = iTermPortalSync.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		59C980D4FC51EED30AEB8879 /* iTermPortalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iTermPortalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		64EDB1FC0DD10BC89071963E /* iTermPortalTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = iTermPortalTests.swift; path = Tests/iTermPortalTests/iTermPortalTests.swift; sourceTree = "<group>"; };
+		73CBD24A7973CA44B03C92BA /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = Info.plist; path = Resources/iTermPortal/Info.plist; sourceTree = "<group>"; };
+		792E2C0521C7E7340CE73D7D /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Resources/iTermPortalSync/Assets.xcassets; sourceTree = "<group>"; };
+		7BB41FE5E07BF922A164EEFF /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = ../../../../../System/Library/Frameworks/ServiceManagement.framework; sourceTree = "<group>"; };
+		7ECC177C5F66C860FB36F2B2 /* AboutWindowController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AboutWindowController.swift; path = Sources/iTermPortal/AboutWindowController.swift; sourceTree = "<group>"; };
+		810BDDE33EE70500615B2FFC /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Sources/iTermPortal/AppDelegate.swift; sourceTree = "<group>"; };
+		8699CB11C981493B845E3EAD /* TerminalLauncher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TerminalLauncher.swift; path = Sources/Shared/TerminalLauncher.swift; sourceTree = "<group>"; };
+		8B5C5684F9585E64B1099ADB /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = Info.plist; path = Resources/iTermPortalSync/Info.plist; sourceTree = "<group>"; };
+		91D75CA83D0B005B6AED3635 /* iTermPortal-DirectInstall.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; name = "iTermPortal-DirectInstall.entitlements"; path = "Entitlements/iTermPortal-DirectInstall.entitlements"; sourceTree = "<group>"; };
+		966128B4DD7DF90E136A5F60 /* FinderSync.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FinderSync.framework; path = ../../../../../System/Library/Frameworks/FinderSync.framework; sourceTree = "<group>"; };
+		B727ABD43F45CAC85C5F2D07 /* iTermPortalSync-AppStore.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; name = "iTermPortalSync-AppStore.entitlements"; path = "Entitlements/iTermPortalSync-AppStore.entitlements"; sourceTree = "<group>"; };
+		BADDF316D262469BBABBD63E /* iTermPortal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iTermPortal.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C21A167ECF9FC9BEDC1F5F22 /* PreferenceMigration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PreferenceMigration.swift; path = Sources/iTermPortal/PreferenceMigration.swift; sourceTree = "<group>"; };
+		CAFD7E2E41BBABED4BB8B400 /* StringExtensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StringExtensions.swift; path = Sources/Shared/StringExtensions.swift; sourceTree = "<group>"; };
+		CB5019C6BD620AA5446D89F0 /* OnboardingWindowController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OnboardingWindowController.swift; path = Sources/iTermPortal/OnboardingWindowController.swift; sourceTree = "<group>"; };
+		D9A9799A3C03615EA6B75532 /* iTermPortalSync-DirectInstall.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; name = "iTermPortalSync-DirectInstall.entitlements"; path = "Entitlements/iTermPortalSync-DirectInstall.entitlements"; sourceTree = "<group>"; };
+		E6604577F4DCB964510FAE2F /* Preferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = Sources/Shared/Preferences.swift; sourceTree = "<group>"; };
+		F882A1D8D28A6DA7C0D4B705 /* generate_icons.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; name = generate_icons.sh; path = scripts/generate_icons.sh; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		83202DBFAE41F930F77E1106 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				922CE776778AD83B063893F8 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		962757B47C07119B579BC07A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F74C3EC16F4C45C57C440013 /* Cocoa.framework in Frameworks */,
+				86360CA8779171AE1A342223 /* FinderSync.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FDE65D5DCA9482B36B6F72FA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B7A61AAA1DA50ED5AE7B51F1 /* Cocoa.framework in Frameworks */,
+				E7801E25A9E672BA709B7486 /* FinderSync.framework in Frameworks */,
+				0DA38322B3B6048975235D4D /* ServiceManagement.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		83622E961767784BBF1CEA24 = {
+			isa = PBXGroup;
+			children = (
+				7ECC177C5F66C860FB36F2B2 /* AboutWindowController.swift */,
+				810BDDE33EE70500615B2FFC /* AppDelegate.swift */,
+				24068291C385F30033C0864B /* Assets.xcassets */,
+				792E2C0521C7E7340CE73D7D /* Assets.xcassets */,
+				213FF1DB260C2C660F85630C /* FinderSync.swift */,
+				AF293B9791C31E85B4CC7D00 /* Frameworks */,
+				F882A1D8D28A6DA7C0D4B705 /* generate_icons.sh */,
+				73CBD24A7973CA44B03C92BA /* Info.plist */,
+				8B5C5684F9585E64B1099ADB /* Info.plist */,
+				2F9550928A45DBA41621133C /* iTermPortal-AppStore.entitlements */,
+				91D75CA83D0B005B6AED3635 /* iTermPortal-DirectInstall.entitlements */,
+				B727ABD43F45CAC85C5F2D07 /* iTermPortalSync-AppStore.entitlements */,
+				D9A9799A3C03615EA6B75532 /* iTermPortalSync-DirectInstall.entitlements */,
+				64EDB1FC0DD10BC89071963E /* iTermPortalTests.swift */,
+				1B0CF5563C9D72A2F0AF6F73 /* main.swift */,
+				CB5019C6BD620AA5446D89F0 /* OnboardingWindowController.swift */,
+				C21A167ECF9FC9BEDC1F5F22 /* PreferenceMigration.swift */,
+				E6604577F4DCB964510FAE2F /* Preferences.swift */,
+				FAE1BEFD9E7B5737B9CD5430 /* Products */,
+				CAFD7E2E41BBABED4BB8B400 /* StringExtensions.swift */,
+				8699CB11C981493B845E3EAD /* TerminalLauncher.swift */,
+			);
+			sourceTree = "<group>";
+		};
+		8B6D803793EA88AF596CBA22 /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				493881ABABF0D6E861394D3E /* Cocoa.framework */,
+			);
+			name = "OS X";
+			sourceTree = "<group>";
+		};
+		AF293B9791C31E85B4CC7D00 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2BD4CF2DDB736691333B1B8F /* FinderSync.framework */,
+				966128B4DD7DF90E136A5F60 /* FinderSync.framework */,
+				8B6D803793EA88AF596CBA22 /* OS X */,
+				7BB41FE5E07BF922A164EEFF /* ServiceManagement.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FAE1BEFD9E7B5737B9CD5430 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BADDF316D262469BBABBD63E /* iTermPortal.app */,
+				4E2185F8BD9B8F63505DB2D8 /* iTermPortalSync.appex */,
+				59C980D4FC51EED30AEB8879 /* iTermPortalTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4022754E7A27DDC884ADCA7B /* iTermPortal */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3A928C615F86AB9DC47A1BB0 /* Build configuration list for PBXNativeTarget "iTermPortal" */;
+			buildPhases = (
+				0F66CA59CB3E1E961E88317B /* Sources */,
+				FDE65D5DCA9482B36B6F72FA /* Frameworks */,
+				544C18C2DF78519A49F04FCE /* Resources */,
+				EE594F5428BAF46CD5445EA2 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2B1B479F597114A53CEC7654 /* PBXTargetDependency */,
+			);
+			name = iTermPortal;
+			productName = iTermPortal;
+			productReference = BADDF316D262469BBABBD63E /* iTermPortal.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8A70C04D87E909B1556CC23F /* iTermPortalSync */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8BA61608E0D612752A091ECB /* Build configuration list for PBXNativeTarget "iTermPortalSync" */;
+			buildPhases = (
+				25D4D24EE13856B909C4AE8C /* Sources */,
+				962757B47C07119B579BC07A /* Frameworks */,
+				720608522E6BD8BC692132A5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iTermPortalSync;
+			productName = iTermPortalSync;
+			productReference = 4E2185F8BD9B8F63505DB2D8 /* iTermPortalSync.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		C65A989D82A49971B3A60794 /* iTermPortalTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 496B579604DC7E17D894949A /* Build configuration list for PBXNativeTarget "iTermPortalTests" */;
+			buildPhases = (
+				B174049D5B855FB89BD8506F /* Sources */,
+				83202DBFAE41F930F77E1106 /* Frameworks */,
+				E3B7A3AEE56CE099160B05CF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iTermPortalTests;
+			productName = iTermPortalTests;
+			productReference = 59C980D4FC51EED30AEB8879 /* iTermPortalTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B2B9F11459B7863E061EEC7E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+			};
+			buildConfigurationList = 5CF81530443BCB326F7C9BC5 /* Build configuration list for PBXProject "iTermPortal" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 83622E961767784BBF1CEA24;
+			minimizedProjectReferenceProxies = 0;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = FAE1BEFD9E7B5737B9CD5430 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4022754E7A27DDC884ADCA7B /* iTermPortal */,
+				8A70C04D87E909B1556CC23F /* iTermPortalSync */,
+				C65A989D82A49971B3A60794 /* iTermPortalTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		544C18C2DF78519A49F04FCE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F7C4E63533913A555DBD4EA1 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		720608522E6BD8BC692132A5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D68816BD0EBCAC1345831DD1 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E3B7A3AEE56CE099160B05CF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0F66CA59CB3E1E961E88317B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1EE40B09F264C2F64E896139 /* AboutWindowController.swift in Sources */,
+				AC31365AC3BEB8655A5DA2EF /* AppDelegate.swift in Sources */,
+				087047F2E3ADC95762C1B94B /* main.swift in Sources */,
+				CEBA321A7228E75EC0EB75CC /* OnboardingWindowController.swift in Sources */,
+				409A2026040EF632DE3FE230 /* PreferenceMigration.swift in Sources */,
+				5BAE449591786F407A9FDD9B /* Preferences.swift in Sources */,
+				A4045EF6B16A8C0CF2F8759D /* StringExtensions.swift in Sources */,
+				2FD074F96B7F1BCC226CB097 /* TerminalLauncher.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		25D4D24EE13856B909C4AE8C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2CCB40587DD87DA7B2B9E644 /* FinderSync.swift in Sources */,
+				54F1583FFF06D27FA0D265DC /* Preferences.swift in Sources */,
+				C3335F2A8C83AF44392CAD8B /* StringExtensions.swift in Sources */,
+				B95DD6A5D32C574601E0E3AF /* TerminalLauncher.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B174049D5B855FB89BD8506F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5844C2F830F7AB0BFAF3F6C /* iTermPortalTests.swift in Sources */,
+				CC56F370EC5023E6AA84B4FE /* PreferenceMigration.swift in Sources */,
+				E762A37791F03B664119C0AC /* Preferences.swift in Sources */,
+				7FF4162E5B20F4435D5E02B5 /* StringExtensions.swift in Sources */,
+				0BE4C173BF73BE4249F4464E /* TerminalLauncher.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2B1B479F597114A53CEC7654 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = iTermPortalSync;
+			target = 8A70C04D87E909B1556CC23F /* iTermPortalSync */;
+			targetProxy = E36A108060EDBF7E61B50A98 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4B7C02AF54DFCEE02974EB9E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_TESTABILITY = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = iTermPortalTests;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "";
+			};
+			name = Release;
+		};
+		55B62303499DE9E2AF8E30FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 2.4.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		69DCCC0B97B31A17746144D4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 2.4.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		6FB554E24B03C28C7B318F77 /* DirectInstall */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 2.4.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = DirectInstall;
+		};
+		866A4E3B0429E1C0555F0F68 /* DirectInstall */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Entitlements/iTermPortalSync-DirectInstall.entitlements";
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/iTermPortalSync/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal.sync;
+				PRODUCT_NAME = iTermPortalSync;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = DirectInstall;
+		};
+		95D2CF49C6D6C520A1544860 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = iTermPortalTests;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "";
+			};
+			name = Debug;
+		};
+		96A7CCFD553B101BBA07878F /* DirectInstall */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = "Entitlements/iTermPortal-DirectInstall.entitlements";
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/iTermPortal/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal;
+				PRODUCT_NAME = iTermPortal;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = DirectInstall;
+		};
+		AD3AA8E8301145880F391F99 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = "Entitlements/iTermPortal-DirectInstall.entitlements";
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/iTermPortal/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal;
+				PRODUCT_NAME = iTermPortal;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = Debug;
+		};
+		BD3C5A613E9B3ECD85D1E975 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Entitlements/iTermPortalSync-DirectInstall.entitlements";
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/iTermPortalSync/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal.sync;
+				PRODUCT_NAME = iTermPortalSync;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = Debug;
+		};
+		C5130F031090B5331F1560BA /* AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Entitlements/iTermPortalSync-AppStore.entitlements";
+				ENABLE_APP_SANDBOX = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/iTermPortalSync/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal.sync;
+				PRODUCT_NAME = iTermPortalSync;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = AppStore;
+		};
+		C7D172A962A6DADBB313249E /* AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = "Entitlements/iTermPortal-AppStore.entitlements";
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/iTermPortal/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal;
+				PRODUCT_NAME = iTermPortal;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = AppStore;
+		};
+		E2BBE156EAF1FEAA911D5EFD /* DirectInstall */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_TESTABILITY = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = iTermPortalTests;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "";
+			};
+			name = DirectInstall;
+		};
+		E36D653993574F7908BB9B53 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Entitlements/iTermPortalSync-DirectInstall.entitlements";
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/iTermPortalSync/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal.sync;
+				PRODUCT_NAME = iTermPortalSync;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = Release;
+		};
+		F7E3038E29E0848D6FFE0B80 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CODE_SIGN_ENTITLEMENTS = "Entitlements/iTermPortal-DirectInstall.entitlements";
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/iTermPortal/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal;
+				PRODUCT_NAME = iTermPortal;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = Release;
+		};
+		FAA182DDEF073CA52412F760 /* AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_TESTABILITY = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = iTermPortalTests;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hjoncour.fportal.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "";
+			};
+			name = AppStore;
+		};
+		FC1B83A41A7ECA4F99A13C0D /* AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 2.4.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = AppStore;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3A928C615F86AB9DC47A1BB0 /* Build configuration list for PBXNativeTarget "iTermPortal" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7D172A962A6DADBB313249E /* AppStore */,
+				AD3AA8E8301145880F391F99 /* Debug */,
+				96A7CCFD553B101BBA07878F /* DirectInstall */,
+				F7E3038E29E0848D6FFE0B80 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		496B579604DC7E17D894949A /* Build configuration list for PBXNativeTarget "iTermPortalTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAA182DDEF073CA52412F760 /* AppStore */,
+				95D2CF49C6D6C520A1544860 /* Debug */,
+				E2BBE156EAF1FEAA911D5EFD /* DirectInstall */,
+				4B7C02AF54DFCEE02974EB9E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5CF81530443BCB326F7C9BC5 /* Build configuration list for PBXProject "iTermPortal" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC1B83A41A7ECA4F99A13C0D /* AppStore */,
+				55B62303499DE9E2AF8E30FA /* Debug */,
+				6FB554E24B03C28C7B318F77 /* DirectInstall */,
+				69DCCC0B97B31A17746144D4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8BA61608E0D612752A091ECB /* Build configuration list for PBXNativeTarget "iTermPortalSync" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C5130F031090B5331F1560BA /* AppStore */,
+				BD3C5A613E9B3ECD85D1E975 /* Debug */,
+				866A4E3B0429E1C0555F0F68 /* DirectInstall */,
+				E36D653993574F7908BB9B53 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B2B9F11459B7863E061EEC7E /* Project object */;
+}

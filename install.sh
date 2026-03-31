@@ -4,8 +4,63 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APP_NAME="iTermPortal.app"
 SOURCE_APP="$ROOT_DIR/dist/$APP_NAME"
+FALLBACK_SOURCE_APP="$ROOT_DIR/build/DerivedData/Build/Products/Debug/$APP_NAME"
 DEST_DIR="/Applications"
+CONFIGURATION="${FPORTAL_CONFIGURATION:-Debug}"
+DERIVED_DATA_PATH="${FPORTAL_DERIVED_DATA_PATH:-$ROOT_DIR/build/DerivedData}"
+SKIP_BUILD=0
+
+usage() {
+  cat <<'EOF'
+Usage: ./install.sh [options]
+
+Build and install the native iTermPortal app.
+
+Options:
+  --configuration <name>  Xcode build configuration (default: Debug)
+  --dest <path>           Install destination directory (default: /Applications)
+  --skip-build            Install the latest built app without rebuilding
+  -h, --help              Show this help
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --configuration)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing value for $1" >&2
+        exit 1
+      fi
+      CONFIGURATION="$2"
+      shift 2
+      ;;
+    --dest)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing value for $1" >&2
+        exit 1
+      fi
+      DEST_DIR="$2"
+      shift 2
+      ;;
+    --skip-build)
+      SKIP_BUILD=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+done
+
 DEST_APP="$DEST_DIR/$APP_NAME"
+SOURCE_APP="$ROOT_DIR/dist/$APP_NAME"
+FALLBACK_SOURCE_APP="$DERIVED_DATA_PATH/Build/Products/$CONFIGURATION/$APP_NAME"
 
 run_maybe_sudo() {
   if "$@"; then
@@ -21,9 +76,19 @@ run_maybe_sudo() {
   return 1
 }
 
+if [[ "$SKIP_BUILD" -eq 0 ]]; then
+  "$ROOT_DIR/scripts/build_app.sh" \
+    --configuration "$CONFIGURATION" \
+    --derived-data "$DERIVED_DATA_PATH"
+fi
+
+if [[ ! -d "$SOURCE_APP" && -d "$FALLBACK_SOURCE_APP" ]]; then
+  SOURCE_APP="$FALLBACK_SOURCE_APP"
+fi
+
 if [[ ! -d "$SOURCE_APP" ]]; then
   echo "Missing built app: $SOURCE_APP" >&2
-  echo "Build first with: sh scripts/build_applescript_app.sh" >&2
+  echo "Build first with: ./scripts/build_app.sh" >&2
   exit 1
 fi
 
