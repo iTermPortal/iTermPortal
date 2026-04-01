@@ -7,28 +7,44 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build app
-        run: ./scripts/build_applescript_app.sh
-
-      - name: Verify app bundle
+      - name: Build unsigned Debug app
         run: |
-          test -d "dist/iTermPortal.app"
-          /usr/libexec/PlistBuddy -c "Print :LSUIElement" "dist/iTermPortal.app/Contents/Info.plist"
-          /usr/libexec/PlistBuddy -c "Print :CFBundleIconFile" "dist/iTermPortal.app/Contents/Info.plist"
+          xcodebuild \
+            -project iTermPortal.xcodeproj \
+            -scheme iTermPortal \
+            -configuration Debug \
+            -derivedDataPath build/DerivedData \
+            build \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Verify bundle structure
+        run: |
+          APP="build/DerivedData/Build/Products/Debug/iTermPortal.app"
+          SYNC="$APP/Contents/PlugIns/iTermPortalSync.appex"
+          test -d "$APP"
+          test -d "$SYNC"
+          /usr/libexec/PlistBuddy -c "Print :NSExtension:NSExtensionPointIdentifier" \
+            "$SYNC/Contents/Info.plist" | grep "com.apple.FinderSync"
+          /usr/libexec/PlistBuddy -c "Print :LSUIElement" \
+            "$APP/Contents/Info.plist" | grep "true"
 
       - name: Package artifact
         run: |
-          rm -f dist/iTermPortal-macos.zip
-          ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
+          APP="build/DerivedData/Build/Products/Debug/iTermPortal.app"
+          rm -f build/iTermPortal-macos.zip
+          ditto -c -k --sequesterRsrc --keepParent "$APP" build/iTermPortal-macos.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: itermportal-macos-pr-build
-          path: dist/iTermPortal-macos.zip
+          path: build/iTermPortal-macos.zip
           if-no-files-found: error
           retention-days: 7

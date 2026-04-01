@@ -63,7 +63,13 @@ fastlane/test_output
 
 .DS_Store
 dist/
+build/DerivedData/
+build/*.xcarchive/
+build/Export/
+*.provisionprofile
+*.xcresult
 __pycache__/
 *.pyc
 .ssmver/
 .docs/
+.claude/

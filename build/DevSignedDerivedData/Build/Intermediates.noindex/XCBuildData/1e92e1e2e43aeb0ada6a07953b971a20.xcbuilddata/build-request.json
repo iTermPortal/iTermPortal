@@ -1,0 +1,65 @@
+{
+  "buildCommand" : {
+    "command" : "build",
+    "skipDependencies" : false,
+    "style" : "buildOnly"
+  },
+  "configuredTargets" : [
+    {
+      "guid" : "142557ab588f66866c84830f787314b7d0df461434ca30118582938bdf886761"
+    }
+  ],
+  "containerPath" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/iTermPortal.xcodeproj",
+  "continueBuildingAfterErrors" : false,
+  "dependencyScope" : "workspace",
+  "enableIndexBuildArena" : false,
+  "hideShellScriptEnvironment" : false,
+  "parameters" : {
+    "action" : "build",
+    "activeArchitecture" : "arm64",
+    "activeRunDestination" : {
+      "disableOnlyActiveArch" : false,
+      "platform" : "macosx",
+      "sdk" : "macosx15.5",
+      "sdkVariant" : "macos",
+      "supportedArchitectures" : [
+        "arm64e",
+        "arm64",
+        "x86_64"
+      ],
+      "targetArchitecture" : "arm64"
+    },
+    "arenaInfo" : {
+      "buildIntermediatesPath" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/DevSignedDerivedData/Build/Intermediates.noindex",
+      "buildProductsPath" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/DevSignedDerivedData/Build/Products",
+      "derivedDataPath" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/DevSignedDerivedData",
+      "indexDataStoreFolderPath" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/DevSignedDerivedData/Index.noindex/DataStore",
+      "indexEnableDataStore" : true,
+      "indexPCHPath" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/DevSignedDerivedData/Index.noindex/PrecompiledHeaders",
+      "pchPath" : "/Users/hjoncour/Projects/iTermPortal/iTermPortal/build/DevSignedDerivedData/Build/Intermediates.noindex/PrecompiledHeaders"
+    },
+    "configurationName" : "Debug",
+    "overrides" : {
+      "commandLine" : {
+        "table" : {
+          "CODE_SIGN_IDENTITY" : "Apple Development",
+          "CODE_SIGN_STYLE" : "Automatic",
+          "DEVELOPMENT_TEAM" : "WJHCD68D7C"
+        }
+      },
+      "synthesized" : {
+        "table" : {
+          "ACTION" : "build",
+          "ENABLE_PREVIEWS" : "NO",
+          "ENABLE_XOJIT_PREVIEWS" : "YES"
+        }
+      }
+    }
+  },
+  "schemeCommand" : "launch",
+  "showNonLoggedProgress" : true,
+  "useDryRun" : false,
+  "useImplicitDependencies" : true,
+  "useLegacyBuildLocations" : false,
+  "useParallelTargets" : true
+}

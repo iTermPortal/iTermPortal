@@ -25,7 +25,12 @@ jobs:
       APPLE_INSTALLER_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_INSTALLER_CERTIFICATE_PASSWORD }}
       APPLE_INSTALLER_DIST_CERTIFICATE: ${{ secrets.APPLE_INSTALLER_DIST_CERTIFICATE }}
       APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD }}
+      APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+      APPLE_SYNC_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_SYNC_PROVISIONING_PROFILE_BASE64 }}
+      APPLE_DIRECT_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_DIRECT_PROVISIONING_PROFILE_BASE64 }}
+      APPLE_DIRECT_SYNC_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_DIRECT_SYNC_PROVISIONING_PROFILE_BASE64 }}
       KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
       APPLE_API_KEY_ID_FPORTAL: ${{ secrets.APPLE_API_KEY_ID_FPORTAL }}
       APPLE_API_KEY_FPORTAL: ${{ secrets.APPLE_API_KEY_FPORTAL }}
@@ -33,7 +38,6 @@ jobs:
       APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
       APPLE_ID: ${{ secrets.APPLE_ID }}
       APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       APP_BUNDLE_ID_VAR: ${{ vars.APPLE_APP_BUNDLE_ID }}
       APP_BUNDLE_ID_SECRET: ${{ secrets.APPLE_APP_BUNDLE_ID }}
 
@@ -43,103 +47,115 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve release config and diagnostics
+      - name: Resolve bundle id and notarization mode
         shell: bash
         run: |
           set -euo pipefail
 
-          SIGNING_ENABLED=false
-          SIGNING_CERT_SOURCE="none"
-          if [[ -n "${APPLE_CERTIFICATE:-}" && -n "${APPLE_CERTIFICATE_PASSWORD:-}" ]]; then
-            SIGNING_ENABLED=true
-            SIGNING_CERT_SOURCE="APPLE_CERTIFICATE"
-          elif [[ -n "${APPLE_APP_DIST_CERTIFICATE:-}" && -n "${APPLE_APP_DIST_CERTIFICATE_PASSWORD:-}" ]]; then
-            SIGNING_ENABLED=true
-            SIGNING_CERT_SOURCE="APPLE_APP_DIST_CERTIFICATE"
+          APPLE_CERTIFICATE_RESOLVED="${APPLE_CERTIFICATE:-}"
+          if [[ -z "$APPLE_CERTIFICATE_RESOLVED" && -n "${APPLE_APP_DIST_CERTIFICATE:-}" ]]; then
+            APPLE_CERTIFICATE_RESOLVED="$APPLE_APP_DIST_CERTIFICATE"
           fi
 
-          INSTALLER_SIGNING_ENABLED=false
-          INSTALLER_CERT_SOURCE="none"
-          if [[ -n "${APPLE_INSTALLER_CERTIFICATE:-}" && -n "${APPLE_INSTALLER_CERTIFICATE_PASSWORD:-}" ]]; then
-            INSTALLER_SIGNING_ENABLED=true
-            INSTALLER_CERT_SOURCE="APPLE_INSTALLER_CERTIFICATE"
-          elif [[ -n "${APPLE_INSTALLER_DIST_CERTIFICATE:-}" && -n "${APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD:-}" ]]; then
-            INSTALLER_SIGNING_ENABLED=true
-            INSTALLER_CERT_SOURCE="APPLE_INSTALLER_DIST_CERTIFICATE"
+          APPLE_CERTIFICATE_PASSWORD_RESOLVED="${APPLE_CERTIFICATE_PASSWORD:-}"
+          if [[ -z "$APPLE_CERTIFICATE_PASSWORD_RESOLVED" && -n "${APPLE_APP_DIST_CERTIFICATE_PASSWORD:-}" ]]; then
+            APPLE_CERTIFICATE_PASSWORD_RESOLVED="$APPLE_APP_DIST_CERTIFICATE_PASSWORD"
           fi
 
-          if [[ ("$SIGNING_ENABLED" == "true" || "$INSTALLER_SIGNING_ENABLED" == "true") && -z "${KEYCHAIN_PASSWORD:-}" ]]; then
-            echo "::error::KEYCHAIN_PASSWORD is required when a signing certificate is configured."
+          APPLE_DIRECT_PROVISIONING_PROFILE_BASE64_RESOLVED="${APPLE_DIRECT_PROVISIONING_PROFILE_BASE64:-}"
+          if [[ -z "$APPLE_DIRECT_PROVISIONING_PROFILE_BASE64_RESOLVED" && -n "${APPLE_PROVISIONING_PROFILE_BASE64:-}" ]]; then
+            APPLE_DIRECT_PROVISIONING_PROFILE_BASE64_RESOLVED="$APPLE_PROVISIONING_PROFILE_BASE64"
+          fi
+
+          APPLE_DIRECT_SYNC_PROVISIONING_PROFILE_BASE64_RESOLVED="${APPLE_DIRECT_SYNC_PROVISIONING_PROFILE_BASE64:-}"
+          if [[ -z "$APPLE_DIRECT_SYNC_PROVISIONING_PROFILE_BASE64_RESOLVED" && -n "${APPLE_SYNC_PROVISIONING_PROFILE_BASE64:-}" ]]; then
+            APPLE_DIRECT_SYNC_PROVISIONING_PROFILE_BASE64_RESOLVED="$APPLE_SYNC_PROVISIONING_PROFILE_BASE64"
+          fi
+
+          APP_BUNDLE_ID="${APP_BUNDLE_ID_VAR:-}"
+          if [[ -z "$APP_BUNDLE_ID" && -n "${APP_BUNDLE_ID_SECRET:-}" ]]; then
+            APP_BUNDLE_ID="$APP_BUNDLE_ID_SECRET"
+          fi
+          if [[ -z "$APP_BUNDLE_ID" ]]; then
+            APP_BUNDLE_ID="com.hjoncour.fPortal"
+          fi
+          if [[ "$APP_BUNDLE_ID" != "com.hjoncour.fPortal" ]]; then
+            echo "::error::This project currently expects bundle id com.hjoncour.fPortal, got '$APP_BUNDLE_ID'."
             exit 1
           fi
+          APP_EXTENSION_BUNDLE_ID="${APP_BUNDLE_ID}.FinderExtension"
 
-          PKG_ENABLED=false
-          if [[ "$SIGNING_ENABLED" == "true" && "$INSTALLER_SIGNING_ENABLED" == "true" ]]; then
-            PKG_ENABLED=true
-          fi
-
-          APPLE_API_KEY_RESOLVED=""
-          API_KEY_SOURCE="none"
-          if [[ -n "${APPLE_API_KEY:-}" ]]; then
-            APPLE_API_KEY_RESOLVED="$APPLE_API_KEY"
-            API_KEY_SOURCE="APPLE_API_KEY"
-          elif [[ -n "${APPLE_API_KEY_ID_FPORTAL:-}" ]]; then
+          APPLE_API_KEY_RESOLVED="${APPLE_API_KEY:-}"
+          if [[ -z "$APPLE_API_KEY_RESOLVED" && -n "${APPLE_API_KEY_ID_FPORTAL:-}" ]]; then
             APPLE_API_KEY_RESOLVED="$APPLE_API_KEY_ID_FPORTAL"
-            API_KEY_SOURCE="APPLE_API_KEY_ID_FPORTAL"
-          elif [[ -n "${APPLE_API_KEY_FPORTAL:-}" ]]; then
+          fi
+          if [[ -z "$APPLE_API_KEY_RESOLVED" && -n "${APPLE_API_KEY_FPORTAL:-}" ]]; then
             APPLE_API_KEY_RESOLVED="$APPLE_API_KEY_FPORTAL"
-            API_KEY_SOURCE="APPLE_API_KEY_FPORTAL"
           fi
 
-          NOTARIZE_ENABLED=false
           if [[ -n "$APPLE_API_KEY_RESOLVED" && -n "${APPLE_API_ISSUER:-}" && -n "${APPLE_API_KEY_P8:-}" ]]; then
-            NOTARIZE_ENABLED=true
+            NOTARIZE_MODE="api_key"
           elif [[ -n "${APPLE_ID:-}" && -n "${APPLE_PASSWORD:-}" && -n "${APPLE_TEAM_ID:-}" ]]; then
-            NOTARIZE_ENABLED=true
+            NOTARIZE_MODE="apple_id"
+          else
+            NOTARIZE_MODE="skip"
           fi
 
-          RELEASE_BUNDLE_ID="${APP_BUNDLE_ID_VAR:-}"
-          if [[ -z "$RELEASE_BUNDLE_ID" && -n "${APP_BUNDLE_ID_SECRET:-}" ]]; then
-            RELEASE_BUNDLE_ID="$APP_BUNDLE_ID_SECRET"
-          fi
-          if [[ -z "$RELEASE_BUNDLE_ID" ]]; then
-            RELEASE_BUNDLE_ID="com.hjoncour.fportal"
-          fi
+          echo "APP_BUNDLE_ID=$APP_BUNDLE_ID" >> "$GITHUB_ENV"
+          echo "APP_EXTENSION_BUNDLE_ID=$APP_EXTENSION_BUNDLE_ID" >> "$GITHUB_ENV"
+          echo "APPLE_CERTIFICATE_RESOLVED=$APPLE_CERTIFICATE_RESOLVED" >> "$GITHUB_ENV"
+          echo "APPLE_CERTIFICATE_PASSWORD_RESOLVED=$APPLE_CERTIFICATE_PASSWORD_RESOLVED" >> "$GITHUB_ENV"
+          echo "APPLE_DIRECT_PROVISIONING_PROFILE_BASE64_RESOLVED=$APPLE_DIRECT_PROVISIONING_PROFILE_BASE64_RESOLVED" >> "$GITHUB_ENV"
+          echo "APPLE_DIRECT_SYNC_PROVISIONING_PROFILE_BASE64_RESOLVED=$APPLE_DIRECT_SYNC_PROVISIONING_PROFILE_BASE64_RESOLVED" >> "$GITHUB_ENV"
+          echo "APPLE_API_KEY_RESOLVED=$APPLE_API_KEY_RESOLVED" >> "$GITHUB_ENV"
+          echo "NOTARIZE_MODE=$NOTARIZE_MODE" >> "$GITHUB_ENV"
 
-          {
-            echo "SIGNING_ENABLED=$SIGNING_ENABLED"
-            echo "SIGNING_CERT_SOURCE=$SIGNING_CERT_SOURCE"
-            echo "INSTALLER_SIGNING_ENABLED=$INSTALLER_SIGNING_ENABLED"
-            echo "INSTALLER_CERT_SOURCE=$INSTALLER_CERT_SOURCE"
-            echo "PKG_ENABLED=$PKG_ENABLED"
-            echo "NOTARIZE_ENABLED=$NOTARIZE_ENABLED"
-            echo "APPLE_API_KEY_RESOLVED=$APPLE_API_KEY_RESOLVED"
-            echo "API_KEY_SOURCE=$API_KEY_SOURCE"
-            echo "RELEASE_BUNDLE_ID=$RELEASE_BUNDLE_ID"
-          } >> "$GITHUB_ENV"
+      - name: Validate required signing secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(
+            APPLE_CERTIFICATE_RESOLVED
+            APPLE_CERTIFICATE_PASSWORD_RESOLVED
+            APPLE_DIRECT_PROVISIONING_PROFILE_BASE64_RESOLVED
+            APPLE_DIRECT_SYNC_PROVISIONING_PROFILE_BASE64_RESOLVED
+            KEYCHAIN_PASSWORD
+            APPLE_TEAM_ID
+          )
+          for key in "${required[@]}"; do
+            if [[ -z "${!key:-}" ]]; then
+              echo "::error::Missing required value: $key"
+              exit 1
+            fi
+          done
 
-          echo "Release preflight:"
-          echo "  ref: ${GITHUB_REF_NAME}"
-          echo "  commit: ${GITHUB_SHA:0:7}"
-          echo "  signing enabled: $SIGNING_ENABLED"
-          echo "  signing cert source: $SIGNING_CERT_SOURCE"
-          echo "  installer signing enabled: $INSTALLER_SIGNING_ENABLED"
-          echo "  installer cert source: $INSTALLER_CERT_SOURCE"
-          echo "  pkg asset enabled: $PKG_ENABLED"
-          echo "  notarization enabled: $NOTARIZE_ENABLED"
-          echo "  api key source: $API_KEY_SOURCE"
-          echo "  release bundle id: $RELEASE_BUNDLE_ID"
-          echo "  api issuer present: $([[ -n \"${APPLE_API_ISSUER:-}\" ]] && echo yes || echo no)"
-          echo "  p8 present: $([[ -n \"${APPLE_API_KEY_P8:-}\" ]] && echo yes || echo no)"
-          echo "  apple-id fallback present: $([[ -n \"${APPLE_ID:-}\" && -n \"${APPLE_PASSWORD:-}\" && -n \"${APPLE_TEAM_ID:-}\" ]] && echo yes || echo no)"
+      - name: Install direct distribution profiles
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILES_DIR"
 
-      - name: Import Apple signing certificate
-        if: ${{ env.SIGNING_ENABLED == 'true' || env.INSTALLER_SIGNING_ENABLED == 'true' }}
+          echo "$APPLE_DIRECT_PROVISIONING_PROFILE_BASE64_RESOLVED" | base64 --decode > /tmp/main-direct.provisionprofile
+          MAIN_UUID=$(security cms -D -i /tmp/main-direct.provisionprofile | \
+            /usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin)
+          cp /tmp/main-direct.provisionprofile "$PROFILES_DIR/$MAIN_UUID.provisionprofile"
+
+          echo "$APPLE_DIRECT_SYNC_PROVISIONING_PROFILE_BASE64_RESOLVED" | base64 --decode > /tmp/sync-direct.provisionprofile
+          SYNC_UUID=$(security cms -D -i /tmp/sync-direct.provisionprofile | \
+            /usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin)
+          cp /tmp/sync-direct.provisionprofile "$PROFILES_DIR/$SYNC_UUID.provisionprofile"
+
+          echo "MAIN_UUID=$MAIN_UUID" >> "$GITHUB_ENV"
+          echo "SYNC_UUID=$SYNC_UUID" >> "$GITHUB_ENV"
+
+      - name: Import Developer ID certificate
         shell: bash
         run: |
           set -euxo pipefail
 
-          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+          echo "$APPLE_CERTIFICATE_RESOLVED" | base64 --decode > developer_id.p12
+          KEYCHAIN_PATH="$RUNNER_TEMP/release-build.keychain-db"
           echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
 
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
@@ -148,302 +164,146 @@ jobs:
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -t 3600 -u "$KEYCHAIN_PATH"
 
-          if [[ "$SIGNING_ENABLED" == "true" ]]; then
-            CERT_B64=""
-            CERT_PASS=""
-            if [[ "$SIGNING_CERT_SOURCE" == "APPLE_CERTIFICATE" ]]; then
-              CERT_B64="$APPLE_CERTIFICATE"
-              CERT_PASS="$APPLE_CERTIFICATE_PASSWORD"
-            elif [[ "$SIGNING_CERT_SOURCE" == "APPLE_APP_DIST_CERTIFICATE" ]]; then
-              CERT_B64="$APPLE_APP_DIST_CERTIFICATE"
-              CERT_PASS="$APPLE_APP_DIST_CERTIFICATE_PASSWORD"
-            else
-              echo "::error::Unknown SIGNING_CERT_SOURCE: $SIGNING_CERT_SOURCE"
-              exit 1
-            fi
+          security import developer_id.p12 -A -k "$KEYCHAIN_PATH" -P "$APPLE_CERTIFICATE_PASSWORD_RESOLVED" \
+            -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/xcrun
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
-            echo "$CERT_B64" | base64 --decode > certificate.p12
-            security import certificate.p12 -A -k "$KEYCHAIN_PATH" -P "$CERT_PASS" \
-              -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/xcrun -T /usr/bin/productbuild
-            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          APP_SIGNING_IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
+            awk -F\" '/Developer ID Application/ {print $2; exit}')
 
-            echo "Available code-sign identities:"
+          if [[ -z "$APP_SIGNING_IDENTITY" ]]; then
+            echo "::error::No Developer ID Application signing identity found."
             security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
-
-            # Prefer Developer ID Application for direct distribution (enables notarization).
-            # Fall back to Apple Distribution if that's all that's available, but notarization
-            # will be skipped — Gatekeeper will warn users without a Developer ID cert.
-            CERT_ID=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
-              awk -F\" '/Developer ID Application/ {print $2; exit}')
-            if [[ -z "$CERT_ID" ]]; then
-              CERT_ID=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
-                awk -F\" '/Apple Distribution|Mac App Distribution|3rd Party Mac Developer Application/ {print $2; exit}')
-              if [[ -n "$CERT_ID" ]]; then
-                echo "::warning::Using App Store distribution cert for signing. Notarization requires a Developer ID Application cert — releases will show a Gatekeeper warning. Add APPLE_CERTIFICATE (Developer ID Application) to fix this."
-                echo "NOTARIZE_ENABLED=false" >> "$GITHUB_ENV"
-              fi
-            fi
-            if [[ -z "$CERT_ID" ]]; then
-              echo "::error::No compatible app signing identity found in imported certificate."
-              security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
-              exit 1
-            fi
-
-            echo "APPLE_SIGNING_IDENTITY=$CERT_ID" >> "$GITHUB_ENV"
-            echo "CODESIGN_ALLOCATE=$(xcrun -f codesign_allocate)" >> "$GITHUB_ENV"
-          fi
-
-          if [[ "$INSTALLER_SIGNING_ENABLED" == "true" ]]; then
-            INSTALLER_CERT_B64=""
-            INSTALLER_CERT_PASS=""
-            if [[ "$INSTALLER_CERT_SOURCE" == "APPLE_INSTALLER_CERTIFICATE" ]]; then
-              INSTALLER_CERT_B64="$APPLE_INSTALLER_CERTIFICATE"
-              INSTALLER_CERT_PASS="$APPLE_INSTALLER_CERTIFICATE_PASSWORD"
-            elif [[ "$INSTALLER_CERT_SOURCE" == "APPLE_INSTALLER_DIST_CERTIFICATE" ]]; then
-              INSTALLER_CERT_B64="$APPLE_INSTALLER_DIST_CERTIFICATE"
-              INSTALLER_CERT_PASS="$APPLE_INSTALLER_DIST_CERTIFICATE_PASSWORD"
-            else
-              echo "::error::Unknown INSTALLER_CERT_SOURCE: $INSTALLER_CERT_SOURCE"
-              exit 1
-            fi
-
-            echo "$INSTALLER_CERT_B64" | base64 --decode > installer_certificate.p12
-            security import installer_certificate.p12 -A -k "$KEYCHAIN_PATH" -P "$INSTALLER_CERT_PASS" \
-              -T /usr/bin/productbuild -T /usr/bin/productsign -T /usr/bin/security -T /usr/bin/xcrun
-            security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-
-            echo "Available installer identities:"
-            security find-identity -v -p basic "$KEYCHAIN_PATH" || true
-
-            INSTALLER_ID=$(security find-identity -v -p basic "$KEYCHAIN_PATH" | \
-              awk -F\" '/Developer ID Installer|Mac Installer Distribution|3rd Party Mac Developer Installer/ {print $2; exit}')
-            if [[ -z "$INSTALLER_ID" ]]; then
-              echo "::error::No compatible installer signing identity found in imported installer certificate."
-              security find-identity -v -p basic "$KEYCHAIN_PATH" || true
-              exit 1
-            fi
-
-            echo "INSTALLER_SIGNING_IDENTITY=$INSTALLER_ID" >> "$GITHUB_ENV"
-          fi
-
-      - name: Write App Store Connect API key file (optional)
-        if: ${{ env.NOTARIZE_ENABLED == 'true' && env.APPLE_API_KEY_P8 != '' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          printf "%s" "$APPLE_API_KEY_P8" > AuthKey.p8
-
-      - name: Build app
-        env:
-          FPORTAL_BUNDLE_ID: ${{ env.RELEASE_BUNDLE_ID }}
-        run: ./scripts/build_applescript_app.sh
-
-      - name: Re-sign app
-        if: ${{ env.SIGNING_ENABLED == 'true' }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          APP_PATH="dist/iTermPortal.app"
-          HELPER_PATH="$APP_PATH/Contents/Library/LoginItems/iTermPortalMenu.app"
-
-          # Remove resource forks / Finder metadata that codesign rejects.
-          xattr -cr "$APP_PATH"
-
-          # Strip existing signatures.
-          /usr/bin/codesign --remove-signature "$HELPER_PATH" 2>/dev/null || true
-          /usr/bin/codesign --remove-signature "$APP_PATH" 2>/dev/null || true
-
-          # Sign inside-out: helper first (no sandbox for direct distribution).
-          /usr/bin/codesign --force \
-            --options runtime \
-            --timestamp \
-            --keychain "$KEYCHAIN_PATH" \
-            -s "$APPLE_SIGNING_IDENTITY" \
-            "$HELPER_PATH"
-
-          # Sign main app with apple-events entitlement (required for AppleScript).
-          /usr/bin/codesign --force \
-            --entitlements config/entitlements/direct-install.plist \
-            --options runtime \
-            --timestamp \
-            --keychain "$KEYCHAIN_PATH" \
-            -s "$APPLE_SIGNING_IDENTITY" \
-            "$APP_PATH"
-
-          /usr/bin/codesign --verify --deep --strict --verbose=4 "$APP_PATH"
-
-      - name: Validate app bundle metadata
-        shell: bash
-        run: |
-          set -euxo pipefail
-          APP_PATH="dist/iTermPortal.app"
-          INFO_PLIST="$APP_PATH/Contents/Info.plist"
-          [[ -d "$APP_PATH" ]] || { echo "::error::Missing $APP_PATH"; exit 1; }
-          [[ -d "$APP_PATH/Contents" ]] || { echo "::error::Missing $APP_PATH/Contents"; exit 1; }
-          [[ -f "$INFO_PLIST" ]] || { echo "::error::Missing $INFO_PLIST"; exit 1; }
-          /usr/libexec/PlistBuddy -c "Print :CFBundlePackageType" "$INFO_PLIST"
-          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$INFO_PLIST"
-          /usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$INFO_PLIST"
-
-      - name: Warn if release is unsigned
-        if: ${{ env.SIGNING_ENABLED != 'true' }}
-        run: |
-          echo "::warning::No signing certificate configured; publishing unsigned build artifact."
-
-      - name: Notarize and staple app
-        id: notarize_app
-        if: ${{ env.NOTARIZE_ENABLED == 'true' && env.SIGNING_ENABLED == 'true' }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-
-          # Package the app into a zip for submission.
-          rm -f dist/iTermPortal-macos.zip
-          ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
-
-          notarize_submit() {
-            local target="$1"
-            local result_file="$2"
-            if [[ -f AuthKey.p8 && -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" ]]; then
-              xcrun notarytool submit "$target" \
-                --key ./AuthKey.p8 --key-id "$APPLE_API_KEY_RESOLVED" --issuer "$APPLE_API_ISSUER" \
-                --wait --output-format json | tee "$result_file"
-            else
-              xcrun notarytool submit "$target" \
-                --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_PASSWORD" \
-                --wait --output-format json | tee "$result_file"
-            fi
-
-            STATUS=$(python3 -c "import json; print(json.load(open('$result_file')).get('status',''))" 2>/dev/null || echo "")
-            SUBMISSION_ID=$(python3 -c "import json; print(json.load(open('$result_file')).get('id',''))" 2>/dev/null || echo "")
-
-            if [[ "$STATUS" != "Accepted" ]]; then
-              echo "::error::Notarization was not accepted for $target. Status: '$STATUS'"
-              # Fetch the detailed log from Apple so we can see exactly what failed.
-              if [[ -n "$SUBMISSION_ID" ]]; then
-                echo "Fetching notarization log for submission $SUBMISSION_ID ..."
-                if [[ -f AuthKey.p8 && -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" ]]; then
-                  xcrun notarytool log "$SUBMISSION_ID" \
-                    --key ./AuthKey.p8 --key-id "$APPLE_API_KEY_RESOLVED" --issuer "$APPLE_API_ISSUER" \
-                    2>&1 || true
-                else
-                  xcrun notarytool log "$SUBMISSION_ID" \
-                    --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_PASSWORD" \
-                    2>&1 || true
-                fi
-              fi
-              exit 1
-            fi
-            echo "Notarization accepted for $target (submission $SUBMISSION_ID)."
-          }
-
-          notarize_submit "dist/iTermPortal-macos.zip" "notary-result.json"
-
-          # Staple the notarization ticket to the app, then repackage the zip.
-          xcrun stapler staple -v dist/iTermPortal.app
-          rm -f dist/iTermPortal-macos.zip
-          ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
-
-      - name: Package app (no notarization)
-        if: ${{ steps.notarize_app.outcome == 'skipped' }}
-        run: |
-          rm -f dist/iTermPortal-macos.zip
-          ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
-
-      - name: Build signed installer package (.pkg)
-        if: ${{ env.PKG_ENABLED == 'true' }}
-        timeout-minutes: 10
-        shell: bash
-        run: |
-          set -euxo pipefail
-          rm -f dist/iTermPortal-direct-install.pkg dist/iTermPortal-direct-install-unsigned.pkg
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          # Build from the already-notarized and stapled app.
-          productbuild \
-            --component "dist/iTermPortal.app" /Applications \
-            "dist/iTermPortal-direct-install-unsigned.pkg"
-          productsign \
-            --sign "$INSTALLER_SIGNING_IDENTITY" \
-            --keychain "$KEYCHAIN_PATH" \
-            "dist/iTermPortal-direct-install-unsigned.pkg" \
-            "dist/iTermPortal-direct-install.pkg"
-          rm -f "dist/iTermPortal-direct-install-unsigned.pkg"
-          ls -lh "dist/iTermPortal-direct-install.pkg"
-          pkgutil --check-signature "dist/iTermPortal-direct-install.pkg"
-
-      - name: Notarize and staple pkg
-        id: notarize_pkg
-        if: ${{ env.PKG_ENABLED == 'true' && env.NOTARIZE_ENABLED == 'true' }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-
-          if [[ -f AuthKey.p8 && -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" ]]; then
-            xcrun notarytool submit "dist/iTermPortal-direct-install.pkg" \
-              --key ./AuthKey.p8 --key-id "$APPLE_API_KEY_RESOLVED" --issuer "$APPLE_API_ISSUER" \
-              --wait --output-format json | tee notary-result-pkg.json
-          else
-            xcrun notarytool submit "dist/iTermPortal-direct-install.pkg" \
-              --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_PASSWORD" \
-              --wait --output-format json | tee notary-result-pkg.json
-          fi
-
-          STATUS=$(python3 -c "import json; print(json.load(open('notary-result-pkg.json')).get('status',''))" 2>/dev/null || echo "")
-          SUBMISSION_ID=$(python3 -c "import json; print(json.load(open('notary-result-pkg.json')).get('id',''))" 2>/dev/null || echo "")
-          if [[ "$STATUS" != "Accepted" ]]; then
-            echo "::error::PKG notarization was not accepted. Status: '$STATUS'"
-            if [[ -n "$SUBMISSION_ID" ]]; then
-              echo "Fetching notarization log for submission $SUBMISSION_ID ..."
-              if [[ -f AuthKey.p8 && -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" ]]; then
-                xcrun notarytool log "$SUBMISSION_ID" \
-                  --key ./AuthKey.p8 --key-id "$APPLE_API_KEY_RESOLVED" --issuer "$APPLE_API_ISSUER" \
-                  2>&1 || true
-              else
-                xcrun notarytool log "$SUBMISSION_ID" \
-                  --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_PASSWORD" \
-                  2>&1 || true
-              fi
-            fi
             exit 1
           fi
 
-          xcrun stapler staple -v dist/iTermPortal-direct-install.pkg
+          echo "APP_SIGNING_IDENTITY=$APP_SIGNING_IDENTITY" >> "$GITHUB_ENV"
 
-      - name: Warn if signed installer package is unavailable
-        if: ${{ env.PKG_ENABLED != 'true' }}
+      - name: Write App Store Connect API key file
+        if: ${{ env.NOTARIZE_MODE == 'api_key' }}
+        shell: bash
         run: |
-          echo "::warning::Signed direct-install package (.pkg) was not created. Configure both app cert and installer cert secrets to enable it."
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/private_keys"
+          KEY_FILE="$RUNNER_TEMP/private_keys/AuthKey_${APPLE_API_KEY_RESOLVED}.p8"
+          printf "%s" "$APPLE_API_KEY_P8" > "$KEY_FILE"
+          echo "AUTH_KEY_PATH=$KEY_FILE" >> "$GITHUB_ENV"
+
+      - name: Archive direct-install app
+        shell: bash
+        run: |
+          set -euxo pipefail
+          APP_VERSION="$(grep -m1 '^version' ssmver.toml | sed 's/.*= *\"//;s/\"//')"
+          xcodebuild archive \
+            -project iTermPortal.xcodeproj \
+            -scheme iTermPortal \
+            -configuration DirectInstall \
+            -archivePath build/iTermPortal.xcarchive \
+            -derivedDataPath build/DerivedData \
+            MARKETING_VERSION="$APP_VERSION" \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="$APP_SIGNING_IDENTITY" \
+            OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN_PATH"
+
+      - name: Export Developer ID app
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cat > /tmp/ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <plist version="1.0"><dict>
+            <key>method</key><string>developer-id</string>
+            <key>teamID</key><string>$APPLE_TEAM_ID</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>provisioningProfiles</key><dict>
+              <key>$APP_BUNDLE_ID</key><string>$MAIN_UUID</string>
+              <key>$APP_EXTENSION_BUNDLE_ID</key><string>$SYNC_UUID</string>
+            </dict>
+          </dict></plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath build/iTermPortal.xcarchive \
+            -exportPath build/Export \
+            -exportOptionsPlist /tmp/ExportOptions.plist
+
+      - name: Verify exported app
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_EXPORT="$(find build/Export -maxdepth 1 -name '*.app' | head -n1)"
+          if [[ -z "$APP_EXPORT" ]]; then
+            echo "::error::No exported .app found in build/Export"
+            exit 1
+          fi
+          SYNC="$APP_EXPORT/Contents/PlugIns/iTermPortalSync.appex"
+          test -d "$SYNC"
+          /usr/libexec/PlistBuddy -c "Print :NSExtension:NSExtensionPointIdentifier" \
+            "$SYNC/Contents/Info.plist" | grep -q "com.apple.FinderSync"
+          echo "APP_EXPORT=$APP_EXPORT" >> "$GITHUB_ENV"
+
+      - name: Package app zip
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -f build/iTermPortal-macos.zip
+          ditto -c -k --sequesterRsrc --keepParent "$APP_EXPORT" build/iTermPortal-macos.zip
+
+      - name: Notarize and staple zip
+        if: ${{ env.NOTARIZE_MODE != 'skip' }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          if [[ "$NOTARIZE_MODE" == "api_key" ]]; then
+            xcrun notarytool submit build/iTermPortal-macos.zip \
+              --key "$AUTH_KEY_PATH" \
+              --key-id "$APPLE_API_KEY_RESOLVED" \
+              --issuer "$APPLE_API_ISSUER" \
+              --wait --output-format json | tee notary-result.json
+          else
+            xcrun notarytool submit build/iTermPortal-macos.zip \
+              --apple-id "$APPLE_ID" \
+              --team-id "$APPLE_TEAM_ID" \
+              --password "$APPLE_PASSWORD" \
+              --wait --output-format json | tee notary-result.json
+          fi
+
+          STATUS=$(python3 -c "import json; print(json.load(open('notary-result.json')).get('status',''))")
+          if [[ "$STATUS" != "Accepted" ]]; then
+            echo "::error::Notarization was not accepted. Status: '$STATUS'"
+            exit 1
+          fi
+
+          xcrun stapler staple -v "$APP_EXPORT"
+          rm -f build/iTermPortal-macos.zip
+          ditto -c -k --sequesterRsrc --keepParent "$APP_EXPORT" build/iTermPortal-macos.zip
+
+      - name: Warn if notarization was skipped
+        if: ${{ env.NOTARIZE_MODE == 'skip' }}
+        run: |
+          echo "::warning::Notarization credentials were not configured. Published zip is signed but not notarized."
 
       - name: Derive release metadata
         id: meta
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! -f ssmver.toml ]]; then
-            echo "::error::Missing ssmver.toml file."
-            exit 1
-          fi
-          VERSION="$(grep -m1 '^version' ssmver.toml | sed 's/.*= *"//;s/"//')"
-          if [[ -z "$VERSION" ]]; then
-            echo "::error::No version found in ssmver.toml."
-            exit 1
-          fi
+          VERSION="$(grep -m1 '^version' ssmver.toml | sed 's/.*= *\"//;s/\"//')"
           SHORT_SHA="${GITHUB_SHA:0:7}"
           TS="$(date -u +'%Y%m%d%H%M%S')"
-          TAG="v${VERSION}-${TS}-${SHORT_SHA}"
-          NAME="iTermPortal ${VERSION} (${SHORT_SHA})"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "tag=v${VERSION}-${TS}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "name=iTermPortal ${VERSION} (${SHORT_SHA})" >> "$GITHUB_OUTPUT"
 
-      - name: Upload release artifact (debug)
+      - name: Upload release artifact
         uses: actions/upload-artifact@v4
         with:
           name: itermportal-release-${{ github.run_number }}
           path: |
-            dist/iTermPortal-macos.zip
-            dist/iTermPortal-direct-install.pkg
+            build/iTermPortal-macos.zip
             notary-result.json
-          if-no-files-found: ignore
+          if-no-files-found: error
           retention-days: 7
 
       - name: Create GitHub release
@@ -453,22 +313,16 @@ jobs:
           tag_name: ${{ steps.meta.outputs.tag }}
           name: ${{ steps.meta.outputs.name }}
           generate_release_notes: true
-          files: |
-            dist/iTermPortal-macos.zip
-            dist/iTermPortal-direct-install.pkg
+          files: build/iTermPortal-macos.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Print release URL
-        if: ${{ steps.gh_release.outcome == 'success' }}
-        run: |
-          echo "Release created: ${{ steps.gh_release.outputs.url }}"
 
       - name: Cleanup
         if: always()
         shell: bash
         run: |
-          rm -f certificate.p12 installer_certificate.p12 AuthKey.p8
+          rm -f developer_id.p12 notary-result.json /tmp/main-direct.provisionprofile /tmp/sync-direct.provisionprofile
+          rm -rf "$RUNNER_TEMP/private_keys"
           if [[ -n "${KEYCHAIN_PATH:-}" ]]; then
             security delete-keychain "$KEYCHAIN_PATH" || true
           fi

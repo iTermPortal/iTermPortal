@@ -1,0 +1,4 @@
+Target dependency graph (2 targets)
+Target 'iTermPortal' in project 'iTermPortal'
+➜ Explicit dependency on target 'iTermPortalSync' in project 'iTermPortal'
+Target 'iTermPortalSync' in project 'iTermPortal' (no dependencies)
