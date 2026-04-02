@@ -3,7 +3,7 @@ use scripting additions
 property appTitle : "Open Terminal Here"
 
 on run
-	my openTerminalForFinderContext(missing value)
+	my ensureMenuBarHelperRunning()
 end run
 
 on reopen
@@ -26,11 +26,12 @@ on openTerminalForFinderContext(inputItems)
 end openTerminalForFinderContext
 
 on resolveTargetPath(inputItems)
+	set pathFromOpenEvent to my pathFromInputItems(inputItems)
+	if pathFromOpenEvent is not missing value then return pathFromOpenEvent
+
 	try
 		return my resolvePathFromFinder()
 	on error
-		set pathFromOpenEvent to my pathFromInputItems(inputItems)
-		if pathFromOpenEvent is not missing value then return pathFromOpenEvent
 		error "Open a Finder window and try again."
 	end try
 end resolveTargetPath
