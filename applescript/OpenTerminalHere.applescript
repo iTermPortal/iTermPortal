@@ -24,7 +24,7 @@ on openTerminalForFinderContext(inputItems)
 		if targetPath is missing value or targetPath is "" then error "Could not resolve a Finder folder."
 		my launchTerminal(targetPath)
 	on error errMsg
-		display alert appTitle message errMsg as critical
+		error errMsg
 	end try
 end openTerminalForFinderContext
 
@@ -41,16 +41,16 @@ end resolveTargetPath
 
 on resolvePathFromFinder()
 	tell application "Finder"
-		if not (exists Finder window 1) then error "Open a Finder window and try again."
+		if not (exists window 1) then error "Open a Finder window and try again."
 
-		set selectedItems to selection as alias list
+		set selectedItems to selection
 		if (count of selectedItems) > 0 then
 			set firstSelection to item 1 of selectedItems
-			set selectedPath to POSIX path of firstSelection
+			set selectedPath to POSIX path of (firstSelection as alias)
 			return my directoryForPath(selectedPath)
 		end if
 
-		set currentTarget to (target of front Finder window) as alias
+		set currentTarget to (target of front window) as alias
 		return POSIX path of currentTarget
 	end tell
 end resolvePathFromFinder
@@ -244,14 +244,6 @@ on launchTerminalAppNewTab(targetPath)
 				do script cdCommand in front window
 			end tell
 		else
-			-- System Events failed — likely missing Accessibility permissions.
-			try
-				display dialog "iTermPortal needs Accessibility permissions to open new tabs in Terminal." & return & return & "Go to System Settings > Privacy & Security > Accessibility, then add iTermPortal." buttons {"Open System Settings", "Use New Window"} default button "Open System Settings" with icon caution
-				set userChoice to button returned of result
-				if userChoice is "Open System Settings" then
-					do shell script "open 'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility'"
-				end if
-			end try
 			my launchTerminalAppNewTerminal(targetPath)
 		end if
 	on error

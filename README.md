@@ -36,12 +36,11 @@ Uses [ssmver](https://github.com/hjoncour/ssmver)
 Workflows:
 - `build.yaml`: PR build validation
 - `app-store-release-test.yaml`: Mac App Store package pipeline (`[release]` trigger, optional manual upload)
-- `release.yaml`: push to `main`/`master` builds and publishes GitHub Release assets (`iTermPortal-macos.zip` + optional signed `iTermPortal-direct-install.pkg`)
+- `release.yaml`: pushes to `master` derive `vX.Y.Z` from `ssmver.toml`, update that GitHub Release, and update the Homebrew tap cask (`iTermPortal-macos.zip` + optional signed `iTermPortal-direct-install.pkg`)
 - `certificate.yaml`: macOS certificate/notarization preflight
 
 Setup guide (all variables + macOS cert instructions):
-- `docs/github-actions.md`
-- `docs/app-store-release.md`
+- `docs/homebrew-release.md`
 
 ## Add to Finder Toolbar
 
@@ -54,11 +53,3 @@ Setup guide (all variables + macOS cert instructions):
 
 On first use, macOS may prompt for Automation permissions so the app can read Finder context.
 Grant once; repeated clicks should run without prompts.
-
-## Acceptance Checks
-
-1. Open Finder at `/Users/hjoncour/Projects`, click icon, run `pwd` in Terminal.
-2. Open Finder at `/Users/hjoncour/Downloads/studio/test_linkedin_9f7a1e80/frames`, click icon, run `pwd`.
-3. Select a file in Finder, click icon, verify Terminal opens in the containing folder.
-4. Restart Finder (`Option` + right-click Finder in Dock -> `Relaunch`), confirm toolbar icon remains and still works.
-5. Click repeatedly while changing folders; each click should open in the folder visible at click time.

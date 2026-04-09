@@ -1,0 +1,27 @@
+diff --git a/swift/ITermPortalStatusBar.swift b/swift/ITermPortalStatusBar.swift
+index 6595e8b..478e7cc 100644
+--- a/swift/ITermPortalStatusBar.swift
++++ b/swift/ITermPortalStatusBar.swift
+@@ -65,12 +65,16 @@ private enum PreferenceStore {
+     }
+
+     private static func baseSettingsURL() -> URL {
+-        let appSupport = FileManager.default.urls(
+-            for: .applicationSupportDirectory,
+-            in: .userDomainMask
+-        ).first!
+-        return appSupport
+-            .appendingPathComponent("iTermPortal", isDirectory: true)
++        // Use the passwd-entry home to bypass sandbox container redirection,
++        // so the AppleScript host app can read the same settings files.
++        let realHome: String
++        if let pw = getpwuid(getuid()), let dir = pw.pointee.pw_dir {
++            realHome = String(cString: dir)
++        } else {
++            realHome = NSHomeDirectory()
++        }
++        return URL(fileURLWithPath: realHome, isDirectory: true)
++            .appendingPathComponent("Library/Application Support/iTermPortal", isDirectory: true)
+     }
+
+     private static func terminalSettingsURL() -> URL {

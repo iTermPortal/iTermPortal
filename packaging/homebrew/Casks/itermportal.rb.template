@@ -1,0 +1,13 @@
+cask "itermportal" do
+  version "__VERSION__"
+  sha256 "__SHA256__"
+
+  url "https://github.com/__REPOSITORY__/releases/download/v#{version}/__ASSET_NAME__"
+  name "iTermPortal"
+  desc "Finder toolbar app that opens a terminal in the current folder"
+  homepage "https://github.com/__REPOSITORY__"
+
+  depends_on macos: ">= :big_sur"
+
+  app "iTermPortal.app"
+end

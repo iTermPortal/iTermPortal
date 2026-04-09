@@ -45,14 +45,6 @@ on launchTerminalAppNewTab(targetPath)
 				do script cdCommand in front window
 			end tell
 		else
-			-- System Events failed — likely missing Accessibility permissions.
-			try
-				display dialog "iTermPortal needs Accessibility permissions to open new tabs in Terminal." & return & return & "Go to System Settings > Privacy & Security > Accessibility, then add iTermPortal." buttons {"Open System Settings", "Use New Window"} default button "Open System Settings" with icon caution
-				set userChoice to button returned of result
-				if userChoice is "Open System Settings" then
-					do shell script "open 'x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility'"
-				end if
-			end try
 			my launchTerminalAppNewTerminal(targetPath)
 		end if
 	on error
