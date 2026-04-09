@@ -36,12 +36,11 @@ Uses [ssmver](https://github.com/hjoncour/ssmver)
 Workflows:
 - `build.yaml`: PR build validation
 - `app-store-release-test.yaml`: Mac App Store package pipeline (`[release]` trigger, optional manual upload)
-- `release.yaml`: push to `main`/`master` builds and publishes GitHub Release assets (`iTermPortal-macos.zip` + optional signed `iTermPortal-direct-install.pkg`)
+- `release.yaml`: version tags (`vX.Y.Z`) build the signed GitHub Release assets and update the Homebrew tap cask (`iTermPortal-macos.zip` + optional signed `iTermPortal-direct-install.pkg`)
 - `certificate.yaml`: macOS certificate/notarization preflight
 
 Setup guide (all variables + macOS cert instructions):
-- `docs/github-actions.md`
-- `docs/app-store-release.md`
+- `docs/homebrew-release.md`
 
 ## Add to Finder Toolbar
 

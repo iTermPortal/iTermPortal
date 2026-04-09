@@ -1,10 +1,9 @@
-name: Release iTermPortal (Signed macOS build)
+name: Release iTermPortal + Update Homebrew Tap
 
 on:
   push:
-    branches:
-      - master
-  workflow_dispatch:
+    tags:
+      - "v*"
 
 permissions:
   contents: write
@@ -16,6 +15,11 @@ concurrency:
 jobs:
   release:
     runs-on: macos-latest
+    outputs:
+      version: ${{ steps.release_meta.outputs.version }}
+      tag: ${{ steps.release_meta.outputs.tag }}
+      asset_name: ${{ steps.asset_meta.outputs.asset_name }}
+      asset_sha256: ${{ steps.asset_meta.outputs.asset_sha256 }}
     env:
       APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
       APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -36,12 +40,55 @@ jobs:
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       APP_BUNDLE_ID_VAR: ${{ vars.APPLE_APP_BUNDLE_ID }}
       APP_BUNDLE_ID_SECRET: ${{ secrets.APPLE_APP_BUNDLE_ID }}
+      HOMEBREW_TAP_REPOSITORY: ${{ vars.HOMEBREW_TAP_REPOSITORY }}
+      HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Validate release tag and Homebrew configuration
+        id: release_meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          VERSION="$(python3 scripts/get_version.py)"
+          TAG="${GITHUB_REF_NAME}"
+          EXPECTED_TAG="v${VERSION}"
+
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Release tags must use v<version> (example: v2.3.2)."
+            exit 1
+          fi
+
+          if [[ "$TAG" != "$EXPECTED_TAG" ]]; then
+            echo "::error::Tag '$TAG' does not match ssmver.toml version '$VERSION' (expected '$EXPECTED_TAG')."
+            exit 1
+          fi
+
+          if [[ -z "${HOMEBREW_TAP_REPOSITORY:-}" ]]; then
+            echo "::error::Missing repository variable HOMEBREW_TAP_REPOSITORY."
+            exit 1
+          fi
+
+          if [[ -z "${HOMEBREW_TAP_GITHUB_TOKEN:-}" ]]; then
+            echo "::error::Missing secret HOMEBREW_TAP_GITHUB_TOKEN."
+            exit 1
+          fi
+
+          {
+            echo "version=$VERSION"
+            echo "tag=$TAG"
+            echo "release_name=iTermPortal $VERSION"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Release metadata:"
+          echo "  version: $VERSION"
+          echo "  tag: $TAG"
+          echo "  tap repo: $HOMEBREW_TAP_REPOSITORY"
 
       - name: Resolve release config and diagnostics
         shell: bash
@@ -129,9 +176,9 @@ jobs:
           echo "  notarization enabled: $NOTARIZE_ENABLED"
           echo "  api key source: $API_KEY_SOURCE"
           echo "  release bundle id: $RELEASE_BUNDLE_ID"
-          echo "  api issuer present: $([[ -n \"${APPLE_API_ISSUER:-}\" ]] && echo yes || echo no)"
-          echo "  p8 present: $([[ -n \"${APPLE_API_KEY_P8:-}\" ]] && echo yes || echo no)"
-          echo "  apple-id fallback present: $([[ -n \"${APPLE_ID:-}\" && -n \"${APPLE_PASSWORD:-}\" && -n \"${APPLE_TEAM_ID:-}\" ]] && echo yes || echo no)"
+          echo "  api issuer present: $([[ -n "${APPLE_API_ISSUER:-}" ]] && echo yes || echo no)"
+          echo "  p8 present: $([[ -n "${APPLE_API_KEY_P8:-}" ]] && echo yes || echo no)"
+          echo "  apple-id fallback present: $([[ -n "${APPLE_ID:-}" && -n "${APPLE_PASSWORD:-}" && -n "${APPLE_TEAM_ID:-}" ]] && echo yes || echo no)"
 
       - name: Import Apple signing certificate
         if: ${{ env.SIGNING_ENABLED == 'true' || env.INSTALLER_SIGNING_ENABLED == 'true' }}
@@ -170,16 +217,13 @@ jobs:
             echo "Available code-sign identities:"
             security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
 
-            # Prefer Developer ID Application for direct distribution (enables notarization).
-            # Fall back to Apple Distribution if that's all that's available, but notarization
-            # will be skipped — Gatekeeper will warn users without a Developer ID cert.
             CERT_ID=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
               awk -F\" '/Developer ID Application/ {print $2; exit}')
             if [[ -z "$CERT_ID" ]]; then
               CERT_ID=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | \
                 awk -F\" '/Apple Distribution|Mac App Distribution|3rd Party Mac Developer Application/ {print $2; exit}')
               if [[ -n "$CERT_ID" ]]; then
-                echo "::warning::Using App Store distribution cert for signing. Notarization requires a Developer ID Application cert — releases will show a Gatekeeper warning. Add APPLE_CERTIFICATE (Developer ID Application) to fix this."
+                echo "::warning::Using App Store distribution cert for signing. Notarization requires a Developer ID Application cert; releases will show a Gatekeeper warning. Add APPLE_CERTIFICATE (Developer ID Application) to fix this."
                 echo "NOTARIZE_ENABLED=false" >> "$GITHUB_ENV"
               fi
             fi
@@ -246,14 +290,11 @@ jobs:
           APP_PATH="dist/iTermPortal.app"
           HELPER_PATH="$APP_PATH/Contents/Library/LoginItems/iTermPortalMenu.app"
 
-          # Remove resource forks / Finder metadata that codesign rejects.
           xattr -cr "$APP_PATH"
 
-          # Strip existing signatures.
           /usr/bin/codesign --remove-signature "$HELPER_PATH" 2>/dev/null || true
           /usr/bin/codesign --remove-signature "$APP_PATH" 2>/dev/null || true
 
-          # Sign inside-out: helper first (no sandbox for direct distribution).
           /usr/bin/codesign --force \
             --options runtime \
             --timestamp \
@@ -261,7 +302,6 @@ jobs:
             -s "$APPLE_SIGNING_IDENTITY" \
             "$HELPER_PATH"
 
-          # Sign main app with apple-events entitlement (required for AppleScript).
           /usr/bin/codesign --force \
             --entitlements config/entitlements/direct-install.plist \
             --options runtime \
@@ -273,6 +313,8 @@ jobs:
           /usr/bin/codesign --verify --deep --strict --verbose=4 "$APP_PATH"
 
       - name: Validate app bundle metadata
+        env:
+          RELEASE_VERSION: ${{ steps.release_meta.outputs.version }}
         shell: bash
         run: |
           set -euxo pipefail
@@ -281,8 +323,16 @@ jobs:
           [[ -d "$APP_PATH" ]] || { echo "::error::Missing $APP_PATH"; exit 1; }
           [[ -d "$APP_PATH/Contents" ]] || { echo "::error::Missing $APP_PATH/Contents"; exit 1; }
           [[ -f "$INFO_PLIST" ]] || { echo "::error::Missing $INFO_PLIST"; exit 1; }
+
+          APP_VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INFO_PLIST")
+          if [[ "$APP_VERSION" != "$RELEASE_VERSION" ]]; then
+            echo "::error::App bundle version '$APP_VERSION' does not match release version '$RELEASE_VERSION'."
+            exit 1
+          fi
+
           /usr/libexec/PlistBuddy -c "Print :CFBundlePackageType" "$INFO_PLIST"
           /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$INFO_PLIST"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$INFO_PLIST"
           /usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$INFO_PLIST"
 
       - name: Warn if release is unsigned
@@ -297,9 +347,7 @@ jobs:
         run: |
           set -euxo pipefail
 
-          # Package the app into a zip for submission.
-          rm -f dist/iTermPortal-macos.zip
-          ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
+          ./scripts/package_release_zip.sh dist/iTermPortal.app dist/iTermPortal-macos.zip
 
           notarize_submit() {
             local target="$1"
@@ -319,7 +367,6 @@ jobs:
 
             if [[ "$STATUS" != "Accepted" ]]; then
               echo "::error::Notarization was not accepted for $target. Status: '$STATUS'"
-              # Fetch the detailed log from Apple so we can see exactly what failed.
               if [[ -n "$SUBMISSION_ID" ]]; then
                 echo "Fetching notarization log for submission $SUBMISSION_ID ..."
                 if [[ -f AuthKey.p8 && -n "${APPLE_API_KEY_RESOLVED:-}" && -n "${APPLE_API_ISSUER:-}" ]]; then
@@ -339,16 +386,12 @@ jobs:
 
           notarize_submit "dist/iTermPortal-macos.zip" "notary-result.json"
 
-          # Staple the notarization ticket to the app, then repackage the zip.
           xcrun stapler staple -v dist/iTermPortal.app
-          rm -f dist/iTermPortal-macos.zip
-          ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
+          ./scripts/package_release_zip.sh dist/iTermPortal.app dist/iTermPortal-macos.zip
 
       - name: Package app (no notarization)
         if: ${{ steps.notarize_app.outcome == 'skipped' }}
-        run: |
-          rm -f dist/iTermPortal-macos.zip
-          ditto -c -k --sequesterRsrc --keepParent dist/iTermPortal.app dist/iTermPortal-macos.zip
+        run: ./scripts/package_release_zip.sh dist/iTermPortal.app dist/iTermPortal-macos.zip
 
       - name: Build signed installer package (.pkg)
         if: ${{ env.PKG_ENABLED == 'true' }}
@@ -358,7 +401,6 @@ jobs:
           set -euxo pipefail
           rm -f dist/iTermPortal-direct-install.pkg dist/iTermPortal-direct-install-unsigned.pkg
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          # Build from the already-notarized and stapled app.
           productbuild \
             --component "dist/iTermPortal.app" /Applications \
             "dist/iTermPortal-direct-install-unsigned.pkg"
@@ -414,26 +456,17 @@ jobs:
         run: |
           echo "::warning::Signed direct-install package (.pkg) was not created. Configure both app cert and installer cert secrets to enable it."
 
-      - name: Derive release metadata
-        id: meta
+      - name: Compute release asset metadata
+        id: asset_meta
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! -f ssmver.toml ]]; then
-            echo "::error::Missing ssmver.toml file."
-            exit 1
-          fi
-          VERSION="$(grep -m1 '^version' ssmver.toml | sed 's/.*= *"//;s/"//')"
-          if [[ -z "$VERSION" ]]; then
-            echo "::error::No version found in ssmver.toml."
-            exit 1
-          fi
-          SHORT_SHA="${GITHUB_SHA:0:7}"
-          TS="$(date -u +'%Y%m%d%H%M%S')"
-          TAG="v${VERSION}-${TS}-${SHORT_SHA}"
-          NAME="iTermPortal ${VERSION} (${SHORT_SHA})"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          ASSET_PATH="dist/iTermPortal-macos.zip"
+          [[ -f "$ASSET_PATH" ]] || { echo "::error::Missing $ASSET_PATH"; exit 1; }
+          SHA256="$(shasum -a 256 "$ASSET_PATH" | awk '{print $1}')"
+          echo "asset_name=$(basename "$ASSET_PATH")" >> "$GITHUB_OUTPUT"
+          echo "asset_sha256=$SHA256" >> "$GITHUB_OUTPUT"
+          echo "App asset SHA256: $SHA256"
 
       - name: Upload release artifact (debug)
         uses: actions/upload-artifact@v4
@@ -443,6 +476,7 @@ jobs:
             dist/iTermPortal-macos.zip
             dist/iTermPortal-direct-install.pkg
             notary-result.json
+            notary-result-pkg.json
           if-no-files-found: ignore
           retention-days: 7
 
@@ -450,9 +484,10 @@ jobs:
         id: gh_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.meta.outputs.tag }}
-          name: ${{ steps.meta.outputs.name }}
+          tag_name: ${{ steps.release_meta.outputs.tag }}
+          name: ${{ steps.release_meta.outputs.release_name }}
           generate_release_notes: true
+          overwrite_files: true
           files: |
             dist/iTermPortal-macos.zip
             dist/iTermPortal-direct-install.pkg
@@ -472,3 +507,29 @@ jobs:
           if [[ -n "${KEYCHAIN_PATH:-}" ]]; then
             security delete-keychain "$KEYCHAIN_PATH" || true
           fi
+
+  update_homebrew_tap:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+
+      - name: Checkout tap repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.HOMEBREW_TAP_REPOSITORY }}
+          token: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+          path: homebrew-tap
+
+      - name: Update cask in tap repository
+        env:
+          TAP_PATH: ${{ github.workspace }}/homebrew-tap
+          RELEASE_VERSION: ${{ needs.release.outputs.version }}
+          RELEASE_SHA256: ${{ needs.release.outputs.asset_sha256 }}
+          RELEASE_ASSET_NAME: ${{ needs.release.outputs.asset_name }}
+          SOURCE_REPOSITORY: ${{ github.repository }}
+        run: ./scripts/update_homebrew_tap.sh
