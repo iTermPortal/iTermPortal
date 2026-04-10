@@ -21,13 +21,14 @@ on launchGhosttyNewTerminal(targetPath)
 end launchGhosttyNewTerminal
 
 on launchGhosttyNewWindow(targetPath)
+	-- Ghostty's CLI actions do not IPC reliably into a running instance on macOS,
+	-- and `open -a Ghostty <path>` gets routed to the existing window as a new tab.
+	-- Forcing a new Ghostty process with --working-directory produces a fresh window
+	-- at the requested path, which matches what the user expects from "new window".
 	try
-		set ghosttyBundle to do shell script "mdfind \"kMDItemCFBundleIdentifier == 'com.mitchellh.ghostty'\" | head -n 1"
-		if ghosttyBundle is "" then error "Ghostty bundle not found"
-		set ghosttyBin to ghosttyBundle & "/Contents/MacOS/ghostty"
-		do shell script quoted form of ghosttyBin & " +new-window --working-directory=" & quoted form of targetPath & " > /dev/null 2>&1 &"
+		do shell script "open -na Ghostty --args --working-directory=" & quoted form of targetPath
 	on error
-		my launchGhosttyNewTerminal(targetPath)
+		my launchFallbackTerminal("Ghostty", targetPath, "new_window")
 	end try
 end launchGhosttyNewWindow
 
