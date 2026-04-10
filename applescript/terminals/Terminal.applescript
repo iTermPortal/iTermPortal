@@ -2,11 +2,23 @@ on launchTerminalApp(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchTerminalAppNewTab(targetPath)
 	else if openMode is "new_window" then
-		my launchNewWindow("Terminal", targetPath)
+		my launchTerminalAppNewWindow(targetPath)
 	else
 		my launchTerminalAppNewTerminal(targetPath)
 	end if
 end launchTerminalApp
+
+on launchTerminalAppNewWindow(targetPath)
+	set cdCommand to "cd " & quoted form of targetPath
+	try
+		tell application "Terminal"
+			activate
+			do script cdCommand
+		end tell
+	on error
+		do shell script "open -a Terminal " & quoted form of targetPath
+	end try
+end launchTerminalAppNewWindow
 
 on launchTerminalAppNewTerminal(targetPath)
 	try
@@ -45,9 +57,9 @@ on launchTerminalAppNewTab(targetPath)
 				do script cdCommand in front window
 			end tell
 		else
-			my launchTerminalAppNewTerminal(targetPath)
+			my launchTerminalAppNewWindow(targetPath)
 		end if
 	on error
-		do shell script "open -a Terminal " & quoted form of targetPath
+		my launchTerminalAppNewWindow(targetPath)
 	end try
 end launchTerminalAppNewTab

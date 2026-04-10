@@ -7,6 +7,7 @@ property appTitle : "Open Terminal Here"
 
 on run
 	my ensureMenuBarHelperRunning()
+	my openTerminalForFinderContext(missing value)
 end run
 
 on reopen
@@ -18,13 +19,13 @@ on open inputItems
 end open
 
 on openTerminalForFinderContext(inputItems)
+	my ensureMenuBarHelperRunning()
 	try
-		my ensureMenuBarHelperRunning()
 		set targetPath to my resolveTargetPath(inputItems)
-		if targetPath is missing value or targetPath is "" then error "Could not resolve a Finder folder."
+		if targetPath is missing value or targetPath is "" then return
 		my launchTerminal(targetPath)
-	on error errMsg
-		error errMsg
+	on error
+		return
 	end try
 end openTerminalForFinderContext
 
@@ -47,13 +48,30 @@ on resolvePathFromFinder()
 		if (count of selectedItems) > 0 then
 			set firstSelection to item 1 of selectedItems
 			set selectedPath to POSIX path of (firstSelection as alias)
-			return my directoryForPath(selectedPath)
+			set resolvedSelection to my directoryForSelection(selectedPath)
+			if resolvedSelection is not missing value then return resolvedSelection
 		end if
 
 		set currentTarget to (target of front window) as alias
 		return POSIX path of currentTarget
 	end tell
 end resolvePathFromFinder
+
+on directoryForSelection(candidatePath)
+	if candidatePath is "" then return missing value
+	if my isBundlePath(candidatePath) then return missing value
+	return my directoryForPath(candidatePath)
+end directoryForSelection
+
+on isBundlePath(candidatePath)
+	set trimmedPath to candidatePath
+	if trimmedPath ends with "/" then set trimmedPath to text 1 thru -2 of trimmedPath
+	set bundleSuffixes to {".app", ".bundle", ".framework", ".pkg", ".plugin", ".kext", ".xpc", ".appex"}
+	repeat with suffix in bundleSuffixes
+		if trimmedPath ends with suffix then return true
+	end repeat
+	return false
+end isBundlePath
 
 on pathFromInputItems(inputItems)
 	if inputItems is missing value then return missing value
@@ -160,19 +178,39 @@ on launchITerm2(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchITerm2NewTab(targetPath)
 	else if openMode is "new_window" then
-		my launchNewWindow("iTerm", targetPath)
+		my launchITerm2NewWindow(targetPath)
 	else
 		my launchITerm2NewTerminal(targetPath)
 	end if
 end launchITerm2
 
 on launchITerm2NewTerminal(targetPath)
+	-- Best-effort: ask macOS to launch a brand new iTerm2 instance.
+	-- iTerm2 ignores this unless "Allow multiple instances" is enabled in its settings,
+	-- in which case a second process starts. We then drive the frontmost instance
+	-- to create a window cd'd into the target directory.
 	try
-		do shell script "open -na iTerm " & quoted form of targetPath
-	on error
-		my launchFallbackTerminal("iTerm", targetPath, "new_terminal")
+		do shell script "open -n -a iTerm"
+		delay 0.5
 	end try
+	my launchITerm2NewWindow(targetPath)
 end launchITerm2NewTerminal
+
+on launchITerm2NewWindow(targetPath)
+	set cdCommand to "cd " & quoted form of targetPath
+	try
+		set scriptSource to "tell application \"iTerm\"" & return & ¬
+			"activate" & return & ¬
+			"set newWindow to (create window with default profile)" & return & ¬
+			"tell current session of newWindow" & return & ¬
+			"write text " & quote & cdCommand & quote & return & ¬
+			"end tell" & return & ¬
+			"end tell"
+		run script scriptSource
+	on error
+		my launchFallbackTerminal("iTerm", targetPath, "new_window")
+	end try
+end launchITerm2NewWindow
 
 on launchITerm2NewTab(targetPath)
 	set cdCommand to "cd " & quoted form of targetPath
@@ -201,11 +239,23 @@ on launchTerminalApp(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchTerminalAppNewTab(targetPath)
 	else if openMode is "new_window" then
-		my launchNewWindow("Terminal", targetPath)
+		my launchTerminalAppNewWindow(targetPath)
 	else
 		my launchTerminalAppNewTerminal(targetPath)
 	end if
 end launchTerminalApp
+
+on launchTerminalAppNewWindow(targetPath)
+	set cdCommand to "cd " & quoted form of targetPath
+	try
+		tell application "Terminal"
+			activate
+			do script cdCommand
+		end tell
+	on error
+		do shell script "open -a Terminal " & quoted form of targetPath
+	end try
+end launchTerminalAppNewWindow
 
 on launchTerminalAppNewTerminal(targetPath)
 	try
@@ -244,10 +294,10 @@ on launchTerminalAppNewTab(targetPath)
 				do script cdCommand in front window
 			end tell
 		else
-			my launchTerminalAppNewTerminal(targetPath)
+			my launchTerminalAppNewWindow(targetPath)
 		end if
 	on error
-		do shell script "open -a Terminal " & quoted form of targetPath
+		my launchTerminalAppNewWindow(targetPath)
 	end try
 end launchTerminalAppNewTab
 
@@ -276,9 +326,12 @@ end launchGhosttyNewTerminal
 
 on launchGhosttyNewWindow(targetPath)
 	try
-		do shell script "open -a Ghostty " & quoted form of targetPath
+		set ghosttyBundle to do shell script "mdfind \"kMDItemCFBundleIdentifier == 'com.mitchellh.ghostty'\" | head -n 1"
+		if ghosttyBundle is "" then error "Ghostty bundle not found"
+		set ghosttyBin to ghosttyBundle & "/Contents/MacOS/ghostty"
+		do shell script quoted form of ghosttyBin & " +new-window --working-directory=" & quoted form of targetPath & " > /dev/null 2>&1 &"
 	on error
-		my launchFallbackTerminal("Ghostty", targetPath, "new_window")
+		my launchGhosttyNewTerminal(targetPath)
 	end try
 end launchGhosttyNewWindow
 
@@ -295,7 +348,7 @@ on launchWarp(targetPath, openMode)
 	if openMode is "new_tab" then
 		my launchWarpNewTab(targetPath)
 	else if openMode is "new_window" then
-		my launchNewWindow("Warp", targetPath)
+		my launchWarpNewWindow(targetPath)
 	else
 		my launchWarpNewTerminal(targetPath)
 	end if
@@ -305,15 +358,28 @@ on launchWarpNewTerminal(targetPath)
 	try
 		do shell script "open -na Warp " & quoted form of targetPath
 	on error
-		my launchFallbackTerminal("Warp", targetPath, "new_terminal")
+		my launchWarpNewWindow(targetPath)
 	end try
 end launchWarpNewTerminal
 
+on launchWarpNewWindow(targetPath)
+	try
+		set encodedPath to my urlEncodePath(targetPath)
+		do shell script "open 'warp://action/new_window?path=" & encodedPath & "'"
+	on error
+		my launchFallbackTerminal("Warp", targetPath, "new_window")
+	end try
+end launchWarpNewWindow
+
 on launchWarpNewTab(targetPath)
 	try
-		set encodedPath to do shell script "python3 -c 'import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))' " & quoted form of targetPath
+		set encodedPath to my urlEncodePath(targetPath)
 		do shell script "open 'warp://action/new_tab?path=" & encodedPath & "'"
 	on error
-		my launchWarpNewTerminal(targetPath)
+		my launchWarpNewWindow(targetPath)
 	end try
 end launchWarpNewTab
+
+on urlEncodePath(targetPath)
+	return do shell script "python3 -c 'import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))' " & quoted form of targetPath
+end urlEncodePath

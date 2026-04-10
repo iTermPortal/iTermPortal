@@ -4,6 +4,7 @@ property appTitle : "Open Terminal Here"
 
 on run
 	my ensureMenuBarHelperRunning()
+	my openTerminalForFinderContext(missing value)
 end run
 
 on reopen
@@ -15,13 +16,13 @@ on open inputItems
 end open
 
 on openTerminalForFinderContext(inputItems)
+	my ensureMenuBarHelperRunning()
 	try
-		my ensureMenuBarHelperRunning()
 		set targetPath to my resolveTargetPath(inputItems)
-		if targetPath is missing value or targetPath is "" then error "Could not resolve a Finder folder."
+		if targetPath is missing value or targetPath is "" then return
 		my launchTerminal(targetPath)
-	on error errMsg
-		error errMsg
+	on error
+		return
 	end try
 end openTerminalForFinderContext
 
@@ -44,13 +45,30 @@ on resolvePathFromFinder()
 		if (count of selectedItems) > 0 then
 			set firstSelection to item 1 of selectedItems
 			set selectedPath to POSIX path of (firstSelection as alias)
-			return my directoryForPath(selectedPath)
+			set resolvedSelection to my directoryForSelection(selectedPath)
+			if resolvedSelection is not missing value then return resolvedSelection
 		end if
 
 		set currentTarget to (target of front window) as alias
 		return POSIX path of currentTarget
 	end tell
 end resolvePathFromFinder
+
+on directoryForSelection(candidatePath)
+	if candidatePath is "" then return missing value
+	if my isBundlePath(candidatePath) then return missing value
+	return my directoryForPath(candidatePath)
+end directoryForSelection
+
+on isBundlePath(candidatePath)
+	set trimmedPath to candidatePath
+	if trimmedPath ends with "/" then set trimmedPath to text 1 thru -2 of trimmedPath
+	set bundleSuffixes to {".app", ".bundle", ".framework", ".pkg", ".plugin", ".kext", ".xpc", ".appex"}
+	repeat with suffix in bundleSuffixes
+		if trimmedPath ends with suffix then return true
+	end repeat
+	return false
+end isBundlePath
 
 on pathFromInputItems(inputItems)
 	if inputItems is missing value then return missing value

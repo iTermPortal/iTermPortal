@@ -22,9 +22,12 @@ end launchGhosttyNewTerminal
 
 on launchGhosttyNewWindow(targetPath)
 	try
-		do shell script "open -a Ghostty " & quoted form of targetPath
+		set ghosttyBundle to do shell script "mdfind \"kMDItemCFBundleIdentifier == 'com.mitchellh.ghostty'\" | head -n 1"
+		if ghosttyBundle is "" then error "Ghostty bundle not found"
+		set ghosttyBin to ghosttyBundle & "/Contents/MacOS/ghostty"
+		do shell script quoted form of ghosttyBin & " +new-window --working-directory=" & quoted form of targetPath & " > /dev/null 2>&1 &"
 	on error
-		my launchFallbackTerminal("Ghostty", targetPath, "new_window")
+		my launchGhosttyNewTerminal(targetPath)
 	end try
 end launchGhosttyNewWindow
 
