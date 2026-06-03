@@ -35,7 +35,7 @@ Uses [ssmver](https://github.com/hjoncour/ssmver)
 
 Workflows:
 - `build.yaml`: PR build validation
-- `app-store-release-test.yaml`: Mac App Store package pipeline (`[release]` trigger, optional manual upload)
+- `app-store-release-test.yaml`: Mac App Store package pipeline (`[release]` trigger, optional manual upload). **Note: App Store distribution is not currently a working end-user path — installed copies fail at runtime due to sandbox-specific issues that don't manifest in the locally-built Developer ID build. Use the Homebrew cask or the direct download instead. See `.docs/features/15_app_store_pipeline.md` §15.**
 - `release.yaml`: pushes to `master` derive `vX.Y.Z` from `ssmver.toml`, update that GitHub Release, and update the Homebrew tap cask (`iTermPortal-macos.zip` + optional signed `iTermPortal-direct-install.pkg`)
 - `certificate.yaml`: macOS certificate/notarization preflight
 
