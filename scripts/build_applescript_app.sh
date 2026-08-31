@@ -11,6 +11,7 @@ TERMINAL_SCRIPT_SOURCES=(
   "$ROOT_DIR/applescript/terminals/Warp.applescript"
 )
 HELPER_SOURCE="$ROOT_DIR/swift/ITermPortalStatusBar.swift"
+GHOSTTY_SERVICE_HELPER_SOURCE="$ROOT_DIR/swift/GhosttyServiceLauncher.swift"
 ICON_SOURCE="$ROOT_DIR/assets/icons/negative.png"
 APPSTORE_ICON_SOURCE="$ROOT_DIR/assets/icons/input.png"
 DIST_DIR="$ROOT_DIR/dist"
@@ -29,6 +30,8 @@ HELPER_APP_PATH="$APP_PATH/Contents/Library/LoginItems/$HELPER_APP_NAME"
 HELPER_EXECUTABLE_NAME="iTermPortalMenu"
 HELPER_EXECUTABLE_PATH="$HELPER_APP_PATH/Contents/MacOS/$HELPER_EXECUTABLE_NAME"
 HELPER_INFO_PLIST="$HELPER_APP_PATH/Contents/Info.plist"
+GHOSTTY_SERVICE_HELPER_NAME="iTermPortalGhosttyService"
+GHOSTTY_SERVICE_HELPER_PATH="$APP_PATH/Contents/MacOS/$GHOSTTY_SERVICE_HELPER_NAME"
 BUNDLE_ID="${FPORTAL_BUNDLE_ID:-com.hjoncour.fportal}"
 SSMVER_FILE="$ROOT_DIR/ssmver.toml"
 TMP_DIR=""
@@ -68,6 +71,11 @@ fi
 
 if [[ ! -f "$HELPER_SOURCE" ]]; then
   echo "Missing status bar helper source: $HELPER_SOURCE" >&2
+  exit 1
+fi
+
+if [[ ! -f "$GHOSTTY_SERVICE_HELPER_SOURCE" ]]; then
+  echo "Missing Ghostty service helper source: $GHOSTTY_SERVICE_HELPER_SOURCE" >&2
   exit 1
 fi
 
@@ -169,6 +177,9 @@ swiftc -O -framework AppKit "$HELPER_SOURCE" -o "$HELPER_EXECUTABLE_PATH"
 chmod +x "$HELPER_EXECUTABLE_PATH"
 cp "$GENERATED_ICON_PATH" "$HELPER_APP_PATH/Contents/Resources/AppIcon.icns"
 
+swiftc -O -framework AppKit "$GHOSTTY_SERVICE_HELPER_SOURCE" -o "$GHOSTTY_SERVICE_HELPER_PATH"
+chmod +x "$GHOSTTY_SERVICE_HELPER_PATH"
+
 cat > "$HELPER_INFO_PLIST" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -256,3 +267,4 @@ echo "No Dock icon: LSUIElement=true"
 echo "Icon source: $ICON_SOURCE"
 echo "Bundle ID: $BUNDLE_ID"
 echo "Status bar helper: $HELPER_APP_PATH"
+echo "Ghostty service helper: $GHOSTTY_SERVICE_HELPER_PATH"

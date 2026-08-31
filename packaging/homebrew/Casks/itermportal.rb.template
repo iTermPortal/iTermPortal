@@ -7,7 +7,18 @@ cask "itermportal" do
   desc "Finder toolbar app that opens a terminal in the current folder"
   homepage "https://github.com/__REPOSITORY__"
 
+  livecheck do
+    url :url
+    strategy :github_latest
+  end
+
   depends_on macos: ">= :big_sur"
 
   app "iTermPortal.app"
+
+  zap trash: [
+    "~/Library/Application Support/iTermPortal",
+    "~/Library/Preferences/com.hjoncour.fportal.plist",
+    "~/Library/Preferences/com.hjoncour.fportal.menu.plist",
+  ]
 end

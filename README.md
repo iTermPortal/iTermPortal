@@ -21,8 +21,17 @@ Icon source:
 Output app:
 - `dist/iTermPortal.app`
 
+Install that build at its stable location before adding it to Finder:
+
+```bash
+./install.sh
+```
+
+Installed app:
+- `/Applications/iTermPortal.app`
+
 Terminal selection:
-1. Launch `dist/iTermPortal.app` once.
+1. Launch `/Applications/iTermPortal.app` once.
 2. Click the new menu bar icon.
 3. Pick your default terminal.
 4. Next Finder toolbar clicks open in that terminal.
@@ -44,10 +53,13 @@ Setup guide (all variables + macOS cert instructions):
 
 ## Add to Finder Toolbar
 
-1. Open a Finder window.
-2. Hold `Command` and drag `dist/iTermPortal.app` into Finder's toolbar.
-3. Click the new toolbar icon to run it.
-4. If Finder still shows an old icon, remove the toolbar item, relaunch Finder, and drag `dist/iTermPortal.app` back in.
+1. Build and install the app with `./scripts/build_applescript_app.sh && ./install.sh`.
+2. Open `/Applications` in Finder.
+3. Hold `Command` and drag `/Applications/iTermPortal.app` into Finder's toolbar.
+4. Click the new toolbar icon to run it.
+5. If Finder shows a question mark, hold `Command` and drag that broken item out of the toolbar, then add `/Applications/iTermPortal.app` again.
+
+Do not add `dist/iTermPortal.app` to Finder's toolbar. `dist/` is a disposable build directory, and rebuilding it replaces the app object that Finder bookmarked. The `/Applications` path is the stable toolbar target.
 
 ## First-Run Permissions
 
