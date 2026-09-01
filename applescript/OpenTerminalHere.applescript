@@ -353,16 +353,24 @@ on launchGhosttyNewTerminal(targetPath)
 end launchGhosttyNewTerminal
 
 on launchGhosttyNewWindow(targetPath)
-	-- Ghostty's CLI actions do not IPC reliably into a running instance on macOS,
-	-- and `open -a Ghostty <path>` gets routed to the existing window as a new tab.
-	-- Forcing a new Ghostty process with --working-directory produces a fresh window
-	-- at the requested path, which matches what the user expects from "new window".
+	-- Opening a folder through Launch Services follows Ghostty's configurable Dock
+	-- drop behavior, whose default is a new tab. Use Ghostty's explicit macOS
+	-- "New Ghostty Window Here" service so this mode always creates a window.
 	try
-		do shell script "open -na Ghostty --args --working-directory=" & quoted form of targetPath
+		my launchGhosttyService("new-window", targetPath)
 	on error
-		my launchFallbackTerminal("Ghostty", targetPath, "new_window")
+		-- Older Ghostty builds may not register the service. A separate app
+		-- instance is the closest fallback that cannot target an existing tab.
+		my launchGhosttyNewTerminal(targetPath)
 	end try
 end launchGhosttyNewWindow
+
+on launchGhosttyService(serviceMode, targetPath)
+	set appPath to POSIX path of (path to me)
+	set helperPath to appPath & "Contents/MacOS/iTermPortalGhosttyService"
+	set helperCommand to quoted form of helperPath & " " & quoted form of serviceMode & " " & quoted form of targetPath
+	do shell script helperCommand
+end launchGhosttyService
 
 on launchGhosttyNewTab(targetPath)
 	try
